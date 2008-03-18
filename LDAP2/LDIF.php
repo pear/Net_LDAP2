@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 require_once 'PEAR.php';
-require_once 'Net/LDAP2-php';
+require_once 'Net/LDAP2.php';
 require_once 'Net/LDAP2/Entry.php';
 require_once 'Net/LDAP2/Util.php';
 

@@ -8,7 +8,7 @@
 
 // Class includes; this assumes Net_LDAP2 installed in PHPs include path
 // or under subfolder "Net" in the local directory.
-require_once 'Net/LDAP2-php';
+require_once 'Net/LDAP2.php';
 
 // Configuration
 // host can be a single server (string) or multiple ones - if we define more

@@ -1,0 +1,17 @@
+; +---------------------------------------------------------------------------+
+; | This is a configuration file for Net_LDAP2LDIFs tests.                     |
+; | To activate the tests, you need to adjust the configuration to            |
+; | your needs and copy it over to "ldapldifconfig.conf". Place the           |
+; | file inside the directory holding all the test programs.                  |
+; |                                                                           |
+; | Note, that this tests assumes a correct LDIF file.                        |
+; | By default, one of the test sets will be used.                            |
+; |                                                                           |
+; | The syntax of this file is really easy and similar to other .ini-files.   |
+; | Remember to quote strings containing non-alphanumeric characters.         |
+; +---------------------------------------------------------------------------+
+
+
+; /!\ IMOPORTANT NOTE: THE LDIF BASED MOCK SERVER IS NOT IMPLEMENTED SO FAR! /!\
+;     This file is just here for later use and a reminder. Just ignore it so far
+;     unless you are implementing tests :)

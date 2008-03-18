@@ -1,0 +1,64 @@
+Examples:
+
+First of all connect to your server as usual. (Some servers require
+authentication to get the Subschema entry)
+
+$config = array( 'host' => 'localhost' );
+$ldap = Net_LDAP2::connect( $config );
+if( Net_LDAP2::isError( $ldap ) ) die ( $ldap->getMessage() )
+
+Then we can get the schema.
+
+$schema = $ldap->schema();
+if( Net_LDAP2::isError( $schema ) ) die ( $schema->getMessage() );
+
+You can give a parameter to $ldap->schema() which sets the Subschema Entry dn.
+If it is omitted, the entry dn will be fetched internally via rootDSE().
+If that fails it will be set to "cn=Subschema".
+
+$schema = $ldap->schema( 'cn=Subschema' );
+
+Now you can work with the schema and retrieve information:
+
+$attrs = $schema->getAll( 'attributes' );
+
+This returns an array with all attributes and their information such as syntax,
+equality, max_length etc. Look at the returned array to see what information was
+passed.
+
+Valid options to getAll() are:
+
+objectclasses
+attributes
+ditcontentrules
+ditstructurerules
+matchingrules
+matchingruleuses
+nameforms
+syntaxes
+
+If you know the the name of an attribute or objectclass you can get the 
+information directly.
+
+$attr = $schema->get('attribute', 'userPassword');
+$oc   = $schema->get('objectclass', 'posixAccount');
+
+The first parameter determines the type of entry to be fetched and can be one
+of:
+
+attribute
+ditcontentrule
+ditstructurerule
+matchingrule
+matchingruleuse
+nameform
+objectclass
+syntax
+
+The second parameter can be the name or the oid of the entry.
+
+You can retrieve a list of required and optional attributes of an object class
+via must( $oc ) or may( $oc ). Both return a list of attributes in an array.
+
+$required = $schema->must( 'posixAccount' );
+$optional = $schema->may( 'posixAccount' );

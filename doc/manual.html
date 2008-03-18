@@ -1,0 +1,244 @@
+<html>
+<head>
+	<title>Net_LDAP2 Manual</title>
+	<style type="text/css">
+		pre { border: 1px solid #000000; background-color:#EBEBEB; padding:5px; }
+	</style>
+</head>
+<body>
+<h1>Net_LDAP2 Manual</h1>
+Welcome to the Net_LDAP2 user manual! here you have a quick introduction on
+how to use Net_LDAP2 to acces your directory server with php.
+
+<h2>First step: Connect</h2>
+<p>
+To do this, use the Net_LDAP2::connect function like this:
+
+<p><pre>
+require_once('Net_LDAP22/LDAP2-php');
+
+$config = array (
+            'binddn'   => 'uid=tarjei,dc=php,dc=net',
+            'bindpw' => 'secret',
+            'basedn'   => dc=php,dc=net
+          );
+
+$ldap = Net_LDAP2::connect($config);
+</pre></p>
+</p>
+<p>
+But what are valid values in the config array?
+<ul>Here's a quick table: (defaults)
+     <li><b>binddn</b>   = the DN to bind as. (none)</li>
+     <li><b>bindpw</b>   = Password of the user specified by 'binddn' (none)</li>
+     <li><b>host</b>     = the ldap host to connect to (localhost)</li>
+     <li><b>base</b>     = ldap base, this is usually the Entry point of your directory (none)</li>
+     <li><b>port</b>     = the server port (389)</li>
+     <li><b>starttls</b> = when set, ldap_start_tls() is run after connecting. (false)</li>
+     <li><b>version</b>  = ldap version (defaults to v 3) </li>
+     <li><b>filter</b>   = default search filter (objectclass=*)</li>
+     <li><b>scope</b>    = default search scope (sub)</li>
+</ul>
+We'll get back to these later.
+</p>
+
+
+
+<h2>Errorhandling</h2>
+<p>
+Now you should have the base ldapobject stored in the variable "$ldap".
+But, what if it is an error? Net_LDAP2 returns a Net_LDAP2_error object (basicly a
+pear_error object) when an error occurs. So wherever you need to check an error, do like this:
+<p><pre>
+$ldap = Net_LDAP2::connect($config); // copied from above! 
+
+if (Net_LDAP2::isError($ldap)) {
+   print $ldap->getMessage(); // this will tell you what went wrong!
+}
+
+</pre></p>
+</p>
+<p>
+Two things to note:
+
+<br>1) The function is_a() might be faster:
+<p><pre>
+if (is_a($ldap,'net_ldap_error')) {
+// do the same as above
+}
+</pre></p>
+In PHP5 you must use the instanceof operator instead of is_a().
+
+<br>2) Net_LDAP2_Error can also return an errornumber. These numbers are standardized. A good description of what they mean is found there:
+http://www.directory-info.com/LDAP2/LDAPErrorCodes.html
+</p>
+
+
+
+<h2>Searching (basics)</h2>
+<p>
+Most of the work you do on an ldapserver is in searching,
+for example, you search for your boss's password or his wife's phonenumber.
+<br>Searching an ldapserver is a bit like doing SQL and a lot not like it at all.</br>
+Think of the directory as some sort of "telephone book".
+Basically, searches are performed by applying a "filter" to objects under a
+specific "base" in the directory. Additionally, there is a "scope" applied to the search,
+so you can specify the recursion level in the directory tree.
+</p>
+<p>
+<h3>Base:</h3>
+The "base" is the point under the directory where you want to search under.
+To search for all people under php.net, you may use: "ou=People,dc=php,dc=net".
+But if you want just to search the devs, you can use "ou=dev,ou=People,dc=php,dc=net".
+</p>
+<p>
+<h3>Filter:</h3> Filters define what you are looking for. They "filter out" unwanted entries.
+<br>Filters start with a ( and end with a ). There is a lot to be said about filters, most is better said by examples:
+
+<br><br><b>(&(objectclass=posixAccount)(uid=boss)) :</b> The object has to satisfy both filters.
+I.e. an object that is both boss and an posixAccount. If you had another object
+with uid=boss but that wasn't an postixaccount it would be excluded.
+<br><b>(|(uid=boss)(uid=secretary)) :</b> Either the boss or the secretary. 
+Note that both logical operators are placed before the filters not between the
+two conditions as you might used to from sql.
+<br><b>(&(objectclass=posixAccount)(|(uid=boss)(uid=secretary))) :</b>
+Here they must have the posixAccount objectclass as well.
+
+<b>(objectclass=*) :</b> All objects must have an objectclass, so this is the simplest way of saying everything.
+
+<b>(uid=t*) :</b> With the right indexes on the server, you may search the substring of an attriute. Here; all users with the first name beginning with a "T".
+
+<br>Please note, that Net_LDAP2 provides a filter class for simplier generation and combination of filters.
+You should use that class unless you know how filters work. This will save you a lot of trouble,
+since there are some encoding issues with ldap-filters. If you want to provide the filter yourself,
+you should also have a look to <a href="http://www.ietf.org/rfc/rfc1558.txt">RFC #1558</a> defining LDAP-Filters.
+</p>
+
+<p>
+<h3>Searchscope</h3>
+The scope of an search may be three things:
+<ul>
+	<li><b>'base'</b> = Just the entry in question.</li>
+	<li><b>'sub'</b> = All subentries.</li>
+	<li><b>'one'</b> = All entries just below the searchbase.</li>
+</ul>
+
+Searching with scope 'base' may be handy for getting just one entry. But then again, that's what the getEntry function does.
+</p>
+
+<p>
+<h3>Searching some entries</h3>
+We know now, how to search, so we will test out our new knowledge.
+We want to search all person entries whose second name starts with "Ha", but only developers.
+Later we want to know the name and the telephone number of the persons.
+<pre>
+$filter = '(&(objectclass=person)(sn=Ha*))';
+$searchbase = 'ou=dev,ou=People,dc=php,dc=net';
+$options = array(
+               'scope' => 'sub',        // all entries below the searchbase (recursive all subtrees from there)
+               'attributes' => array('sn','gn','telephonenumber')  // what attributes to select
+           );
+$search = $ldap->search($searchbase, $filter, $options);
+</pre>
+$search should now be an Net_LDAP2_Search object.
+<br>Okay, now we assume that everything was fine (in production, test for error!).
+We have several options now.
+We can fetch the found entries at once sorted ($search->sorted()) or unsorted ($search->entries()), or we can read
+the objects one by one inside a loop using $search->shiftEntry(). See the class documentation of Net_LDAP2_Search
+for more details.
+</p>
+
+<h2>Entries</h2>
+<p>
+This describes how to get an entry and modifying it.
+If we just want one single entry, it may be useful to directly fetch that entry instead
+of searching it manually. To do this you can use Net_LDAP2s "getEntry()" method:
+<pre>
+$dn = 'cn=Foo Bar,ou=dev,ou=People,dc=php,dc=net';
+$entry =& $ldap->getEntry($dn, array('sn','gn','telephonenumber'));
+</pre>
+</p>
+With this entry object you now can perform some actions like fetching the contents of attributes:
+<pre>
+$telephonenumber =    $entry->getValue('telephonenumber','single');
+</pre>
+Or you can modify a attribute:
+<pre>
+$entry->replace("telephonenumber" => "0123456789");   // replace the attributes values with the new number
+$entry->update();  // update temporarily modified entry on the server
+</pre>
+Of course there are much more other possibilitys. Please note that adding and deleting 
+whole entrys is performed through the Net_LDAP2 class and not with the Net_LDAP2_Entry class.
+
+<h2>Schemas</h2>
+You may also use Net_LDAP2 to find out what schemas your ldap-server supports. Here's an example of how:
+<pre>
+$schema = $ldap->schema();
+</pre>
+Now you got a schemaobject.
+To read from this schemaobject, you have several methods defined in the class Net_LDAP2_Schema.
+<br>For example, to find out which attributes are required for inetOrgPerson, you do this:
+<pre>
+$required = $schema->must( 'inetOrgUser' );
+
+print_r($required);
+/* The output of this will be:
+Array
+(
+     [0] => sn
+     [1] => cn
+)
+*/
+</pre>
+
+Ok, but what kind of attribute is sn? Let's check:
+<pre>
+$att = $schema->get('attribute','sn');
+
+print_r($att);
+/* The output of this will be:
+Array
+(
+     [aliases] => Array
+             (
+              [0] => surname
+             )
+
+     [oid] => 2.5.4.4
+     [name] => sn
+     [desc] => RFC2256: last (family) name(s) for which the entity is known by
+     [sup] => Array
+     (
+        [0] => name
+     )
+     [type] => attribute
+)
+*/
+</pre>
+Hmm, ok, the sup part is important. It means that surname derives it's syntax from another attribute,
+the name attribute. So , we need to check that as well.
+<br>We do:
+<pre>
+$att_dep = $schema->get('attribute',$att['sup'][0]);
+
+print_r($att_dep);
+/* The output of this will be:
+Array
+(
+    [aliases] => Array
+        (
+        )
+
+    [oid] => 2.5.4.41
+    [name] => name
+    [desc] => RFC2256: common supertype of name attributes
+    [equality] => caseIgnoreMatch
+    [substr] => caseIgnoreSubstringsMatch
+    [syntax] => 1.3.6.1.4.1.1466.115.121.1.15{32768}
+    [max_length] => 32768
+    [type] => attribute
+)
+*/
+</pre>
+From this we find out that the attribute has a maxlength of 32768 characters
+and has the syntax 1.3.6.1.4.1.1466.115.121.1.15{32768}.

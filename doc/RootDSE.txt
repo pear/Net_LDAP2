@@ -1,0 +1,57 @@
+First of all connect as usual. (Some servers require authentication to get the 
+RootDSE entry)
+
+$config = array( 'host' => 'localhost' );
+$ldap = Net_LDAP2::connect( $config );
+if( Net_LDAP2::isError( $ldap ) ) die( $ldap->getMessage() );
+
+Now we can get the entry:
+
+$dse = $ldap->rootDSE();
+if( Net_LDAP2::isError( $dse ) die( $dse->getMessage() );
+
+You can give an array of attributes to fetch  as an parameter ro rootDSE().
+If none are given these ones are fetched:
+
+namingContexts
+altServer
+supportedExtension
+supportedControl
+supportedSASLMechanisms
+supportedLDAPVersion
+subschemaSubentry
+
+Then you can work with the object:
+
+$basedn = $dse->getValue( 'namingContexts' );
+
+if( $dse->supportedVersion( 3 ) == 3 ) {
+  do_something_only_ldap_v3_can_do();
+}
+
+Public functions:
+
+getValue( string )
+
+get the value of this attribute. same syntax as Net_LDAP2_Entry::get_value()
+
+supportedControl( oid ) 
+supportedExtension( oid )
+
+check if the given control/extension is supported by the server
+
+supportedSASLMechanism( mechanism )
+
+check if the given sasl mechanism is supported by the server
+
+supportedVersion( version )
+
+check if the given ldap version is supported by the serve
+
+These are alias functions of the above, to make the api perl-ldap compatible.
+
+get_value()
+supported_control()
+supported_extension()
+supported_sasl_mechanism()
+supported_version()

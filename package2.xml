@@ -18,18 +18,6 @@ http://pear.php.net/dtd/package-2.0.xsd">
                  Net_LDAP2 layers itself on top of PHP's existing ldap extensions.
     </description>
     <lead>
-        <name>Tarjei Huse</name>
-        <user>tarjei</user>
-        <email>tarjei@nu.no</email>
-        <active>no</active>
-    </lead>
-    <lead>
-        <name>Jan Wagner</name>
-        <user>jw</user>
-        <email>wagner@netsols.de</email>
-        <active>no</active>
-    </lead>
-    <lead>
         <name>Benedikt Hallinger</name>
         <user>beni</user>
         <email>beni@php.net</email>

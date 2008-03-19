@@ -37,26 +37,23 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2008-03-13</date>
+    <date></date>
     <version>
         <release>2.0.0</release>
         <api>2.0.0</api>
     </version>
     <stability>
-        <release>stable</release>
-        <api>stable</api>
+        <release>beta</release>
+        <api>beta</api>
     </stability>
     <license>LGPL License</license>
-    <notes>/!\ This release is PHP5 only, replacing the Net_LDAP package.
-               If you still need PHP4 support, use Net_LDAP instead.
-        * Implemented iterable search results so one can use foreach() with Net_LDAP2_Search objects
-        * Fixed a problem with Net_LDAP2_LDIF and files with DOS line endings
+    <notes>
     </notes>
 
     <contents>
         <dir name="/">
             <file baseinstalldir="Net" name="LDAP2.php" role="php" />
-            <dir name="LDAP">
+            <dir name="LDAP2">
                 <file baseinstalldir="Net" name="Entry.php" role="php" />
                 <file baseinstalldir="Net" name="Filter.php" role="php" />
                 <file baseinstalldir="Net" name="RootDSE.php" role="php" />
@@ -64,7 +61,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 <file baseinstalldir="Net" name="Search.php" role="php" />
                 <file baseinstalldir="Net" name="Util.php" role="php" />
                 <file baseinstalldir="Net" name="LDIF.php" role="php" />
-            </dir> <!-- /LDAP -->
+            </dir> <!-- /LDAP2 -->
             <dir name="doc">
                 <file baseinstalldir="Net" name="manual.html" role="doc" />
                 <file baseinstalldir="Net" name="README.txt" role="doc" />
@@ -471,6 +468,23 @@ http://pear.php.net/dtd/package-2.0.xsd">
             * Changed API of Net_LDAP->copy() to only accept Net_LDAP_Entry objects, because with DNs
             Attribute values will be lost
             /!\ This is the last release of Net_LDAP supporting PHP4 /!\
+            </notes>
+        </release>
+        <release>
+            <date>2008-03-19</date>
+            <version>
+                <release>2.0.0RC1</release>
+                <api>2.0.0RC1</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>beta</api>
+            </stability>
+            <license>LGPL License</license>
+            <notes>/!\ This release is PHP5 only, replacing the Net_LDAP package.
+                    If you still need PHP4 support, use Net_LDAP instead.
+                * Implemented iterable search results so one can use foreach() with Net_LDAP2_Search objects
+                * Fixed a problem with Net_LDAP2_LDIF and files with DOS line endings
             </notes>
         </release>
     </changelog>

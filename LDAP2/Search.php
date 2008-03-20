@@ -19,36 +19,36 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     /**
     * Search result identifier
     *
-    * @access private
+    * @access protected
     * @var resource
     */
-    var $_search;
+    protected $_search;
 
     /**
     * LDAP resource link
     *
-    * @access private
+    * @access protected
     * @var resource
     */
-    var $_link;
+    protected $_link;
 
     /**
     * Net_LDAP2 object
     *
     * A reference of the Net_LDAP2 object for passing to Net_LDAP2_Entry
     *
-    * @access private
+    * @access protected
     * @var object Net_LDAP2
     */
-    var $_ldap;
+    protected $_ldap;
 
     /**
     * Result entry identifier
     *
-    * @access private
+    * @access protected
     * @var resource
     */
-    var $_entry = null;
+    protected $_entry = null;
 
     /**
     * The errorcode the search got
@@ -59,18 +59,18 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *               than this is a point to handle.
     *           32 - no such object - search here returns a count of 0.
     *
-    * @access private
+    * @access protected
     * @var int
     */
-    var $_errorCode = 0; // if not set - sucess!
+    protected $_errorCode = 0; // if not set - sucess!
 
     /**
     * Cache for all entries already fetched from iterator interface
     *
-    * @access private
+    * @access protected
     * @var array
     */
-    var $_iteratorCache = array();
+    protected $_iteratorCache = array();
 
     /**
     * What attributes we searched for
@@ -82,20 +82,20 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * This variable gets set from the constructor and returned
     * from {@link _searchedAttrs()}
     *
-    * @access private
+    * @access protected
     * @var array
     */
-    var $_searchedAttrs = array();
+    protected $_searchedAttrs = array();
 
     /**
     * Cache variable for storing entries fetched internally
     *
     * This currently is only used by {@link pop_entry()}
     *
-    * @access private
+    * @access protected
     * @var array
     */
-    var $_entry_cache = false;
+    protected $_entry_cache = false;
 
     /**
     * Constructor
@@ -104,15 +104,15 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @param Net_LDAP2|resource &$ldap      Net_LDAP2 object or just a LDAP-Link resource
     * @param array             $attributes (optional) Array with searched attribute names. (see {@link $_searchedAttrs})
     *
-    * @access protected
+    * @access public
     */
-    function Net_LDAP2_Search(&$search, &$ldap, $attributes = array())
+    public function __construct(&$search, &$ldap, $attributes = array())
     {
         $this->PEAR('Net_LDAP2_Error');
 
         $this->setSearch($search);
 
-        if (is_a($ldap, 'Net_LDAP2')) {
+        if ($ldap instanceof Net_LDAP2) {
             $this->_ldap =& $ldap;
             $this->setLink($this->_ldap->getLink());
         } else {
@@ -131,7 +131,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return array Array of entry objects.
     */
-    function entries()
+    public function entries()
     {
         $entries = array();
 
@@ -151,7 +151,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return Net_LDAP2_Entry|false  Reference to Net_LDAP2_Entry object or false
     */
-    function &shiftEntry()
+    public function &shiftEntry()
     {
         if ($this->count() == 0 ) {
             $false = false;
@@ -160,13 +160,15 @@ class Net_LDAP2_Search extends PEAR implements Iterator
 
         if (is_null($this->_entry)) {
             $this->_entry = @ldap_first_entry($this->_link, $this->_search);
-            $entry        = new Net_LDAP2_Entry($this->_ldap, $this->_entry);
+            $entry = Net_LDAP2_Entry::createConnected($this->_ldap, $this->_entry);
+            if ($entry instanceof Net_LDAP2_Error) $entry = false;
         } else {
             if (!$this->_entry = @ldap_next_entry($this->_link, $this->_entry)) {
                 $false = false;
                 return $false;
             }
-            $entry = new Net_LDAP2_Entry($this->_ldap, $this->_entry);
+            $entry = Net_LDAP2_Entry::createConnected($this->_ldap, $this->_entry);
+            if ($entry instanceof Net_LDAP2_Error) $entry = false;
         }
         return $entry;
     }
@@ -176,7 +178,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @see shiftEntry()
     */
-    function shift_entry()
+    public function shift_entry()
     {
         $args = func_get_args();
         return call_user_func_array(array( &$this, 'shiftEntry' ), $args);
@@ -190,7 +192,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return Net_LDAP2_Entry|false
     */
-    function popEntry()
+    public function popEntry()
     {
         if (false === $this->_entry_cache) {
             // fetch entries into cache if not done so far
@@ -206,7 +208,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @see popEntry()
     */
-    function pop_entry()
+    public function pop_entry()
     {
         $args = func_get_args();
         return call_user_func_array(array( &$this, 'popEntry' ), $args);
@@ -232,7 +234,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return array|Net_LDAP2_Error   Array with sorted entries or error
     */
-    function sorted_as_struct($attrs = array('cn'), $order = SORT_ASC)
+    public function sorted_as_struct($attrs = array('cn'), $order = SORT_ASC)
     {
         /*
         * Old Code, suitable and fast for single valued sorting
@@ -335,7 +337,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return array|Net_LDAP2_Error   Array with sorted Net_LDAP2_Entries or error
     */
-    function sorted($attrs = array('cn'), $order = SORT_ASC)
+    public function sorted($attrs = array('cn'), $order = SORT_ASC)
     {
         $return = array();
         $sorted = $this->sorted_as_struct($attrs, $order);
@@ -380,7 +382,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return array      associative result array as described above
     */
-    function as_struct()
+    public function as_struct()
     {
         $return  = array();
         $entries = $this->entries();
@@ -407,7 +409,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @access public
     * @return void
     */
-    function setSearch(&$search)
+    public function setSearch(&$search)
     {
         $this->_search = $search;
     }
@@ -420,7 +422,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @access public
     * @return void
     */
-    function setLink(&$link)
+    public function setLink(&$link)
     {
         $this->_link = $link;
     }
@@ -430,7 +432,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return int Number of entries in search.
     */
-    function count()
+    public function count()
     {
         // this catches the situation where OL returned errno 32 = no such object!
         if (!$this->_search) {
@@ -444,7 +446,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return int The ldap error number.
     */
-    function getErrorCode()
+    public function getErrorCode()
     {
         return $this->_errorCode;
     }
@@ -454,7 +456,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @access protected
     */
-    function _Net_LDAP2_Search()
+    public function _Net_LDAP2_Search()
     {
         @ldap_free_result($this->_search);
     }
@@ -464,7 +466,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return void
     */
-    function done()
+    public function done()
     {
         $this->_Net_LDAP2_Search();
     }
@@ -474,9 +476,9 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return array
     * @see $_searchedAttrs
-    * @access private
+    * @access protected
     */
-    function _searchedAttrs()
+    public function _searchedAttrs()
     {
         return $this->_searchedAttrs;
     }
@@ -486,7 +488,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return boolean
     */
-    function sizeLimitExceeded()
+    public function sizeLimitExceeded()
     {
         return ($this->getErrorCode() == 4);
     }
@@ -513,7 +515,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return Net_LDAP2_Entry|false
     */
-    function current()
+    public function current()
     {
         if (count($this->_iteratorCache) == 0) {
             $this->next();
@@ -529,7 +531,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @see current()
     * @return string|false DN of the current entry; false in case no entry is returned by current()
     */
-    function key()
+    public function key()
     {
         $entry = $this->current();
         return ($entry instanceof Net_LDAP2_Entry)? $entry->dn() :false;
@@ -544,7 +546,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @see current()
     * @return void
     */
-    function next()
+    public function next()
     {
         // fetch next entry.
         // if we have no entrys anymore, we add false (which is
@@ -567,7 +569,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @see current()
     * @return boolean FALSE if there's nothing more to iterate over
     */
-    function valid()
+    public function valid()
     {
         return ($this->current() instanceof Net_LDAP2_Entry);
     }
@@ -580,7 +582,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @see current()
     * @return void
     */
-    function rewind()
+    public function rewind()
     {
         reset($this->_iteratorCache);
     }

@@ -19,17 +19,17 @@ require_once 'PEAR.php';
 class Net_LDAP2_Util extends PEAR
 {
     /**
-    * Private empty Constructur
-    *
-    * @access private
-    */
-    function Net_LDAP2_Util()
+     * Constructor
+     *
+     * @access public
+     */
+    public function __construct()
     {
          // We do nothing here, since all methods can be called statically.
-         // In Net_LDAP2 <= 0.7, we needed a instance of Util, because
+         // In Net_LDAP <= 0.7, we needed a instance of Util, because
          // it was possible to do utf8 encoding and decoding, but this
          // has been moved to the LDAP class. The constructor remains only
-         // here to document the downward compatibility of creating a instance.
+         // here to document the downward compatibility of creating an instance.
     }
 
     /**
@@ -73,23 +73,27 @@ class Net_LDAP2_Util extends PEAR
     * @return array   Parts of the exploded DN
     * @todo implement BER
     */
-    function ldap_explode_dn($dn, $options = array('casefold' => 'upper'))
+    public static function ldap_explode_dn($dn, $options = array('casefold' => 'upper'))
     {
         if (!isset($options['onlyvalues'])) $options['onlyvalues']  = false;
         if (!isset($options['reverse']))    $options['reverse']     = false;
         if (!isset($options['casefold']))   $options['casefold']    = 'upper';
 
         // Escaping of DN and stripping of "OID."
-        $dn = Net_LDAP2_Util::canonical_dn($dn, array('casefold' => $options['casefold']));
+        $dn = self::canonical_dn($dn, array('casefold' => $options['casefold']));
 
         // splitting the DN
         $dn_array = preg_split('/(?<=[^\\\\]),/', $dn);
 
+        // clear wrong splitting (possibly we have split too much)
+        // /!\ Not clear, if this is neccessary here
+        //$dn_array = self::_correct_dn_splitting($dn_array, ',');
+
         // construct subarrays for multivalued RDNs and unescape DN value
         // also convert to output format and apply casefolding
         foreach ($dn_array as $key => $value) {
-            $value_u = Net_LDAP2_Util::unescape_dn_value($value);
-            $rdns    = Net_LDAP2_Util::split_rdn_multival($value_u[0]);
+            $value_u = self::unescape_dn_value($value);
+            $rdns    = self::split_rdn_multival($value_u[0]);
             if (count($rdns) > 1) {
                 // MV RDN!
                 foreach ($rdns as $subrdn_k => $subrdn_v) {
@@ -101,10 +105,10 @@ class Net_LDAP2_Util extends PEAR
                         preg_match('/(.+?)(?<!\\\\)=(.+)/', $subrdn_v, $matches);
                         $rdn_ocl         = $matches[1];
                         $rdn_val         = $matches[2];
-                        $unescaped       = Net_LDAP2_Util::unescape_dn_value($rdn_val);
+                        $unescaped       = self::unescape_dn_value($rdn_val);
                         $rdns[$subrdn_k] = $unescaped[0];
                     } else {
-                        $unescaped = Net_LDAP2_Util::unescape_dn_value($subrdn_v);
+                        $unescaped = self::unescape_dn_value($subrdn_v);
                         $rdns[$subrdn_k] = $unescaped[0];
                     }
                 }
@@ -121,10 +125,10 @@ class Net_LDAP2_Util extends PEAR
                     preg_match('/(.+?)(?<!\\\\)=(.+)/', $value, $matches);
                     $dn_ocl         = $matches[1];
                     $dn_val         = $matches[2];
-                    $unescaped      = Net_LDAP2_Util::unescape_dn_value($dn_val);
+                    $unescaped      = self::unescape_dn_value($dn_val);
                     $dn_array[$key] = $unescaped[0];
                 } else {
-                    $unescaped = Net_LDAP2_Util::unescape_dn_value($value);
+                    $unescaped = self::unescape_dn_value($value);
                     $dn_array[$key] = $unescaped[0];
                 }
             }
@@ -150,7 +154,7 @@ class Net_LDAP2_Util extends PEAR
     * @static
     * @return array The array $values, but escaped
     */
-    function escape_dn_value($values = array())
+    public static function escape_dn_value($values = array())
     {
         // Parameter validation
         if (!is_array($values)) {
@@ -170,7 +174,7 @@ class Net_LDAP2_Util extends PEAR
             $val = str_replace('=',    '\=', $val);
 
             // ASCII < 32 escaping
-            $val = Net_LDAP2_Util::asc2hex32($val);
+            $val = self::asc2hex32($val);
 
             // Convert all leading and trailing spaces to sequences of \20.
             if (preg_match('/^(\s*)(.+?)(\s*)$/', $val, $matches)) {
@@ -202,7 +206,7 @@ class Net_LDAP2_Util extends PEAR
     * @return array Same as $values, but unescaped
     * @static
     */
-    function unescape_dn_value($values = array())
+    public static function unescape_dn_value($values = array())
     {
         // Parameter validation
         if (!is_array($values)) {
@@ -222,7 +226,7 @@ class Net_LDAP2_Util extends PEAR
             $val = str_replace('\=',    '=', $val);
 
             // Translate hex code into ascii
-            $values[$key] = Net_LDAP2_Util::hex2asc($val);
+            $values[$key] = self::hex2asc($val);
         }
 
         return $values;
@@ -264,7 +268,7 @@ class Net_LDAP2_Util extends PEAR
     * @return false|string The canonical DN or FALSE
     * @todo implement option mbcescape
     */
-    function canonical_dn($dn, $options = array('casefold' => 'upper', 'separator' => ','))
+    public static function canonical_dn($dn, $options = array('casefold' => 'upper', 'separator' => ','))
     {
         if ($dn === '') return $dn;  // empty DN is valid!
 
@@ -284,7 +288,7 @@ class Net_LDAP2_Util extends PEAR
             $dn = preg_split('/(?<=[^\\\\])'.$options['separator'].'/', $dn);
 
             // clear wrong splitting (possibly we have split too much)
-            $dn = Net_LDAP2_Util::_correct_dn_splitting($dn, $options['separator']);
+            $dn = self::_correct_dn_splitting($dn, $options['separator']);
         } else {
             // Is array, check, if the array is indexed or associative
             $assoc = false;
@@ -319,14 +323,14 @@ class Net_LDAP2_Util extends PEAR
                     if (!is_int($subkey)) {
                         $subval = $subkey.'='.$subval;
                     }
-                    $subval_processed = Net_LDAP2_Util::canonical_dn($subval);
+                    $subval_processed = self::canonical_dn($subval);
                     if (false === $subval_processed) return false;
                     $dnval_new .= $subval_processed.'+';
                 }
                 $dn[$pos] = substr($dnval_new, 0, -1); // store RDN part, strip last plus
             } else {
                 // try to split multivalued RDNS into array
-                $rdns = Net_LDAP2_Util::split_rdn_multival($dnval);
+                $rdns = self::split_rdn_multival($dnval);
                 if (count($rdns) > 1) {
                     // Multivalued RDN was detected!
                     // The RDN value is expected to be correctly split by split_rdn_multival().
@@ -334,7 +338,7 @@ class Net_LDAP2_Util extends PEAR
                     $rdn_string = '';
                     sort($rdns, SORT_STRING); // Sort RDN keys alphabetically
                     foreach ($rdns as $rdn) {
-                        $subval_processed = Net_LDAP2_Util::canonical_dn($rdn);
+                        $subval_processed = self::canonical_dn($rdn);
                         if (false === $subval_processed) return false;
                         $rdn_string .= $subval_processed.'+';
                     }
@@ -354,12 +358,12 @@ class Net_LDAP2_Util extends PEAR
                     } else {
                         if ($options['casefold'] == 'upper') $ocl = strtoupper($ocl);
                         if ($options['casefold'] == 'lower') $ocl = strtolower($ocl);
-                        $ocl = Net_LDAP2_Util::escape_dn_value(array($ocl));
+                        $ocl = self::escape_dn_value(array($ocl));
                         $ocl = $ocl[0];
                     }
 
                     // escaping of dn-value
-                    $val = Net_LDAP2_Util::escape_dn_value(array($val));
+                    $val = self::escape_dn_value(array($val));
                     $val = str_replace('/', '\/', $val[0]);
 
                     $dn[$pos] = $ocl.'='.$val;
@@ -383,7 +387,7 @@ class Net_LDAP2_Util extends PEAR
     * @static
     * @return array Array $values, but escaped
     */
-    function escape_filter_value($values = array())
+    public static function escape_filter_value($values = array())
     {
         // Parameter validation
         if (!is_array($values)) {
@@ -398,7 +402,7 @@ class Net_LDAP2_Util extends PEAR
             $val = str_replace(')',  '\29', $val);
 
             // ASCII < 32 escaping
-            $val = Net_LDAP2_Util::asc2hex32($val);
+            $val = self::asc2hex32($val);
 
             if (null === $val) $val = '\0';  // apply escaped "null" if string is empty
 
@@ -418,7 +422,7 @@ class Net_LDAP2_Util extends PEAR
     * @static
     * @return array Array $values, but unescaped
     */
-    function unescape_filter_value($values = array())
+    public static function unescape_filter_value($values = array())
     {
         // Parameter validation
         if (!is_array($values)) {
@@ -427,7 +431,7 @@ class Net_LDAP2_Util extends PEAR
 
         foreach ($values as $key => $value) {
             // Translate hex code into ascii
-            $values[$key] = Net_LDAP2_Util::hex2asc($value);
+            $values[$key] = self::hex2asc($value);
         }
 
         return $values;
@@ -441,7 +445,7 @@ class Net_LDAP2_Util extends PEAR
     * @static
     * @return string
     */
-    function asc2hex32($string)
+    public static function asc2hex32($string)
     {
         for ($i = 0; $i < strlen($string); $i++) {
             $char = substr($string, $i, 1);
@@ -463,7 +467,7 @@ class Net_LDAP2_Util extends PEAR
     * @author beni@php.net, heavily based on work from DavidSmith@byu.net
     * @return string
     */
-    function hex2asc($string)
+    public static function hex2asc($string)
     {
         $string = preg_replace("/\\\([0-9A-Fa-f]{2})/e", "''.chr(hexdec('\\1')).''", $string);
         return $string;
@@ -475,7 +479,7 @@ class Net_LDAP2_Util extends PEAR
     * A RDN can contain multiple values, spearated by a plus sign.
     * This function returns each separate ocl=value pair of the RDN part.
     *
-    * If no multivalued RDN is detected, a array containing only
+    * If no multivalued RDN is detected, an array containing only
     * the original rdn part is returned.
     *
     * For example, the multivalued RDN 'OU=Sales+CN=J. Smith' is exploded to:
@@ -484,7 +488,7 @@ class Net_LDAP2_Util extends PEAR
     * The method trys to be smart if it encounters unescaped "+" characters, but may fail,
     * so ensure escaped "+"es in attr names and attr values.
     *
-    * [BUG] If you use string mode and have a multivalued RDN with unescaped plus characters
+    * [BUG] If you have a multivalued RDN with unescaped plus characters
     *       and there is a unescaped plus sign at the end of an value followed by an
     *       attribute name containing an unescaped plus, then you will get wrong splitting:
     *         $rdn = 'OU=Sales+C+N=J. Smith';
@@ -498,10 +502,10 @@ class Net_LDAP2_Util extends PEAR
     * @static
     * @return array Array with the components of the multivalued RDN or Error
     */
-    function split_rdn_multival($rdn)
+    public static function split_rdn_multival($rdn)
     {
         $rdns = preg_split('/(?<!\\\\)\+/', $rdn);
-        $rdns = Net_LDAP2_Util::_correct_dn_splitting($rdns, '+');
+        $rdns = self::_correct_dn_splitting($rdns, '+');
         return array_values($rdns);
     }
 
@@ -514,7 +518,7 @@ class Net_LDAP2_Util extends PEAR
     *
     * @return array Indexed array: 0=attribute name, 1=attribute value
     */
-    function split_attribute_string($attr)
+    public static function split_attribute_string($attr)
     {
         return preg_split('/(?<!\\\\)=/', $attr, 2);
     }
@@ -526,9 +530,9 @@ class Net_LDAP2_Util extends PEAR
     * @param array $separator Separator that was used when splitting
     *
     * @return array Corrected array
-    * @access private
+    * @access protected
     */
-    function _correct_dn_splitting($dn = array(), $separator = ',')
+    protected static function _correct_dn_splitting($dn = array(), $separator = ',')
     {
         foreach ($dn as $key => $dn_value) {
             $dn_value = $dn[$key]; // refresh value (foreach caches!)

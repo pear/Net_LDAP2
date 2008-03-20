@@ -140,32 +140,10 @@ class Net_LDAP2_UtilTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * Test _correct_dn_splitting()
-     */
-    public function test_correct_dn_splitting() {
-        // normal DN
-        $dn_array = array('cn=John','dc=php','c=net');
-        $expected = array('cn=John','dc=php','c=net');
-        $this->assertEquals($expected, Net_LDAP2_Util::_correct_dn_splitting($dn_array, ','));
-
-        // wrong split at attr name
-        $dn_array = array('c','n=John','dc=php','c=net');
-        $expected = array('c,n=John','dc=php','c=net');
-        $this->assertEquals($expected, Net_LDAP2_Util::_correct_dn_splitting($dn_array, ','));
-
-        // wrong split at attr value
-        $dn_array = array('cn=John','doe','dc=php','c=net');
-        $expected = array('cn=John,doe','dc=php','c=net');
-        $this->assertEquals($expected, Net_LDAP2_Util::_correct_dn_splitting($dn_array, ','));
-
-        // wrong split at both
-        $dn_array = array('cn=John','doe','d', 'c=php','c=net');
-        $expected = array('cn=John,doe','d,c=php','c=net');
-        $this->assertEquals($expected, Net_LDAP2_Util::_correct_dn_splitting($dn_array, ','));
-    }
-
-    /**
      * Tests split_rdn_multival()
+     *
+     * In addition to the above test of the basic split correction,
+     * we test here the functionality of mutlivalued RDNs
      */
     public function testSplit_rdn_multival() {
         // One value
@@ -182,7 +160,6 @@ class Net_LDAP2_UtilTest extends PHPUnit_Framework_TestCase {
 
         // Several multivals
         $rdn = 'OU=Sales+CN=J. Smith+L=London+C=England';
-        $expected = array('OU=Sales', 'CN=J. Smith');
         $expected = array('OU=Sales', 'CN=J. Smith', 'L=London', 'C=England');
         $split = Net_LDAP2_Util::split_rdn_multival($rdn);
         $this->assertEquals($expected,  $split);

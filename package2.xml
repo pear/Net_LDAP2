@@ -27,8 +27,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <!-- Information for this release -->
     <date></date>
     <version>
-        <release>2.0.0</release>
-        <api>2.0.0</api>
+        <release>2.0.0RC2</release>
+        <api>2.0.0RC2</api>
     </version>
     <stability>
         <release>beta</release>
@@ -36,6 +36,13 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
+        * Implemented PHP5 language stuff (thanks to Torsten Roehr for his helpful patches)
+        * Changed Net_LDAP2->_markAsNew() to public access, since this is required by the api
+          and may be useful to developers too
+        * Changed API to create schema object, there is now a factory. Net_LDAP2->schema() calls
+          that factory now instead of fetching the Schema itself
+        * Changed API to create rootDSE object, there is now a factory. Net_LDAP2->rootDSE() calls
+          that factory now instead of fetching the rootDSE itself
     </notes>
 
     <contents>

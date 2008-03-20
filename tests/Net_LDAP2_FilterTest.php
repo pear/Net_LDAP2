@@ -59,7 +59,7 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($this->filter_str, $filter_o->asString());
 
         $filter_o_err = new Net_LDAP2_Filter('some bad filter');
-        $this->assertType('PEAR_Error', $filter_o_err->_filter);
+        $this->assertType('PEAR_Error', $filter_o_err->asString());
     }
 
     /**
@@ -119,19 +119,6 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
         // test creating failure
         $filter = Net_LDAP2_Filter::create($testattr, 'test_undefined_matchingrule', $testval);
         $this->assertType('PEAR_Error', $filter);
-    }
-
-    /**
-     * Tests, if _isLeaf() works
-     */
-    public function test_isLeaf() {
-        $leaf   = Net_LDAP2_Filter::create('foo', 'equals', 'bar');
-        $this->assertType('Net_LDAP2_Filter', $leaf);
-        $this->assertTrue($leaf->_isLeaf());
-
-        $noleaf = Net_LDAP2_Filter::combine('not', $leaf);
-        $this->assertType('Net_LDAP2_Filter', $noleaf);
-        $this->assertFalse($noleaf->_isLeaf());
     }
 
     /**

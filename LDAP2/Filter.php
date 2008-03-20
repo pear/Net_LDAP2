@@ -49,10 +49,10 @@ class Net_LDAP2_Filter extends PEAR
     * This variable holds a array of filter objects
     * that should be combined by this filter object.
     *
-    * @access private
+    * @access protected
     * @var array
     */
-    var $_subfilters = array();
+    protected $_subfilters = array();
 
     /**
     * Match of this filter
@@ -60,10 +60,10 @@ class Net_LDAP2_Filter extends PEAR
     * If this is a leaf filter, then a matching rule is stored,
     * if it is a container, then it is a logical operator
     *
-    * @access private
+    * @access protected
     * @var string
     */
-    var $_match;
+    protected $_match;
 
     /**
     * Single filter
@@ -75,7 +75,7 @@ class Net_LDAP2_Filter extends PEAR
     * @acces private
     * @var string
     */
-    var $_filter;
+    protected $_filter;
 
     /**
     * Create a new Net_LDAP2_Filter object and parse $filter.
@@ -89,11 +89,11 @@ class Net_LDAP2_Filter extends PEAR
     *
     * @see parse()
     */
-    function Net_LDAP2_Filter($filter = false)
+    public function __construct($filter = false)
     {
         // The optional parameter must remain here, because otherwise create() crashes
         if (false !== $filter) {
-            $filter_o = Net_LDAP2_Filter::parse($filter);
+            $filter_o = self::parse($filter);
             if (PEAR::isError($filter_o)) {
                 $this->_filter = $filter_o; // assign error, so asString() can report it
             } else {
@@ -138,7 +138,7 @@ class Net_LDAP2_Filter extends PEAR
     *
     * @return Net_LDAP2_Filter|Net_LDAP2_Error
     */
-    function &create($attr_name, $match, $value = '', $escape = true)
+    public function &create($attr_name, $match, $value = '', $escape = true)
     {
         $leaf_filter = new Net_LDAP2_Filter();
         if ($escape) {
@@ -187,7 +187,7 @@ class Net_LDAP2_Filter extends PEAR
     *
     * This static method combines two or more filter objects and returns one single
     * filter object that contains all the others.
-    * Call this method statically: $filter =& Net_LDAP2_Filter('or', array($filter1, $filter2))
+    * Call this method statically: $filter = Net_LDAP2_Filter('or', array($filter1, $filter2))
     * If the array contains filter strings instead of filter objects, we will try to parse them.
     *
     * @param string                $log_op  The locicall operator. May be "and", "or", "not" or the subsequent logical equivalents "&", "|", "!"
@@ -196,7 +196,7 @@ class Net_LDAP2_Filter extends PEAR
     * @return Net_LDAP2_Filter|Net_LDAP2_Error
     * @static
     */
-    function &combine($log_op, $filters)
+    public function &combine($log_op, $filters)
     {
         if (PEAR::isError($filters)) {
             return $filters;
@@ -210,10 +210,10 @@ class Net_LDAP2_Filter extends PEAR
         // tests for sane operation
         if ($log_op == '!') {
             // Not-combination, here we also accept one filter object or filter string
-            if (!is_array($filters) && is_a($filters, 'Net_LDAP2_Filter')) {
+            if (!is_array($filters) && $filters instanceof Net_LDAP2_Filter) {
                 $filters = array($filters); // force array
             } elseif (is_string($filters)) {
-                $filter_o = Net_LDAP2_Filter::parse($filters);
+                $filter_o = self::parse($filters);
                 if (PEAR::isError($filter_o)) {
                     $err = PEAR::raiseError('Net_LDAP2_Filter combine error: '.$filter_o->getMessage());
                     return $err;
@@ -240,13 +240,13 @@ class Net_LDAP2_Filter extends PEAR
                 return $testfilter;
             } elseif (is_string($testfilter)) {
                 // string found, try to parse into an filter object
-                $filter_o = Net_LDAP2_Filter::parse($testfilter);
+                $filter_o = self::parse($testfilter);
                 if (PEAR::isError($filter_o)) {
                     return $filter_o;
                 } else {
                     $filters[$key] = $filter_o;
                 }
-            } elseif (!is_a($testfilter, 'Net_LDAP2_Filter')) {
+            } elseif (!$testfilter instanceof Net_LDAP2_Filter) {
                 $err = PEAR::raiseError('Net_LDAP2_Filter combine error: invalid object passed in array $filters!');
                 return $err;
             }
@@ -268,7 +268,7 @@ class Net_LDAP2_Filter extends PEAR
     * @return Net_LDAP2_Filter|Net_LDAP2_Error
     * @todo Leaf-mode: Do we need to escape at all? what about *-chars?check for the need of encoding values, tackle problems (see code comments)
     */
-    function parse($FILTER)
+    public static function parse($FILTER)
     {
         if (preg_match('/^\((.+?)\)$/', $FILTER, $matches)) {
             if (in_array(substr($matches[1], 0, 1), array('!', '|', '&'))) {
@@ -284,7 +284,7 @@ class Net_LDAP2_Filter extends PEAR
                 $subfilters = array();
                 while (preg_match('/^(\(.+?\))(.*)/', $remaining_component, $matches)) {
                     $remaining_component = $matches[2];
-                    $filter_o = Net_LDAP2_Filter::parse($matches[1]);
+                    $filter_o = self::parse($matches[1]);
                     if (PEAR::isError($filter_o)) {
                         return $filter_o;
                     }
@@ -292,7 +292,7 @@ class Net_LDAP2_Filter extends PEAR
                 }
 
                 // combine subfilters using the logical operator
-                $filter_o = Net_LDAP2_Filter::combine($log_op, $subfilters);
+                $filter_o = self::combine($log_op, $subfilters);
                 return $filter_o;
             } else {
                 // This is one leaf filter component, do some syntax checks, then escape and build filter_o
@@ -334,7 +334,7 @@ class Net_LDAP2_Filter extends PEAR
     *
     * @return string|Net_LDAP2_Error
     */
-    function asString()
+    public function asString()
     {
         if ($this->_isLeaf()) {
             $return = $this->_filter;
@@ -353,7 +353,7 @@ class Net_LDAP2_Filter extends PEAR
     *
     * @see asString()
     */
-    function as_string()
+    public function as_string()
     {
         return $this->asString();
     }
@@ -369,7 +369,7 @@ class Net_LDAP2_Filter extends PEAR
     *
     * @return true|Net_LDAP2_Error
     */
-    function printMe($FH = false)
+    public function printMe($FH = false)
     {
         if (!is_resource($FH)) {
             if (PEAR::isError($FH)) {
@@ -414,7 +414,7 @@ class Net_LDAP2_Filter extends PEAR
     * @return string         The string $string, but escaped
     * @deprecated  Do not use this method anymore, instead use Net_LDAP2_Util::escape_filter_value() directly
     */
-    function escape($value)
+    public static function escape($value)
     {
         $return = Net_LDAP2_Util::escape_filter_value(array($value));
         return $return[0];
@@ -423,10 +423,10 @@ class Net_LDAP2_Filter extends PEAR
     /**
     * Is this a container or a leaf filter object?
     *
-    * @access private
+    * @access protected
     * @return boolean
     */
-    function _isLeaf()
+    protected function _isLeaf()
     {
         if (count($this->_subfilters) > 0) {
             return false; // Container!

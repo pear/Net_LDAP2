@@ -25,27 +25,17 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2008-03-20</date>
+    <date></daate>
     <version>
-        <release>2.0.0RC2</release>
-        <api>2.0.0RC2</api>
+        <release>2.0.0</release>
+        <api>2.0.0</api>
     </version>
     <stability>
-        <release>beta</release>
-        <api>beta</api>
+        <release>stable</release>
+        <api>stable</api>
     </stability>
     <license>LGPL License</license>
     <notes>
-        * Implemented PHP5 language stuff (thanks to Torsten Roehr for his helpful patches)
-        * Changed Net_LDAP2->_markAsNew() to public access, since this is required by the api
-          and may be useful to developers too
-        * Changed API to create schema object, there is now a factory. Net_LDAP2->schema() calls
-          that factory now instead of fetching the Schema itself
-        * Changed API to create rootDSE object, there is now a factory. Net_LDAP2->rootDSE() calls
-          that factory now instead of fetching the rootDSE itself
-        * Net_LDAP2_Entry has a new factory constructor: createConnected() can be used to
-          establish a new Net_LDAP2_Entry object that represents an already existing entry inside
-          some directory
     </notes>
 
     <contents>
@@ -483,6 +473,30 @@ http://pear.php.net/dtd/package-2.0.xsd">
                     If you still need PHP4 support, use Net_LDAP instead.
                 * Implemented iterable search results so one can use foreach() with Net_LDAP2_Search objects
                 * Fixed a problem with Net_LDAP2_LDIF and files with DOS line endings
+            </notes>
+        </release>
+        <release>
+            <date>2008-03-20</date>
+            <version>
+                <release>2.0.0RC2</release>
+                <api>2.0.0RC2</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>beta</api>
+            </stability>
+            <license>LGPL License</license>
+            <notes>
+                * Implemented PHP5 language stuff (thanks to Torsten Roehr for his helpful patches)
+                * Changed Net_LDAP2->_markAsNew() to public access, since this is required by the api
+                and may be useful to developers too
+                * Changed API to create schema object, there is now a factory. Net_LDAP2->schema() calls
+                that factory now instead of fetching the Schema itself
+                * Changed API to create rootDSE object, there is now a factory. Net_LDAP2->rootDSE() calls
+                that factory now instead of fetching the rootDSE itself
+                * Net_LDAP2_Entry has a new factory constructor: createConnected() can be used to
+                establish a new Net_LDAP2_Entry object that represents an already existing entry inside
+                some directory
             </notes>
         </release>
     </changelog>

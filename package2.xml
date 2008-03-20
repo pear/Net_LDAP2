@@ -43,6 +43,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
           that factory now instead of fetching the Schema itself
         * Changed API to create rootDSE object, there is now a factory. Net_LDAP2->rootDSE() calls
           that factory now instead of fetching the rootDSE itself
+        * Net_LDAP2_Entry has a new factory constructor: createConnected() can be used to
+          establish a new Net_LDAP2_Entry object that represents an already existing entry inside
+          some directory
     </notes>
 
     <contents>

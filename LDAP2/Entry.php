@@ -199,7 +199,11 @@ class Net_LDAP2_Entry extends PEAR
     /**
     * Creates a Net_LDAP2_Entry object out of an ldap entry resource
     *
-    * Use this method, if you want to initialize a fresh entry.
+    * Use this method, if you want to initialize an entry object that is
+    * already present in some directory and that you have read manually.
+    *
+    * Please note, that if you want to create an entry object that represents
+    * some already existing entry, you should use {@link createExisting()}.
     *
     * The method should be called statically: $entry = Net_LDAP2_Entry::createConnected();
     *
@@ -220,6 +224,51 @@ class Net_LDAP2_Entry extends PEAR
 
         $entry = new Net_LDAP2_Entry($ldap, $entry);
         return $entry;
+    }
+
+    /**
+    * Creates an Net_LDAP2_Entry object that is considered already existing
+    *
+    * Use this method, if you want to modify an already existing entry
+    * without fetching it first.
+    * In most cases however, it is better to fetch the entry via Net_LDAP2->getEntry()!
+    *
+    * Please note that you should take care if you construct entries manually with this
+    * because you may get weird synchronisation problems.
+    * The attributes and values as well as the entry itself are considered existent
+    * which may produce errors if you try to modify an entry which doesn't really exist
+    * or if you try to overwrite some attribute with an value already present.
+    *
+    * This method is equal to calling createFresh() and after that markAsNew(FALSE).
+    *
+    * The method should be called statically: $entry = Net_LDAP2_Entry::createExisting();
+    *
+    * The attributes parameter is as following:
+    * <code>
+    * $attrs = array( 'attribute1' => array('value1', 'value2'),
+    *                 'attribute2' => 'single value'
+    *          );
+    * </code>
+    *
+    * @param string    $dn    DN of the Entry
+    * @param array     $attrs Attributes of the entry
+    *
+    * @static
+    * @return Net_LDAP2_Entry|Net_LDAP2_Error
+    */
+    public static function createExisting($dn, $attrs = array())
+    {
+        if (!is_array($attrs)) {
+            return PEAR::raiseError("Unable to create entry object: Parameter \$attrs needs to be an array!");
+        }
+
+        $entry = Net_LDAP2_Entry::createFresh($attrs, $dn);
+        if ($entry instanceof Net_LDAP2_Error) {
+            return $entry;
+        } else {
+            $entry->markAsNew(FALSE);
+            return $entry;
+        }
     }
 
     /**

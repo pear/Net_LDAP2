@@ -36,6 +36,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
+        * new constructor factory for Entry objects: createExisting()
     </notes>
 
     <contents>

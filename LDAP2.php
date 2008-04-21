@@ -32,12 +32,12 @@ require_once 'LDAP2/LDIF.php';
 /**
 *  Error constants for errors that are not LDAP errors.
 */
-define('NET_LDAP_ERROR', 1000);
+define('NET_LDAP2_ERROR', 1000);
 
 /**
 * Net_LDAP2 Version
 */
-define('NET_LDAP_VERSION', '2.0.0');
+define('NET_LDAP2_VERSION', '2.0.0');
 
 /**
 * Net_LDAP2 - manipulate LDAP servers the right way!
@@ -134,7 +134,7 @@ class Net_LDAP2 extends PEAR
     */
     public static function getVersion()
     {
-        return NET_LDAP_VERSION;
+        return NET_LDAP2_VERSION;
     }
 
     /**
@@ -788,7 +788,7 @@ class Net_LDAP2 extends PEAR
                     if ($err) {
                         $msg = @ldap_err2str($err);
                     } else {
-                        $err = NET_LDAP_ERROR;
+                        $err = NET_LDAP2_ERROR;
                         $msg = $this->errorMessage($err);
                     }
                     return $this->raiseError($msg, $err);
@@ -820,7 +820,7 @@ class Net_LDAP2 extends PEAR
                     if ($err) {
                         $msg = @ldap_err2str($err);
                     } else {
-                        $err = NET_LDAP_ERROR;
+                        $err = NET_LDAP2_ERROR;
                         $msg = $this->errorMessage($err);
                     }
                     return $this->raiseError($msg, $err);
@@ -1110,7 +1110,7 @@ class Net_LDAP2 extends PEAR
 
          return isset($errorMessages[$errorcode]) ?
             $errorMessages[$errorcode] :
-            $errorMessages[NET_LDAP_ERROR] . ' (' . $errorcode . ')';
+            $errorMessages[NET_LDAP2_ERROR] . ' (' . $errorcode . ')';
     }
 
     /**
@@ -1330,13 +1330,13 @@ class Net_LDAP2_Error extends PEAR_Error
      * @access public
      * @see PEAR_Error
      */
-    public function __construct($message = 'Net_LDAP2_Error', $code = NET_LDAP_ERROR, $mode = PEAR_ERROR_RETURN,
+    public function __construct($message = 'Net_LDAP2_Error', $code = NET_LDAP2_ERROR, $mode = PEAR_ERROR_RETURN,
                          $level = E_USER_NOTICE, $debuginfo = null)
     {
         if (is_int($code)) {
             $this->PEAR_Error($message . ': ' . Net_LDAP2::errorMessage($code), $code, $mode, $level, $debuginfo);
         } else {
-            $this->PEAR_Error("$message: $code", NET_LDAP_ERROR, $mode, $level, $debuginfo);
+            $this->PEAR_Error("$message: $code", NET_LDAP2_ERROR, $mode, $level, $debuginfo);
         }
     }
 }

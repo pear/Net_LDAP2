@@ -9,14 +9,14 @@ require_once 'PEAR.php';
 * Please don't forget to add binary attributes to isBinary() below
 * to support proper value fetching from Net_LDAP2_Entry
 */
-define('NET_LDAP_SYNTAX_BOOLEAN',            '1.3.6.1.4.1.1466.115.121.1.7');
-define('NET_LDAP_SYNTAX_DIRECTORY_STRING',   '1.3.6.1.4.1.1466.115.121.1.15');
-define('NET_LDAP_SYNTAX_DISTINGUISHED_NAME', '1.3.6.1.4.1.1466.115.121.1.12');
-define('NET_LDAP_SYNTAX_INTEGER',            '1.3.6.1.4.1.1466.115.121.1.27');
-define('NET_LDAP_SYNTAX_JPEG',               '1.3.6.1.4.1.1466.115.121.1.28');
-define('NET_LDAP_SYNTAX_NUMERIC_STRING',     '1.3.6.1.4.1.1466.115.121.1.36');
-define('NET_LDAP_SYNTAX_OID',                '1.3.6.1.4.1.1466.115.121.1.38');
-define('NET_LDAP_SYNTAX_OCTET_STRING',       '1.3.6.1.4.1.1466.115.121.1.40');
+define('NET_LDAP2_SYNTAX_BOOLEAN',            '1.3.6.1.4.1.1466.115.121.1.7');
+define('NET_LDAP2_SYNTAX_DIRECTORY_STRING',   '1.3.6.1.4.1.1466.115.121.1.15');
+define('NET_LDAP2_SYNTAX_DISTINGUISHED_NAME', '1.3.6.1.4.1.1466.115.121.1.12');
+define('NET_LDAP2_SYNTAX_INTEGER',            '1.3.6.1.4.1.1466.115.121.1.27');
+define('NET_LDAP2_SYNTAX_JPEG',               '1.3.6.1.4.1.1466.115.121.1.28');
+define('NET_LDAP2_SYNTAX_NUMERIC_STRING',     '1.3.6.1.4.1.1466.115.121.1.36');
+define('NET_LDAP2_SYNTAX_OID',                '1.3.6.1.4.1.1466.115.121.1.38');
+define('NET_LDAP2_SYNTAX_OCTET_STRING',       '1.3.6.1.4.1.1466.115.121.1.40');
 
 /**
 * Load an LDAP Schema and provide information
@@ -105,7 +105,7 @@ class Net_LDAP2_Schema extends PEAR
     *
     * @author Jan Wagner <wagner@netsols.de>
     * @access public
-    * @return Net_LDAP2_Schema|Net_LDAP_Error
+    * @return Net_LDAP2_Schema|NET_LDAP2_Error
     */
     public function fetch(&$ldap, $dn = null) {
         if (!$ldap instanceof Net_LDAP2) {
@@ -464,8 +464,8 @@ class Net_LDAP2_Schema extends PEAR
         // containing binary values
         // The Syntax Definitons go into constants at the top of this page
         $syntax_binary = array(
-                           NET_LDAP_SYNTAX_OCTET_STRING,
-                           NET_LDAP_SYNTAX_JPEG
+                           NET_LDAP2_SYNTAX_OCTET_STRING,
+                           NET_LDAP2_SYNTAX_JPEG
                          );
 
         // Check Syntax

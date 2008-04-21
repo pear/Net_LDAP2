@@ -478,5 +478,10 @@ class Net_LDAP2_Schema extends PEAR
             return $return;
         }
     }
+
+    // [TODO] add method that allows us to see to which objectclasses a certain attribute belongs to
+    // it should return the result structured, e.g. sorted in "may" and "must". Optionally ot should
+    // be able to return it just "flat", e.g. array_merge()d.
+    // We could use get_all() to achieve this easily, i think
 }
 ?>

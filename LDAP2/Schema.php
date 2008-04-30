@@ -460,6 +460,8 @@ class Net_LDAP2_Schema extends PEAR
     */
     public function isBinary($attribute)
     {
+        $return = false; // default to false
+
         // This list contains all syntax that should be treaten as
         // containing binary values
         // The Syntax Definitons go into constants at the top of this page
@@ -471,12 +473,22 @@ class Net_LDAP2_Schema extends PEAR
         // Check Syntax
         $attr_s = $this->get('attribute', $attribute);
         if (false === Net_LDAP2::isError($attr_s) && isset($attr_s['syntax']) && in_array($attr_s['syntax'], $syntax_binary)) {
+            // Syntax is defined as binary in schema
             $return = true;
-            return $return;
         } else {
-            $return = false;
-            return $return;
+            // Syntax not defined as binary, or not found
+            // if attribute is a subtype, check superior attribute syntaxes
+            if (isset($attr_s['sup'])) {
+                foreach ($attr_s['sup'] as $superattr) {
+                    $return = $this->isBinary($superattr);
+                    if ($return) {
+                        break; // stop checking parents since we are binary
+                    }
+                }
+            }
         }
+
+        return $return;
     }
 
     // [TODO] add method that allows us to see to which objectclasses a certain attribute belongs to

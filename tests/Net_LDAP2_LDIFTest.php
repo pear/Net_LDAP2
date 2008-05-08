@@ -1,4 +1,6 @@
 <?php
+//@encoding iso-8859-1
+
 // Call Net_LDAP2_LDIFTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Net_LDAP2_LDIFTest::main");
@@ -52,16 +54,16 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
             'cn'    => 'test blabla',
             'attr3' => array('foo', 'bar'),
             'attr1' => 12345,
-            'attr4' => 'blablaï¿½ï¿½ï¿½',
+            'attr4' => 'blablaöäü',
             'objectclass' => 'oc2',
             'attr2' => array('1234', 'baz'),
             'verylong' => 'fhu08rhvt7b478vt5hv78h45nfgt45h78t34hhhhhhhhhv5bg8h6ttttttttt3489t57nhvgh4788trhg8999vnhtgthgui65hgb5789thvngwr789cghm738'),
 
-        'cn=test ï¿½ï¿½ï¿½,ou=example,dc=cno' => array(
-            'cn'    => 'test ï¿½ï¿½ï¿½',
+        'cn=test öäü,ou=example,dc=cno' => array(
+            'cn'    => 'test öäü',
             'attr3' => array('foo', 'bar'),
             'attr1' => 12345,
-            'attr4' => 'blablaï¿½ï¿½ï¿½',
+            'attr4' => 'blablaöäü',
             'objectclass' => 'oc3',
             'attr2' => array('1234', 'baz'),
             'attr5' => 'endspace ',

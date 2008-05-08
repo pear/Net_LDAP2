@@ -52,16 +52,16 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
             'cn'    => 'test blabla',
             'attr3' => array('foo', 'bar'),
             'attr1' => 12345,
-            'attr4' => 'blablaöäü',
+            'attr4' => 'blablaï¿½ï¿½ï¿½',
             'objectclass' => 'oc2',
             'attr2' => array('1234', 'baz'),
             'verylong' => 'fhu08rhvt7b478vt5hv78h45nfgt45h78t34hhhhhhhhhv5bg8h6ttttttttt3489t57nhvgh4788trhg8999vnhtgthgui65hgb5789thvngwr789cghm738'),
 
-        'cn=test öäü,ou=example,dc=cno' => array(
-            'cn'    => 'test öäü',
+        'cn=test ï¿½ï¿½ï¿½,ou=example,dc=cno' => array(
+            'cn'    => 'test ï¿½ï¿½ï¿½',
             'attr3' => array('foo', 'bar'),
             'attr1' => 12345,
-            'attr4' => 'blablaöäü',
+            'attr4' => 'blablaï¿½ï¿½ï¿½',
             'objectclass' => 'oc3',
             'attr2' => array('1234', 'baz'),
             'attr5' => 'endspace ',
@@ -639,15 +639,17 @@ if (PHPUnit_MAIN_METHOD == "Net_LDAP2_LDIFTest::main") {
     Net_LDAP2_LDIFTest::main();
 }
 
-/**
-* Function transfers line endings to current OS
-*
-* This is neccessary to make write tests platform indendent.
-*
-* @param string $line Line
-* @return string
-*/
-function conv_lineend($line) {
-    return rtrim($line).PHP_EOL;
+if (!function_exists('conv_lineend')) {
+    /**
+    * Function transfers line endings to current OS
+    *
+    * This is neccessary to make write tests platform indendent.
+    *
+    * @param string $line Line
+    * @return string
+    */
+    function conv_lineend($line) {
+        return rtrim($line).PHP_EOL;
+    }
 }
 ?>

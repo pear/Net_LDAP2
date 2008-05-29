@@ -938,6 +938,20 @@ class Net_LDAP2_Entry extends PEAR
     }
 
     /**
+    * Tells if the entry is consiedered as new (not present in the server)
+    *
+    * Please note, that this doesn't tell you if the entry is present on the server.
+    * Use {@link Net_LDAP2::dnExists()} to see if an entry is already there.
+    *
+    * @return boolean
+    */
+    public function isNew()
+    {
+        return $this->_new;
+    }
+
+
+    /**
     * Is this entry going to be deleted once update() is called?
     *
     * @return boolean

@@ -662,7 +662,10 @@ class Net_LDAP2 extends PEAR
     * Run a ldap query
     *
     * Search is used to query the ldap-database.
-    * $base and $filter may be ommitted.The one from config will then be used.
+    * $base and $filter may be ommitted. The one from config will
+    * then be used. $base is either a DN-string or an Net_LDAP2_Entry
+    * object in which case its DN willb e used.
+    *
     * Params may contain:
     *
     * scope: The scope which will be used for searching
@@ -688,7 +691,7 @@ class Net_LDAP2 extends PEAR
     * Please note, that you cannot override server side limitations to sizelimit
     * and timelimit: You can always only lower a given limit.
     *
-    * @param string                 $base   LDAP searchbase
+    * @param string|Net_LDAP2_Entry  $base   LDAP searchbase
     * @param string|Net_LDAP2_Filter $filter LDAP search filter or a Net_LDAP2_Filter object
     * @param array                  $params Array of options
     *
@@ -700,6 +703,9 @@ class Net_LDAP2 extends PEAR
         if (is_null($base)) {
             $base = $this->_config['basedn'];
         }
+        if ($base instanceof Net_LDAP2_Entry) {
+            $base = $base->dn(); // fetch DN og entry, making searchbase relative to the entry
+        }
         if (is_null($filter)) {
             $filter = $this->_config['filter'];
         }
@@ -708,6 +714,9 @@ class Net_LDAP2 extends PEAR
         }
         if (PEAR::isError($filter)) {
             return $filter;
+        }
+        if (PEAR::isError($base)) {
+            return $base;
         }
 
         /* setting searchparameters  */

@@ -39,6 +39,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
         * New constructor factory for Entry objects: createExisting()
 	* Some small bugfixes
 	* New method Entry->isNew()
+	* Net_LDAP2->search() can handle entry objects as $base now 
     </notes>
 
     <contents>

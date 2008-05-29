@@ -410,6 +410,11 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
                     'objectClass' => array('top','organizationalUnit'),
                     'ou' => 'Net_LDAP2_Test_search1'
                 ));
+            $ou1_1  = Net_LDAP2_Entry::createFresh('ou=Net_LDAP2_Test_search1_1,'.$ou1->dn(),
+                array(
+                    'objectClass' => array('top','organizationalUnit'),
+                    'ou' => 'Net_LDAP2_Test_search2'
+                ));
             $ou2  = Net_LDAP2_Entry::createFresh('ou=Net_LDAP2_Test_search2,'.$base,
                 array(
                     'objectClass' => array('top','organizationalUnit'),
@@ -417,6 +422,8 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
                 ));
             $this->assertTrue($ldap->add($ou1));
             $this->assertTrue($ldap->dnExists($ou1->dn()));
+            $this->assertTrue($ldap->add($ou1_1));
+            $this->assertTrue($ldap->dnExists($ou1_1->dn()));
             $this->assertTrue($ldap->add($ou2));
             $this->assertTrue($ldap->dnExists($ou2->dn()));
 
@@ -445,6 +452,23 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $this->assertType('Net_LDAP2_Search', $res);
             $this->assertThat($res->count(), $this->greaterThanOrEqual(2));
 
+            // Base-search using custom base (string)
+            // should only return the test entry $ou1 and not the entry below it.
+            $res = $ldap->search($ou1->dn(), null,
+                array('scope' => 'base', 'attributes' => '1.1')
+            );
+            $this->assertType('Net_LDAP2_Search', $res);
+            $this->assertEquals(1, $res->count());
+
+            // Search using custom base, this time using an entry object
+            // This tests if passing an entry object as base works
+            // should only return the test entry $ou1
+            $res = $ldap->search($ou1, '(ou=*)',
+                array('scope' => 'base', 'attributes' => '1.1')
+            );
+            $this->assertType('Net_LDAP2_Search', $res);
+            $this->assertEquals(1, $res->count());
+
             // Search using default filter for base-onelevel scope with sizelimit
             // should of course return more than one entry,
             // but not more than sizelimit
@@ -467,6 +491,17 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             );
             $this->assertType('Net_LDAP2_Error', $res);
 
+            // Passing Error object as base and as filter object
+            $error = new Net_LDAP2_Error('Testerror');
+            $res = $ldap->search($error, null, // error base
+                array('attributes' => '1.1')
+            );
+            $this->assertType('Net_LDAP2_Error', $res);
+            $res = $ldap->search(null, $error, // error filter
+                array('attributes' => '1.1')
+            );
+            $this->assertType('Net_LDAP2_Error', $res);
+
             // Nullresult
             $res = $ldap->search(null, '(cn=nevermatching_filter)',
                 array('scope' => 'base', 'attributes' => '1.1')
@@ -476,8 +511,9 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
 
 
             // cleanup
-            $this->assertTrue($ldap->delete($ou1), 'Cleanup failed, please delete manually');
-            $this->assertTrue($ldap->delete($ou2), 'Cleanup failed, please delete manually');
+            $this->assertTrue($ldap->delete($ou1_1), 'Cleanup failed, please delete manually');
+            $this->assertTrue($ldap->delete($ou1),   'Cleanup failed, please delete manually');
+            $this->assertTrue($ldap->delete($ou2),   'Cleanup failed, please delete manually');
         }
     }
 

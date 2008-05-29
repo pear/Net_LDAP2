@@ -574,6 +574,23 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             // Testing existing and not existing DN; neither should produce an error
             $this->assertTrue($ldap->dnExists($dn));
             $this->assertFalse($ldap->dnExists('cn=not_existent,'.$dn));
+
+            // Passing an Entry object (should work)
+            // It should return false, because don't add the test entry
+            $base = $this->ldapcfg['global']['server_base_dn'];
+            $ou1  = Net_LDAP2_Entry::createFresh('ou=Net_LDAP2_Test_search1,'.$base,
+                array(
+                    'objectClass' => array('top','organizationalUnit'),
+                    'ou' => 'Net_LDAP2_Test_search1'
+                ));
+            $this->assertFalse($ldap->dnExists($ou1));
+
+            // Passing an float instead of a string
+            $this->assertType('Net_LDAP2_Error', $ldap->dnExists(1.234));
+
+            // Pasing an error object
+            $error = new Net_LDAP2_Error('Testerror');
+            $this->assertType('Net_LDAP2_Error', $ldap->dnExists($error));
         }
     }
 

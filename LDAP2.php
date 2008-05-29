@@ -877,16 +877,22 @@ class Net_LDAP2 extends PEAR
 
 
     /**
-    * Tell if a DN does exist in the directory
+    * Tells if a DN does exist in the directory
     *
-    * @param string $dn The DN of the object to test
+    * @param string|Net_LDAP2_Entry $dn The DN of the object to test
     *
     * @return boolean|Net_LDAP2_Error
     */
     public function dnExists($dn)
     {
-        if (!is_string($dn)) {
-            return PEAR::raiseError('$dn is expected to be a string but is '.gettype($dn).' '.get_class($dn));
+        if (PEAR::isError($dn)) {
+            return $dn;
+        }
+        if ($dn instanceof Net_LDAP2_Entry) {
+             $dn = $dn->dn();
+        }
+        if (false === is_string($dn)) {
+            return PEAR::raiseError('Parameter $dn is not a string nor an entry object!');
         }
 
         // make dn relative to parent

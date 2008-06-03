@@ -112,7 +112,7 @@ class Net_LDAP2_Filter extends PEAR
     *    - begins:         One of the attributes values must begin with $value
     *    - ends:           One of the attributes values must end with $value
     *    - contains:       One of the attributes values must contain $value
-    *    - any:            The attribute can contain any value but must be existent
+    *    - exists | any:   The attribute can contain any value but must be existent
     *    - greater:        The attributes value is greater than $value
     *    - less:           The attributes value is less than $value
     *    - greaterOrEqual: The attributes value is greater or equal than $value
@@ -174,6 +174,7 @@ class Net_LDAP2_Filter extends PEAR
             $leaf_filter->_filter = '(' . $attr_name . '=~' . $value . ')';
             break;
         case 'any':
+        case 'exists': // alias that may improve user code readability
             $leaf_filter->_filter = '(' . $attr_name . '=*)';
             break;
         default:

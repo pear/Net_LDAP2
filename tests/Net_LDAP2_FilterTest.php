@@ -104,7 +104,7 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
             'less'           => "/\($testattr<$testval\)/",
             'greaterorequal' => "/\($testattr>=$testval\)/",
             'lessorequal'    => "/\($testattr<=$testval\)/",
-            'approx'         => "/\($testattr=~$testval\)/",
+            'approx'         => "/\($testattr~=$testval\)/",
             'any'            => "/\($testattr=\*\)/"
         );
 
@@ -259,6 +259,9 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
 
         $filter_not_dmg0s = Net_LDAP2_Filter::combine('not', 'damaged_filter_str');
         $this->assertType('PEAR_Error', $filter_not_dmg0s);
+
+        $filter_not_multi = Net_LDAP2_Filter::combine('not', array($filter0, $filter1));
+        $this->assertType('PEAR_Error', $filter_not_multi);
 
         $filter_not_dmg1 = Net_LDAP2_Filter::combine('not', null);
         $this->assertType('PEAR_Error', $filter_not_dmg1);

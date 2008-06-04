@@ -214,8 +214,8 @@ class Net_LDAP2_Filter extends PEAR
 
         // tests for sane operation
         if ($log_op == '!') {
-            // Not-combination, here we also accept one filter object or filter string
-            if (!is_array($filters) && $filters instanceof Net_LDAP2_Filter) {
+            // Not-combination, here we only accept one filter object or filter string
+            if ($filters instanceof Net_LDAP2_Filter) {
                 $filters = array($filters); // force array
             } elseif (is_string($filters)) {
                 $filter_o = self::parse($filters);
@@ -225,8 +225,11 @@ class Net_LDAP2_Filter extends PEAR
                 } else {
                     $filters = array($filter_o);
                 }
+            } elseif (is_array($filters)) {
+                $err = PEAR::raiseError('Net_LDAP2_Filter combine error: operator is "not" but $filter is an array!');
+                return $err;
             } else {
-                $err = PEAR::raiseError('Net_LDAP2_Filter combine error: operator is "not" but $filter is not a valid Net_LDAP2_Filter nor an array nor a filter string!');
+                $err = PEAR::raiseError('Net_LDAP2_Filter combine error: operator is "not" but $filter is not a valid Net_LDAP2_Filter nor a filter string!');
                 return $err;
             }
         } elseif ($log_op == '&' || $log_op == '|') {

@@ -472,7 +472,7 @@ class Net_LDAP2_Schema extends PEAR
 
         // Check Syntax
         $attr_s = $this->get('attribute', $attribute);
-        if (Net_LDAP::isError($attr_s)) {
+        if (Net_LDAP2::isError($attr_s)) {
             // Attribute not found in schema
             $return = false; // consider attr not binary
         } elseif (isset($attr_s['syntax']) && in_array($attr_s['syntax'], $syntax_binary)) {

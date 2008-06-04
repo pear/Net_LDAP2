@@ -120,7 +120,8 @@ class Net_LDAP2_Filter extends PEAR
     *    - approx:         One of the attributes values is similar to $value
     *
     * If $escape is set to true (default) then $value will be escaped
-    * properly. If it is set to false then $value will be treaten as raw value.
+    * properly. If it is set to false then $value will be treaten as raw filter value string.
+    * You should escape yourself using {@link Net_LDAP2_Util::escape_filter_value()}!
     *
     * Examples:
     * <code>

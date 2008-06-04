@@ -42,6 +42,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
 	* Net_LDAP2->search() and Net_LDAP2->dnExists() can handle entry objects now 
 	* Added "present" matching rule as stated by RFC 2254 (is an alias of the former "any")
 	* Bugfix in filter class for approx matching and not combination
+	* Bugfix for Schema->isBinary() bug if unknown attribute type is requested 
     </notes>
 
     <contents>

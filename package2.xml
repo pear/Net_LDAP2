@@ -26,10 +26,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2008-06-04</date>
+    <date></date>
     <version>
-        <release>2.0.0RC3</release>
-        <api>2.0.0RC3</api>
+        <release>2.0.0RC4</release>
+        <api>2.0.0RC4</api>
     </version>
     <stability>
         <release>beta</release>
@@ -37,13 +37,6 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
-        * New constructor factory for Entry objects: createExisting()
-        * Several small improvements
-        * New method Entry->isNew()
-        * Net_LDAP2->search() and Net_LDAP2->dnExists() can handle entry objects now 
-        * Added "present" matching rule as stated by RFC 2254 (is an alias of the former "any")
-        * Bugfix in filter class for approx matching and not combination
-        * Bugfix for Schema->isBinary() bug if unknown attribute type is requested 
     </notes>
 
     <contents>
@@ -505,6 +498,27 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 * Net_LDAP2_Entry has a new factory constructor: createConnected() can be used to
                 establish a new Net_LDAP2_Entry object that represents an already existing entry inside
                 some directory
+            </notes>
+        </release>
+        <release>
+            <date>2008-06-04</date>
+            <version>
+                <release>2.0.0RC3</release>
+                <api>2.0.0RC3</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>beta</api>
+            </stability>
+            <license>LGPL License</license>
+            <notes>
+                * New constructor factory for Entry objects: createExisting()
+                * Several small improvements
+                * New method Entry->isNew()
+                * Net_LDAP2->search() and Net_LDAP2->dnExists() can handle entry objects now 
+                * Added "present" matching rule as stated by RFC 2254 (is an alias of the former "any")
+                * Bugfix in filter class for approx matching and not combination
+                * Bugfix for Schema->isBinary() bug if unknown attribute type is requested 
             </notes>
         </release>
     </changelog>

@@ -275,6 +275,7 @@ class Net_LDAP2_Filter extends PEAR
     * @access static
     * @return Net_LDAP2_Filter|Net_LDAP2_Error
     * @todo Leaf-mode: Do we need to escape at all? what about *-chars?check for the need of encoding values, tackle problems (see code comments)
+    * @todo If a not combination is detected, we must check that there is only one filter component following.
     */
     public static function parse($FILTER)
     {

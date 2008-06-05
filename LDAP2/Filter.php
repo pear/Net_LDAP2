@@ -139,7 +139,7 @@ class Net_LDAP2_Filter extends PEAR
     *
     * @return Net_LDAP2_Filter|Net_LDAP2_Error
     */
-    public function &create($attr_name, $match, $value = '', $escape = true)
+    public static function &create($attr_name, $match, $value = '', $escape = true)
     {
         $leaf_filter = new Net_LDAP2_Filter();
         if ($escape) {
@@ -201,7 +201,7 @@ class Net_LDAP2_Filter extends PEAR
     * @return Net_LDAP2_Filter|Net_LDAP2_Error
     * @static
     */
-    public function &combine($log_op, $filters)
+    public static function &combine($log_op, $filters)
     {
         if (PEAR::isError($filters)) {
             return $filters;

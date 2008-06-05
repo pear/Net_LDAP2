@@ -37,6 +37,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
+    	* Net_LDAP2_Filter::create*() methods are declared static now
     </notes>
 
     <contents>

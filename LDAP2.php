@@ -498,6 +498,17 @@ class Net_LDAP2 extends PEAR
     }
 
     /**
+    * Alias for {@link done()}
+    *
+    * @return void
+    * @see done()
+    */
+    public function disconnect()
+    {
+        $this->done();
+    }
+
+    /**
     * Destructor
     *
     * @access protected

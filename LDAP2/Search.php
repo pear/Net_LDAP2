@@ -233,6 +233,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @param int   $order Ordering direction, either constant SORT_ASC or SORT_DESC
     *
     * @return array|Net_LDAP2_Error   Array with sorted entries or error
+    * @todo what about server side sorting as specified in http://www.ietf.org/rfc/rfc2891.txt?
     */
     public function sorted_as_struct($attrs = array('cn'), $order = SORT_ASC)
     {
@@ -325,6 +326,9 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * The sorting is actually done with {@link sorted_as_struct()}.
     *
     * Please note that attribute names are case sensitive!
+    * Also note, that it is (depending on server capabilitys) possible to let
+    * the server sort your results. This happens through search controls
+    * and is described in detail at {@link http://www.ietf.org/rfc/rfc2891.txt}
     *
     * Usage example:
     * <code>
@@ -336,6 +340,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @param int   $order Ordering direction, either constant SORT_ASC or SORT_DESC
     *
     * @return array|Net_LDAP2_Error   Array with sorted Net_LDAP2_Entries or error
+    * @todo Entry object construction could be faster. Maybe we could use one of the factorys instead of fetching the entry again
     */
     public function sorted($attrs = array('cn'), $order = SORT_ASC)
     {

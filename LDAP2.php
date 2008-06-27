@@ -670,7 +670,7 @@ class Net_LDAP2 extends PEAR
     }
 
     /**
-    * Run a ldap query
+    * Run a ldap search query
     *
     * Search is used to query the ldap-database.
     * $base and $filter may be ommitted. The one from config will
@@ -708,6 +708,7 @@ class Net_LDAP2 extends PEAR
     *
     * @access public
     * @return Net_LDAP2_Search|Net_LDAP2_Error Net_LDAP2_Search object or Net_LDAP2_Error object
+    * @todo implement search controls (sorting etc)
     */
     public function search($base = null, $filter = null, $params = array())
     {

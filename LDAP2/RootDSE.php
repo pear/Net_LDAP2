@@ -50,7 +50,9 @@ class Net_LDAP2_RootDSE extends PEAR
         if (is_array($attrs) && count($attrs) > 0 ) {
             $attributes = $attrs;
         } else {
-            $attributes = array('namingContexts',
+            $attributes = array('vendorName',
+                                'vendorVersion',
+                                'namingContexts',
                                 'altServer',
                                 'supportedExtension',
                                 'supportedControl',

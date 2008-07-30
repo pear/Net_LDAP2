@@ -21,13 +21,13 @@
 * Package includes.
 */
 require_once 'PEAR.php';
-require_once 'LDAP2/RootDSE.php';
+require_once 'Net/LDAP2/RootDSE.php';
 require_once 'Net/LDAP2/Schema.php';
-require_once 'LDAP2/Entry.php';
-require_once 'LDAP2/Search.php';
-require_once 'LDAP2/Util.php';
-require_once 'LDAP2/Filter.php';
-require_once 'LDAP2/LDIF.php';
+require_once 'Net/LDAP2/Entry.php';
+require_once 'Net/LDAP2/Search.php';
+require_once 'Net/LDAP2/Util.php';
+require_once 'Net/LDAP2/Filter.php';
+require_once 'Net/LDAP2/LDIF.php';
 
 /**
 *  Error constants for errors that are not LDAP errors.
@@ -69,19 +69,33 @@ class Net_LDAP2 extends PEAR
     * filter   = default search filter
     * scope    = default search scope
     *
+    * Newly added in 2.0.0RC4, for auto-reconnect:
+    * auto_reconnect  = if set to true then the class will automatically attempt to
+    *                   reconnect to the LDAP server in certain failure conditions
+    *                   when attempting a search, or other LDAP operation.  Defaults
+    *                   to false.  Note that if you set this to true, calls to search()
+    *                   may block indefinitely if there is a catastrophic server failure.
+    * min_backoff     = minimum reconnection delay period (in seconds).
+    * current_backoff = initial reconnection delay period (in seconds).
+    * max_backoff     = maximum reconnection delay period (in seconds).
+    *
     * @access protected
     * @var array
     */
-    protected $_config = array('host'     => 'localhost',
-                               'port'     => 389,
-                               'version'  => 3,
-                               'starttls' => false,
-                               'binddn'   => '',
-                               'bindpw'   => '',
-                               'basedn'   => '',
-                               'options'  => array(),
-                               'filter'   => '(objectClass=*)',
-                               'scope'    => 'sub');
+    protected $_config = array('host'            => 'localhost',
+                               'port'            => 389,
+                               'version'         => 3,
+                               'starttls'        => false,
+                               'binddn'          => '',
+                               'bindpw'          => '',
+                               'basedn'          => '',
+                               'options'         => array(),
+                               'filter'          => '(objectClass=*)',
+                               'scope'           => 'sub',
+                               'auto_reconnect'  => false,
+                               'min_backoff'     => 1,
+                               'current_backoff' => 1,
+                               'max_backoff'     => 32);
 
     /**
     * List of hosts we try to establish a connection to
@@ -125,6 +139,19 @@ class Net_LDAP2 extends PEAR
     *            to determine whether they should be utf8 encoded or not.
     */
     protected $_schemaAttrs = array();
+
+    /**
+    * Cache for rootDSE objects
+    *
+    * Since the RootDSE object itself may request a rootDSE object,
+    * {@link rootDse()} caches successful requests.
+    * Internally, Net_LDAP2 needs several lookups to this object, so
+    * caching increases performance significally.
+    *
+    * @access protected
+    * @var array Hash with requested rootDSE attribute names as key and rootDSE object as value
+    */
+    protected $_rootDSE_cache = array();
 
     /**
     * Returns the Net_LDAP2 Release version, may be called statically
@@ -254,7 +281,7 @@ class Net_LDAP2 extends PEAR
     * Bind or rebind to the ldap-server
     *
     * This function binds with the given dn and password to the server. In case
-    * no connection has been made yet, it will be startet and startTLS issued
+    * no connection has been made yet, it will be started and startTLS issued
     * if appropiate.
     *
     * The internal bind configuration is not being updated, so if you call
@@ -307,7 +334,7 @@ class Net_LDAP2 extends PEAR
             if (is_null($dn)) {
                 $msg = @ldap_bind($this->_link); // anonymous bind
             } else {
-                $msg = @ldap_bind($this->_link, $dn, $password); // privilegued bind
+                $msg = @ldap_bind($this->_link, $dn, $password); // privileged bind
             }
             if (false === $msg) {
                 return PEAR::raiseError("Bind failed: " .
@@ -391,6 +418,7 @@ class Net_LDAP2 extends PEAR
             if (false === $this->_link) {
                 $current_error = PEAR::raiseError('Could not connect to ' .
                     $host . ':' . $this->_config['port']);
+                $this->_down_host_list[] = $host;
                 continue;
             }
 
@@ -406,7 +434,7 @@ class Net_LDAP2 extends PEAR
 
             //
             // Attempt to bind to the server. If we have credentials configured,
-            // we try to use them, otherwiese its an anonymous bind.
+            // we try to use them, otherwise its an anonymous bind.
             //
             $msg = $this->bind();
             if (self::isError($msg)) {
@@ -458,6 +486,90 @@ class Net_LDAP2 extends PEAR
     }
 
     /**
+    * Reconnect to the ldap-server.  In case the connection to the LDAP
+    * service has dropped out for some reason, this function will reconnect,
+    * and re-bind if a bind has been attempted in the past.  It is probably
+    * most useful when the server list provided to the new() or connect()
+    * function is an array rather than a single host name, because in that
+    * case it will be able to connect to a failover or secondary server in
+    * case the primary server goes down.
+    *
+    * This doesn't return anything, it just tries to re-establish
+    * the current connection.  It will sleep for the current backoff
+    * period (seconds) before attempting the connect, and if the
+    * connection fails it will double the backoff period, but not
+    * try again.  If you want to ensure a reconnection during a
+    * transient period of server downtime then you need to call this
+    * function in a loop.
+    *
+    * @access protected
+    * @return Net_LDAP2_Error|true    Net_LDAP2_Error object or true
+    */
+    protected function _reconnect()
+    {
+
+        //
+        // Return true if we are already connected.
+        //
+        if ($this->_link !== false) {
+            return true;
+        }
+
+        //
+        // Default error message in case all connection attempts fail but no message is set
+        //
+        $current_error = new PEAR_Error('Unknown connection error');
+
+        //
+        // Sleep for a backoff period in seconds.
+        //
+        sleep($this->_config['current_backoff']);
+
+        //
+        // Retry all available connections.
+        //
+        $this->_down_host_list = array();
+        $msg = $this->_connect();
+
+        //
+        // Bail out if that fails.
+        //
+        if (self::isError($msg)) {
+            $this->_config['current_backoff'] = $this->_config['current_backoff'] * 2;
+            if ($this->_config['current_backoff'] > $this->_config['max_backoff']) {
+                $this->_config['current_backoff'] = $this->_config['max_backoff'];
+            }
+            return $msg;
+        }
+
+        //
+        // Now we should be able to safely (re-)bind.
+        //
+        $msg = $this->bind();
+        if (self::isError($msg)) {
+            $this->_config['current_backoff'] = $this->_config['current_backoff'] * 2;
+            if ($this->_config['current_backoff'] > $this->_config['max_backoff']) {
+                $this->_config['current_backoff'] = $this->_config['max_backoff'];
+            }
+
+            //
+            // _config['host'] should have had the last connected host stored in it
+            // by _connect().  Since we are unable to bind to that host we can safely
+            // assume that it is down or has some other problem.
+            //
+            $this->_down_host_list[] = $this->_config['host'];
+            return $msg;
+        }
+
+        //
+        // At this stage we have connected, bound, and set up options,
+        // so we have a known good LDAP server.  Time to go home.
+        //
+        $this->_config['current_backoff'] = $this->_config['min_backoff'];
+        return true;
+    }
+
+    /**
     * Starts an encrypted session
     *
     * @access public
@@ -465,12 +577,30 @@ class Net_LDAP2 extends PEAR
     */
     public function startTLS()
     {
-        if (false === @ldap_start_tls($this->_link)) {
-            return $this->raiseError("TLS not started: " .
-                                     @ldap_error($this->_link),
-                                     @ldap_errno($this->_link));
+        //
+        // Test to see if the server supports TLS first.
+        //
+        $rootDSE = $this->rootDse();
+        $supported_extensions = $rootDSE->getValue('supportedExtension');
+
+        if (in_array('1.3.6.1.4.1.1466.20037', $supported_extensions)) {
+
+            //
+            // Yes, the server supports TLS.
+            //
+            if (false === @ldap_start_tls($this->_link)) {
+                return $this->raiseError("TLS not started: " .
+                                        @ldap_error($this->_link),
+                                        @ldap_errno($this->_link));
+            }
+            return true;
+        } else {
+
+            //
+            // No, the server does not support TLS.
+            //
+            return $this->raiseError("Server reports that it does not support TLS");
         }
-        return true;
     }
 
     /**
@@ -534,19 +664,63 @@ class Net_LDAP2 extends PEAR
         if (!$entry instanceof Net_LDAP2_Entry) {
             return PEAR::raiseError('Parameter to Net_LDAP2::add() must be a Net_LDAP2_Entry object.');
         }
-        if (@ldap_add($this->_link, $entry->dn(), $entry->getValues())) {
-            // entry successfully added, we should update its $ldap reference
-            // in case it is not set so far (fresh entry)
-            if (!$entry->getLDAP() instanceof Net_LDAP2) {
-                $entry->setLDAP($this);
+
+        //
+        // Continue attempting the add operation in a loop until we
+        // get a success, a definitive failure, or the world ends.
+        //
+        while (true) {
+            $link = $this->getLink();
+
+            if ($link === false) {
+                //
+                // We do not have a successful connection yet.  The call to
+                // getLink() would have kept trying if we wanted one.  Go
+                // home now.
+                //
+                return PEAR::raiseError("Could not add entry " . $entry->dn() .
+                       " no valid LDAP connection could be found.");
             }
-            // store, that the entry is present inside the directory
-            $entry->markAsNew(false);
-            return true;
-        } else {
-             return PEAR::raiseError("Could not add entry " . $entry->dn() . " " .
-                                     @ldap_error($this->_link),
-                                     @ldap_errno($this->_link));
+
+            if (@ldap_add($link, $entry->dn(), $entry->getValues())) {
+                // entry successfully added, we should update its $ldap reference
+                // in case it is not set so far (fresh entry)
+                if (!$entry->getLDAP() instanceof Net_LDAP2) {
+                    $entry->setLDAP($this);
+                }
+                // store, that the entry is present inside the directory
+                $entry->markAsNew(false);
+                return true;
+            } else {
+
+                //
+                // We have a failure.  What type?  We may be able to reconnect
+                // and try again.
+                //
+                $error_code = @ldap_errno($link);
+                $error_name = $this->errorMessage($error_code);
+
+                if (($error_name === 'LDAP_OPERATIONS_ERROR') &&
+                    ($this->_config['auto_reconnect'])) {
+
+                    //
+                    // The server has become disconnected before trying the
+                    // operation.  We should try again, possibly with a different
+                    // server.
+                    //
+                    $this->_link = false;
+                    $this->_reconnect();
+                } else {
+
+                    //
+                    // These are not the errors you are looking for.  They
+                    // can go along their way.
+                    //
+                    return PEAR::raiseError("Could not add entry " . $entry->dn() . " " .
+                                            $error_name,
+                                            $error_code);
+                }
+            }
         }
     }
 
@@ -582,17 +756,62 @@ class Net_LDAP2 extends PEAR
                 }
             }
         }
-        // Delete the DN
-        if (false == @ldap_delete($this->_link, $dn)) {
-            $error = @ldap_errno($this->_link);
-            if ($error == 66) {
-                return PEAR::raiseError("Could not delete entry $dn because of subentries. Use the recursive param to delete them.");
+
+        //
+        // Continue attempting the delete operation in a loop until we
+        // get a success, a definitive failure, or the world ends.
+        //
+        while (true) {
+            $link = $this->getLink();
+
+            if ($link === false) {
+                //
+                // We do not have a successful connection yet.  The call to
+                // getLink() would have kept trying if we wanted one.  Go
+                // home now.
+                //
+                return PEAR::raiseError("Could not add entry " . $entry->dn() .
+                       " no valid LDAP connection could be found.");
+            }
+
+            if (@ldap_delete($link, $entry->dn(), $entry->getValues())) {
+                // entry successfully deleted.
+                return true;
             } else {
-                return PEAR::raiseError("Could not delete entry $dn: " .
-                                         $this->errorMessage($error), $error);
+
+                //
+                // We have a failure.  What type?  We may be able to reconnect
+                // and try again.
+                //
+                $error_code = @ldap_errno($link);
+                $error_name = $this->errorMessage($error_code);
+
+                if (($this->errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
+                    ($this->_config['auto_reconnect'])) {
+
+                    //
+                    // The server has become disconnected before trying the
+                    // operation.  We should try again, possibly with a different
+                    // server.
+                    //
+                    $this->_link = false;
+                    $this->_reconnect();
+
+                } elseif ($error_code == 66) {
+                    return PEAR::raiseError("Could not delete entry $dn because of subentries. Use the recursive parameter to delete them.");
+
+                } else {
+
+                    //
+                    // These are not the errors you are looking for.  They
+                    // can go along their way.
+                    //
+                    return PEAR::raiseError("Could not add entry " . $entry->dn() . " " .
+                                            $error_name,
+                                            $error_code);
+                }
             }
         }
-        return true;
     }
 
     /**
@@ -650,18 +869,86 @@ class Net_LDAP2 extends PEAR
                     return $msg;
                 }
                 $entry->setLDAP($this);
-                $msg = $entry->update();
-                if (self::isError($msg)) {
-                    return PEAR::raiseError("Could not modify entry: ".$msg->getMessage());
+
+                //
+                // Because the @ldap functions are called inside Net_LDAP2_Entry::update,
+                // we have to trap the error codes issued from that if we want to support
+                // reconnection.
+                //
+                while (true) {
+                    $msg = $entry->update();
+
+                    if (self::isError($msg)) {
+                        //
+                        // We have a failure.  What type?  We may be able to reconnect
+                        // and try again.
+                        //
+                        $error_code = $msg->getCode();
+                        $error_name = $this->errorMessage($error_code);
+
+                        if (($this->errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
+                            ($this->_config['auto_reconnect'])) {
+
+                            //
+                            // The server has become disconnected before trying the
+                            // operation.  We should try again, possibly with a different
+                            // server.
+                            //
+                            $this->_link = false;
+                            $this->_reconnect();
+
+                        } else {
+
+                            //
+                            // These are not the errors you are looking for.  They
+                            // can go along their way.
+                            //
+                            return PEAR::raiseError("Could not modify entry: ".$msg->getMessage());
+                        }
+                    }
                 }
             }
         }
 
         if (isset($parms['changes']) && is_array($parms['changes'])) {
             foreach ($parms['changes'] as $action => $value) {
-                $msg = $this->modify($entry, array($action => $value));
-                if (self::isError($msg)) {
-                    return $msg;
+
+                //
+                // Because the @ldap functions are called inside Net_LDAP2_Entry::update,
+                // we have to trap the error codes issued from that if we want to support
+                // reconnection.
+                //
+                while (true) {
+                    $msg = $this->modify($entry, array($action => $value));
+
+                    if (self::isError($msg)) {
+                        //
+                        // We have a failure.  What type?  We may be able to reconnect
+                        // and try again.
+                        //
+                        $error_code = $msg->getCode();
+                        $error_name = $this->errorMessage($error_code);
+
+                        if (($this->errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
+                            ($this->_config['auto_reconnect'])) {
+
+                            //
+                            // The server has become disconnected before trying the
+                            // operation.  We should try again, possibly with a different
+                            // server.
+                            //
+                            $this->_link = false;
+                            $this->_reconnect();
+
+                        } else {
+
+                            //
+                            // These are not the errors you are looking for.  They
+                            // can go along their way.
+                            //
+                            return $msg;
+                        }
+                    }
                 }
             }
         }
@@ -761,31 +1048,42 @@ class Net_LDAP2 extends PEAR
             $search_function = 'ldap_search';
         }
 
-        $search = @call_user_func($search_function,
-                                  $this->_link,
-                                  $base,
-                                  $filter,
-                                  $attributes,
-                                  $attrsonly,
-                                  $sizelimit,
-                                  $timelimit);
+        //
+        // Continue attempting the search operation until we get a success
+        // or a definitive failure.
+        //
+        while (true) {
+            $link = $this->getLink();
+            $search = @call_user_func($search_function,
+                                      $link,
+                                      $base,
+                                      $filter,
+                                      $attributes,
+                                      $attrsonly,
+                                      $sizelimit,
+                                      $timelimit);
 
-        if ($err = @ldap_errno($this->_link)) {
-            if ($err == 32) {
-                // Errorcode 32 = no such object, i.e. a nullresult.
-                return $obj = new Net_LDAP2_Search ($search, $this, $attributes);
-            } elseif ($err == 4) {
-                // Errorcode 4 = sizelimit exeeded.
-                return $obj = new Net_LDAP2_Search ($search, $this, $attributes);
-            } elseif ($err == 87) {
-                // bad search filter
-                return $this->raiseError($this->errorMessage($err) . "($filter)", $err);
+            if ($err = @ldap_errno($link)) {
+                if ($err == 32) {
+                    // Errorcode 32 = no such object, i.e. a nullresult.
+                    return $obj = new Net_LDAP2_Search ($search, $this, $attributes);
+                } elseif ($err == 4) {
+                    // Errorcode 4 = sizelimit exeeded.
+                    return $obj = new Net_LDAP2_Search ($search, $this, $attributes);
+                } elseif ($err == 87) {
+                    // bad search filter
+                    return $this->raiseError($this->errorMessage($err) . "($filter)", $err);
+                } elseif (($err == 1) && ($this->_config['auto_reconnect'])) {
+                    // Errorcode 1 = LDAP_OPERATIONS_ERROR but we can try a reconnect.
+                    $this->_link = false;
+                    $this->_reconnect();
+                } else {
+                    $msg = "\nParameters:\nBase: $base\nFilter: $filter\nScope: $scope";
+                    return $this->raiseError($this->errorMessage($err) . $msg, $err);
+                }
             } else {
-                $msg = "\nParameters:\nBase: $base\nFilter: $filter\nScope: $scope";
-                return $this->raiseError($this->errorMessage($err) . $msg, $err);
+                return $obj = new Net_LDAP2_Search($search, $this, $attributes);
             }
-        } else {
-            return $obj = new Net_LDAP2_Search($search, $this, $attributes);
         }
     }
 
@@ -878,13 +1176,32 @@ class Net_LDAP2 extends PEAR
     * @param int $version LDAP-version that should be used
     *
     * @return Net_LDAP2_Error|true    Net_LDAP2_Error object or true
+    * @todo Checking via the rootDSE takes much time - why? fetching and instanciation is quick!
     */
     public function setLDAPVersion($version = 0)
     {
         if (!$version) {
             $version = $this->_config['version'];
         }
-        return $this->setOption("LDAP_OPT_PROTOCOL_VERSION", $version);
+
+        //
+        // Check to see if the server supports this version first.
+        //
+        // Todo: Why is this so horribly slow?
+        // $this->rootDse() is very fast, as well as Net_LDAP2_RootDSE::fetch()
+        // seems like a problem at copiyng the object inside PHP??
+        //
+        $rootDSE = $this->rootDse();
+        if ($rootDSE instanceof Net_LDAP2_Error) {
+            return $rootDSE;
+        } else {
+            $supported_versions = $rootDSE->getValue('supportedLDAPVersion');
+            if (in_array($version, $supported_versions)) {
+                return $this->setOption("LDAP_OPT_PROTOCOL_VERSION", $version);
+            } else {
+                return $this->raiseError("LDAP Server does not support protocol version " . $version);
+            }
+        }
     }
 
 
@@ -1156,16 +1473,34 @@ class Net_LDAP2 extends PEAR
     /**
     * Gets a rootDSE object
     *
+    * This either fetches a fresh rootDSE object or returns it from
+    * the internal cache for performance reasons, if possible.
+    *
     * @param array $attrs Array of attributes to search for
     *
     * @access public
-    * @author Jan Wagner <wagner@netsols.de>
     * @return Net_LDAP2_Error|Net_LDAP2_RootDSE Net_LDAP2_Error or Net_LDAP2_RootDSE object
     */
     public function &rootDse($attrs = null)
     {
-        $rootDSE =& Net_LDAP2_RootDSE::fetch($this, $attrs);
-        return $rootDSE;
+        if ($attrs !== null && !is_array($attrs)) {
+            return PEAR::raiseError('Parameter $attr is expected to be an array!');
+        }
+
+        $attrs_signature = serialize($attrs);
+
+        // see if we need to fetch a fresh object, or if we already
+        // requested this object with the same attributes
+        if (true || !array_key_exists($attrs_signature, $this->_rootDSE_cache)) {
+            $rootdse =& Net_LDAP2_RootDSE::fetch($this, $attrs);
+            if ($rootdse instanceof Net_LDAP2_Error) {
+                return $rootdse;
+            }
+
+            // search was ok, store rootDSE in cache
+            $this->_rootDSE_cache[$attrs_signature] = $rootdse;
+        }
+        return $this->_rootDSE_cache[$attrs_signature];
     }
 
     /**
@@ -1323,13 +1658,28 @@ class Net_LDAP2 extends PEAR
     }
 
     /**
-    * Get the LDAP link
+    * Get the LDAP link resource.  It will loop attempting to
+    * re-establish the connection if the connection attempt fails and
+    * auto_reconnect has been turned on (see the _config array documentation).
     *
     * @access public
     * @return resource LDAP link
     */
     public function &getLink()
     {
+        if ($this->_config['auto_reconnect']) {
+            while (true) {
+                //
+                // Return the link handle if we are already connected.  Otherwise
+                // try to reconnect.
+                //
+                if ($this->_link !== false) {
+                    return $this->_link;
+                } else {
+                    $this->_reconnect();
+                }
+            }
+        }
         return $this->_link;
     }
 }

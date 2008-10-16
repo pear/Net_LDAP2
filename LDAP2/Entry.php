@@ -680,6 +680,13 @@ class Net_LDAP2_Entry extends PEAR
     /**
     * Update the entry on the directory server
     *
+    * This will evaluate all changes made so far and send them
+    * to the directory server.
+    * Please note, that if you make changes to objectclasses wich
+    * have mandatory attributes set, update() will currently fail.
+    * Remove the entry from the server and readd it as new in such cases.
+    * This also will deal with problems with setting structural object classes.
+    *
     * @param Net_LDAP2 $ldap If passed, a call to setLDAP() is issued prior update, thus switching the LDAP-server. This is for perl-ldap interface compliance
     *
     * @access public

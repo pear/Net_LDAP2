@@ -665,19 +665,16 @@ class Net_LDAP2 extends PEAR
             return PEAR::raiseError('Parameter to Net_LDAP2::add() must be a Net_LDAP2_Entry object.');
         }
 
-        //
         // Continue attempting the add operation in a loop until we
         // get a success, a definitive failure, or the world ends.
-        //
+        $foo = 0;
         while (true) {
             $link = $this->getLink();
 
             if ($link === false) {
-                //
                 // We do not have a successful connection yet.  The call to
                 // getLink() would have kept trying if we wanted one.  Go
                 // home now.
-                //
                 return PEAR::raiseError("Could not add entry " . $entry->dn() .
                        " no valid LDAP connection could be found.");
             }
@@ -692,30 +689,22 @@ class Net_LDAP2 extends PEAR
                 $entry->markAsNew(false);
                 return true;
             } else {
-
-                //
                 // We have a failure.  What type?  We may be able to reconnect
                 // and try again.
-                //
                 $error_code = @ldap_errno($link);
                 $error_name = $this->errorMessage($error_code);
 
                 if (($error_name === 'LDAP_OPERATIONS_ERROR') &&
                     ($this->_config['auto_reconnect'])) {
 
-                    //
                     // The server has become disconnected before trying the
                     // operation.  We should try again, possibly with a different
                     // server.
-                    //
                     $this->_link = false;
                     $this->_reconnect();
                 } else {
-
-                    //
-                    // These are not the errors you are looking for.  They
-                    // can go along their way.
-                    //
+                    // Errors other than the above catched are just passed
+                    // back to the user so he may react upon them.
                     return PEAR::raiseError("Could not add entry " . $entry->dn() . " " .
                                             $error_name,
                                             $error_code);
@@ -854,6 +843,7 @@ class Net_LDAP2 extends PEAR
             return PEAR::raiseError("Parameter is not a string nor an entry object!");
         }
 
+        // Perform changes mentioned separately
         foreach (array('add', 'delete', 'replace') as $action) {
             if (isset($parms[$action])) {
                 $msg = $entry->$action($parms[$action]);
@@ -862,84 +852,74 @@ class Net_LDAP2 extends PEAR
                 }
                 $entry->setLDAP($this);
 
-                //
-                // Because the @ldap functions are called inside Net_LDAP2_Entry::update,
+                // Because the @ldap functions are called inside Net_LDAP2_Entry::update(),
                 // we have to trap the error codes issued from that if we want to support
                 // reconnection.
-                //
                 while (true) {
                     $msg = $entry->update();
 
                     if (self::isError($msg)) {
-                        //
                         // We have a failure.  What type?  We may be able to reconnect
                         // and try again.
-                        //
                         $error_code = $msg->getCode();
                         $error_name = $this->errorMessage($error_code);
 
                         if (($this->errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
                             ($this->_config['auto_reconnect'])) {
 
-                            //
                             // The server has become disconnected before trying the
                             // operation.  We should try again, possibly with a different
                             // server.
-                            //
                             $this->_link = false;
                             $this->_reconnect();
 
                         } else {
 
-                            //
-                            // These are not the errors you are looking for.  They
-                            // can go along their way.
-                            //
+                            // Errors other than the above catched are just passed
+                            // back to the user so he may react upon them.
                             return PEAR::raiseError("Could not modify entry: ".$msg->getMessage());
                         }
+                    } else {
+                        // modification succeedet, evaluate next change
+                        break;
                     }
                 }
             }
         }
 
+        // perform combined changes in 'changes' array
         if (isset($parms['changes']) && is_array($parms['changes'])) {
             foreach ($parms['changes'] as $action => $value) {
 
-                //
                 // Because the @ldap functions are called inside Net_LDAP2_Entry::update,
                 // we have to trap the error codes issued from that if we want to support
                 // reconnection.
-                //
                 while (true) {
                     $msg = $this->modify($entry, array($action => $value));
 
                     if (self::isError($msg)) {
-                        //
                         // We have a failure.  What type?  We may be able to reconnect
                         // and try again.
-                        //
                         $error_code = $msg->getCode();
                         $error_name = $this->errorMessage($error_code);
 
                         if (($this->errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
                             ($this->_config['auto_reconnect'])) {
 
-                            //
                             // The server has become disconnected before trying the
                             // operation.  We should try again, possibly with a different
                             // server.
-                            //
                             $this->_link = false;
                             $this->_reconnect();
 
                         } else {
-
-                            //
-                            // These are not the errors you are looking for.  They
-                            // can go along their way.
-                            //
+                            // Errors other than the above catched are just passed
+                            // back to the user so he may react upon them.
                             return $msg;
                         }
+                    } else {
+                        // modification succeedet, evaluate next change
+                        break;
                     }
                 }
             }
@@ -995,7 +975,7 @@ class Net_LDAP2 extends PEAR
             $base = $this->_config['basedn'];
         }
         if ($base instanceof Net_LDAP2_Entry) {
-            $base = $base->dn(); // fetch DN og entry, making searchbase relative to the entry
+            $base = $base->dn(); // fetch DN of entry, making searchbase relative to the entry
         }
         if (is_null($filter)) {
             $filter = $this->_config['filter'];
@@ -1040,10 +1020,8 @@ class Net_LDAP2 extends PEAR
             $search_function = 'ldap_search';
         }
 
-        //
         // Continue attempting the search operation until we get a success
         // or a definitive failure.
-        //
         while (true) {
             $link = $this->getLink();
             $search = @call_user_func($search_function,

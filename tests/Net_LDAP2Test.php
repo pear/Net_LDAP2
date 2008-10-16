@@ -365,7 +365,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
                 )
             );
 
-            // run them
+            // Perform those changes
             $this->assertTrue($ldap->modify($local_entry, $changes));
 
             // verify correct attribute changes

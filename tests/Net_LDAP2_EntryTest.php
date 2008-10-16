@@ -37,7 +37,6 @@ class Net_LDAP2_EntryTest extends PHPUnit_Framework_TestCase {
      * @access protected
      */
     protected function setUp() {
-        $this->markTestSkipped('Test not implemented yet.');
     }
 
     /**

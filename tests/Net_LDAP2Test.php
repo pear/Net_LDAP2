@@ -127,14 +127,19 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
      * Tests if getVersion() works correctly
      */
     public function testGetVersion() {
-            $this->assertTrue(defined('NET_LDAP2_VERSION'));
-            $this->assertEquals(NET_LDAP2_VERSION, Net_LDAP2::getVersion());
+        $this->assertTrue(defined('NET_LDAP2_VERSION'));
+        $this->assertEquals(NET_LDAP2_VERSION, Net_LDAP2::getVersion());
     }
 
     /**
      * Tests if the server can connect and bind correctly
      */
     public function testConnectAndPrivileguedBind() {
+        // Check extension
+        if (true !== Net_LDAP2::checkLDAPExtension()) {
+            $this->markTestSkipped('PHP LDAP extension not found or not loadable. Skipped Test.');
+        }
+
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
@@ -174,6 +179,11 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
      * Tests if the server can connect and bind anonymously, if supported (->cfg and ldap mode)
      */
     public function testConnectAndAnonymousBind() {
+        // Check extension
+        if (true !== Net_LDAP2::checkLDAPExtension()) {
+            $this->markTestSkipped('PHP LDAP extension not found or not loadable. Skipped Test.');
+        }
+
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } elseif ($this->ldapcfg['global']['server_cap_anonymous'] == true) {
@@ -193,6 +203,11 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
      * testStartTLS() if server supports it
      */
     public function testStartTLS() {
+        // Check extension
+        if (true !== Net_LDAP2::checkLDAPExtension()) {
+            $this->markTestSkipped('PHP LDAP extension not found or not loadable. Skipped Test.');
+        }
+
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } elseif ($this->ldapcfg['global']['server_cap_tls'] == true) {

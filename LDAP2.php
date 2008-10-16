@@ -757,56 +757,48 @@ class Net_LDAP2 extends PEAR
             }
         }
 
-        //
         // Continue attempting the delete operation in a loop until we
         // get a success, a definitive failure, or the world ends.
-        //
         while (true) {
             $link = $this->getLink();
 
             if ($link === false) {
-                //
                 // We do not have a successful connection yet.  The call to
                 // getLink() would have kept trying if we wanted one.  Go
                 // home now.
-                //
-                return PEAR::raiseError("Could not add entry " . $entry->dn() .
+                return PEAR::raiseError("Could not add entry " . $dn .
                        " no valid LDAP connection could be found.");
             }
 
-            if (@ldap_delete($link, $entry->dn(), $entry->getValues())) {
+            if (@ldap_delete($link, $dn)) {
                 // entry successfully deleted.
                 return true;
             } else {
-
-                //
-                // We have a failure.  What type?  We may be able to reconnect
-                // and try again.
-                //
+                // We have a failure.  What type?
+                // We may be able to reconnect and try again.
                 $error_code = @ldap_errno($link);
                 $error_name = $this->errorMessage($error_code);
 
                 if (($this->errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
                     ($this->_config['auto_reconnect'])) {
-
-                    //
                     // The server has become disconnected before trying the
-                    // operation.  We should try again, possibly with a different
-                    // server.
-                    //
+                    // operation.  We should try again, possibly with a 
+                    // different server.
                     $this->_link = false;
                     $this->_reconnect();
 
                 } elseif ($error_code == 66) {
+                    // Subentries present, server refused to delete.
+                    // Deleting subentries is the clients responsibility, but
+                    // since the user may not know of the subentries, we do not
+                    // force that here but instead notify the developer so he
+                    // may take actions himself.
                     return PEAR::raiseError("Could not delete entry $dn because of subentries. Use the recursive parameter to delete them.");
 
                 } else {
-
-                    //
-                    // These are not the errors you are looking for.  They
-                    // can go along their way.
-                    //
-                    return PEAR::raiseError("Could not add entry " . $entry->dn() . " " .
+                    // Errors other than the above catched are just passed
+                    // back to the user so he may react upon them.
+                    return PEAR::raiseError("Could not delete entry " . $dn . " " .
                                             $error_name,
                                             $error_code);
                 }
@@ -1552,7 +1544,7 @@ class Net_LDAP2 extends PEAR
     public static function checkLDAPExtension()
     {
         if (!extension_loaded('ldap') && !@dl('ldap.' . PHP_SHLIB_SUFFIX)) {
-            return PEAR::raiseError("It seems that you do not have the ldap-extension installed. Please install it before using the Net_LDAP2 package.");
+            return new Net_LDAP2_Error("It seems that you do not have the ldap-extension installed. Please install it before using the Net_LDAP2 package.");
         } else {
             return true;
         }

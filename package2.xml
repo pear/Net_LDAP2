@@ -26,10 +26,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2008-10-16</date>
+    <date></date>
     <version>
-        <release>2.0.0RC4</release>
-        <api>2.0.0RC4</api>
+        <release>2.0.0RC5</release>
+        <api>2.0.0RC5</api>
     </version>
     <stability>
         <release>beta</release>
@@ -37,20 +37,6 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
-        * Net_LDAP2_Filter::create*() methods are declared static now
-        * Net_LDAP2 is able to reconnect now in case link is down during operation (thanks Del)
-        * Complex updates fail: under some circumstances, $entry->update() will fail. This is
-          caused by mandatory attributes set and the internal behaviour of Net_LDAP2. A
-          workaround is documented in the code and in the user manual.
-        * Bugfixes in Dels patches. Soemtimes there where endless loops and deleting entries
-          did not always succeed.
-        * Bugfix to reset unicodePwd (Active Directory): a new $force parameter was introduced to Net_LDAP2_Entry->replace()
-          that forces "replace" mode. If not set and attribute is empty (or could not be read like in the AD case)
-          replace() resulted in Net_LDAP2 thinking it should add the attribute. This can now be overriden.
-        * Bugfix in unit tests: the Net_LDAP2Test suite had huge memory consumtion caused by a little error in
-          Net_LDAP2->checkLDAPExtension(). If that method is called before any Net_LDAP class was instanciated, a PEAR
-          error is returned instead of the documented Net_LDAP2_Error which causes the unit test to plot out very much
-          debug information.
     </notes>
 
     <contents>
@@ -534,6 +520,34 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 * Added "present" matching rule as stated by RFC 2254 (is an alias of the former "any")
                 * Bugfix in filter class for approx matching and not combination
                 * Bugfix for Schema->isBinary() bug if unknown attribute type is requested 
+            </notes>
+        </release>
+        <release>
+            <date>2008-10-16</date>
+            <version>
+                <release>2.0.0RC4</release>
+                <api>2.0.0RC4</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>beta</api>
+            </stability>
+            <license>LGPL License</license>
+            <notes>
+                * Net_LDAP2_Filter::create*() methods are declared static now
+                * Net_LDAP2 is able to reconnect now in case link is down during operation (thanks Del)
+                * Complex updates fail: under some circumstances, $entry->update() will fail. This is
+                caused by mandatory attributes set and the internal behaviour of Net_LDAP2. A
+                workaround is documented in the code and in the user manual.
+                * Bugfixes in Dels patches. Soemtimes there where endless loops and deleting entries
+                did not always succeed.
+                * Bugfix to reset unicodePwd (Active Directory): a new $force parameter was introduced to Net_LDAP2_Entry->replace()
+                that forces "replace" mode. If not set and attribute is empty (or could not be read like in the AD case)
+                replace() resulted in Net_LDAP2 thinking it should add the attribute. This can now be overriden.
+                * Bugfix in unit tests: the Net_LDAP2Test suite had huge memory consumtion caused by a little error in
+                Net_LDAP2->checkLDAPExtension(). If that method is called before any Net_LDAP class was instanciated, a PEAR
+                error is returned instead of the documented Net_LDAP2_Error which causes the unit test to plot out very much
+                debug information.
             </notes>
         </release>
     </changelog>

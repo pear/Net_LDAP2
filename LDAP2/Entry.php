@@ -629,18 +629,26 @@ class Net_LDAP2_Entry extends PEAR
     * The parameter has to an array of the following form:
     * array("attributename" => "single value",
     *       "attribute2name" => array("value1", "value2"))
-    * If the attribute does not yet exist it will be added instead.
-    * If the attribue value is null, the attribute will de deleted
+    * If the attribute does not yet exist it will be added instead (see also $force).
+    * If the attribue value is null, the attribute will de deleted.
     *
     * These changes are local to the entry and do
     * not affect the entry on the server until {@link update()} is called.
     *
-    * @param array $attr Attributes to replace
+    * In some cases you are not allowed to read the attributes value (for
+    * example the ActiveDirectory attribute unicodePwd) but are allowed to
+    * replace the value. In this case replace() would assume that the attribute
+    * is not in the directory yet and tries to add it which will result in an
+    * LDAP_TYPE_OR_VALUE_EXISTS error.
+    * To force replace mode instead of add, you can set $force to true.
+    *
+    * @param array $attr  Attributes to replace
+    * @param bool  $force Force replacing mode in case we can't read the attr value but are allowed to replace it
     *
     * @access public
     * @return true|Net_LDAP2_Error
     */
-    public function replace($attr = array())
+    public function replace($attr = array(), $force = false)
     {
         if (false == is_array($attr)) {
             return PEAR::raiseError("Parameter must be an array");
@@ -657,7 +665,7 @@ class Net_LDAP2_Entry extends PEAR
                 }
             }
             // existing attributes will get replaced
-            if ($this->exists($k)) {
+            if ($this->exists($k) || $force) {
                 $this->_changes["replace"][$k] = $v;
                 $this->_attributes[$k]         = $v;
             } else {

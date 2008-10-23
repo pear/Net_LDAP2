@@ -708,7 +708,11 @@ class Net_LDAP2_Entry extends PEAR
             return PEAR::raiseError("The entries LDAP object is not valid");
         }
 
+        // Get and check link
         $link = $ldap->getLink();
+        if (!is_resource($link)) {
+            return PEAR::raiseError("Could not update entry: internal LDAP link is invalid");
+        }
 
         /*
         * Delete the entry

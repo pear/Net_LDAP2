@@ -521,9 +521,9 @@ class Net_LDAP2_Entry extends PEAR
                     $v = array($v);
                 }
             }
-            // add new values to existing attribute
+            // add new values to existing attribute or add new attribute
             if ($this->exists($k)) {
-                $this->_attributes[$k] = array_merge($this->_attributes[$k], $v);
+                $this->_attributes[$k] = array_unique(array_merge($this->_attributes[$k], $v));
             } else {
                 $this->_map[strtolower($k)] = $k;
                 $this->_attributes[$k]      = $v;

@@ -1225,7 +1225,7 @@ class Net_LDAP2 extends PEAR
     * Get a specific entry based on the DN
     *
     * @param string $dn   DN of the entry that should be fetched
-    * @param array  $attr Array of Attributes to select
+    * @param array  $attr Array of Attributes to select. If ommitted, all attributes are fetched.
     *
     * @return Net_LDAP2_Entry|Net_LDAP2_Error    Reference to a Net_LDAP2_Entry object or Net_LDAP2_Error object
     * @todo Maybe check against the shema should be done to be sure the attribute type exists

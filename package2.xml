@@ -39,6 +39,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <notes>
     * Fixed a little issue with repetive adding the same attribute value
     * Fixed Bug #14886 that caused problems with OpenLDAP and V3 only connects
+    * Fixed Bug #14903, now bind attempt is also encrypted if TLS is requested
     </notes>
 
     <contents>

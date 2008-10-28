@@ -1166,6 +1166,9 @@ class Net_LDAP2 extends PEAR
             return $rootDSE;
         } else {
             $supported_versions = $rootDSE->getValue('supportedLDAPVersion');
+            if (is_string($supported_versions)) {
+                $supported_versions = array($supported_versions);
+            }
             if (in_array($version, $supported_versions)) {
                 return $this->setOption("LDAP_OPT_PROTOCOL_VERSION", $version);
             } else {

@@ -36,7 +36,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
         <api>beta</api>
     </stability>
     <license>LGPL License</license>
-    <notes>* Fixed a little issue with repetive adding the same attribute value
+    <notes>
+    * Fixed a little issue with repetive adding the same attribute value
+    * Fixed Bug #14886 that caused problems with OpenLDAP and V3 only connects
     </notes>
 
     <contents>

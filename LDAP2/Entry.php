@@ -532,7 +532,7 @@ class Net_LDAP2_Entry extends PEAR
             if (empty($this->_changes["add"][$k])) {
                 $this->_changes["add"][$k] = array();
             }
-            $this->_changes["add"][$k] = array_merge($this->_changes["add"][$k], $v);
+            $this->_changes["add"][$k] = array_unique(array_merge($this->_changes["add"][$k], $v));
         }
         $return = true;
         return $return;
@@ -581,6 +581,7 @@ class Net_LDAP2_Entry extends PEAR
                     $del_attr_name = array_search($name, $attr);
                     $this->delete(array($del_attr_name => $name));
                 } else {
+                    // mark for update() if this attr was not marked before
                     $name = $this->_getAttrName($name);
                     if ($this->exists($name)) {
                         $this->_changes["delete"][$name] = null;
@@ -595,7 +596,8 @@ class Net_LDAP2_Entry extends PEAR
                     // someone mixed modes and gave us just an attribute name
                     $this->delete($values);
                 } else {
-                    // get the correct attribute name
+                    // mark for update() if this attr was not marked before;
+                    // this time it must consider the selected values also
                     $name = $this->_getAttrName($name);
                     if ($this->exists($name)) {
                         if (false == is_array($values)) {
@@ -606,7 +608,7 @@ class Net_LDAP2_Entry extends PEAR
                             $this->_changes["delete"][$name] = array();
                         }
                         $this->_changes["delete"][$name] =
-                            array_merge($this->_changes["delete"][$name], $values);
+                            array_unique(array_merge($this->_changes["delete"][$name], $values));
                         foreach ($values as $value) {
                             // find the key for the value that should be deleted
                             $key = array_search($value, $this->_attributes[$name]);

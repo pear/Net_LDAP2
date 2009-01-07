@@ -433,6 +433,18 @@ class Net_LDAP2 extends PEAR
             }
 
             //
+            // If we're supposed to use TLS, do so before we try to bind.
+            //
+            if ($this->_config["starttls"] === true) {
+                if (self::isError($msg = $this->startTLS())) {
+                    $current_error           = $msg;
+                    $this->_link             = false;
+                    $this->_down_host_list[] = $host;
+                    continue;
+                }
+            }
+
+            //
             // Attempt to bind to the server. If we have credentials configured,
             // we try to use them, otherwise its an anonymous bind.
             //
@@ -449,14 +461,6 @@ class Net_LDAP2 extends PEAR
             //
             // Set LDAP parameters, now we know we have a valid connection.
             //
-            if ($this->_config["starttls"] === true) {
-                if (self::isError($msg = $this->startTLS())) {
-                    $current_error           = $msg;
-                    $this->_link             = false;
-                    $this->_down_host_list[] = $host;
-                    continue;
-                }
-            }
             if (isset($this->_config['options']) &&
                 is_array($this->_config['options']) &&
                 count($this->_config['options'])) {

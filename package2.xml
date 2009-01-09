@@ -26,10 +26,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2009-01-09</date>
+    <date></date>
     <version>
-        <release>2.0.0RC5</release>
-        <api>2.0.0RC5</api>
+        <release>2.0.0RC6</release>
+        <api>2.0.0RC6</api>
     </version>
     <stability>
         <release>beta</release>
@@ -37,11 +37,6 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
-    * Fixed a little issue with repetive adding the same attribute value
-    * Fixed Bug #14886 that caused problems with OpenLDAP and V3 only connects
-    * Fixed Bug #14903 and #15494, now bind attempt is also encrypted if TLS is requested
-    * Fixed issue with repetitve adding or deleting values causing Net_LDAP to send the same change multiple times
-    * Fixed Bug #15364 that caused a problem with setting the ldap version if only one version is supported by server
     </notes>
 
     <contents>
@@ -553,6 +548,25 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 Net_LDAP2->checkLDAPExtension(). If that method is called before any Net_LDAP class was instanciated, a PEAR
                 error is returned instead of the documented Net_LDAP2_Error which causes the unit test to plot out very much
                 debug information.
+            </notes>
+        </release>
+        <release>
+            <date>2009-01-09</date>
+            <version>
+                <release>2.0.0RC5</release>
+                <api>2.0.0RC5</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>beta</api>
+            </stability>
+            <license>LGPL License</license>
+            <notes>
+            * Fixed a little issue with repetive adding the same attribute value
+            * Fixed Bug #14886 that caused problems with OpenLDAP and V3 only connects
+            * Fixed Bug #14903 and #15494, now bind attempt is also encrypted if TLS is requested
+            * Fixed issue with repetitve adding or deleting values causing Net_LDAP to send the same change multiple times
+            * Fixed Bug #15364 that caused a problem with setting the ldap version if only one version is supported by server
             </notes>
         </release>
     </changelog>

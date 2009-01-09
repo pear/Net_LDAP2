@@ -26,7 +26,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date></date>
+    <date>2009-01-09</date>
     <version>
         <release>2.0.0RC5</release>
         <api>2.0.0RC5</api>
@@ -87,7 +87,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 <file baseinstalldir="Net" name="ldif_data/sorted_w50.ldif" role="test" />
                 <file baseinstalldir="Net" name="ldif_data/unsorted_w30.ldif" role="test" />
                 <file baseinstalldir="Net" name="ldif_data/unsorted_w50.ldif" role="test" />
-		<file baseinstalldir="Net" name="ldif_data/unsorted_w50_WIN.ldif" role="test" />
+                <file baseinstalldir="Net" name="ldif_data/unsorted_w50_WIN.ldif" role="test" />
                 <file baseinstalldir="Net" name="ldif_data/changes.ldif" role="test" />
             </dir> <!-- /tests -->
         </dir> <!-- / -->

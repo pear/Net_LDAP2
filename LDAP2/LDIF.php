@@ -57,11 +57,11 @@ class Net_LDAP2_LDIF extends PEAR
     * @var array
     */
     protected $_options = array('encode'    => 'base64',
-                                'onerror'   => 'undef',
+                                'onerror'   => null,
                                 'change'    => 0,
                                 'lowercase' => 0,
                                 'sort'      => 0,
-                                'version'   => 1,
+                                'version'   => null,
                                 'wrap'      => 78,
                                 'raw'       => ''
                                );
@@ -163,11 +163,11 @@ class Net_LDAP2_LDIF extends PEAR
     *         'base64'     Use base64. (default, this differs from the Perl interface.
     *                                   The perl default is "none"!)
     *
-    *       onerror => 'die' | 'warn' | undef
+    *       onerror => 'die' | 'warn' | NULL
     *         Specify what happens when an error is detected.
     *         'die'  Net_LDAP2_LDIF will croak with an appropriate message.
     *         'warn' Net_LDAP2_LDIF will warn (echo) with an appropriate message.
-    *         undef  Net_LDAP2_LDIF will not warn (default), use error().
+    *         NULL   Net_LDAP2_LDIF will not warn (default), use error().
     *
     *       change => 1
     *         Write entry changes to the LDIF file instead of the entries itself. I.e. write LDAP
@@ -186,7 +186,7 @@ class Net_LDAP2_LDIF extends PEAR
     *         According to RFC 2849 currently the only legal value for this option is 1.
     *         When this option is set Net_LDAP2_LDIF tries to adhere more strictly to
     *         the LDIF specification in RFC2489 in a few places.
-    *         The default is undef meaning no version information is written to the LDIF file.
+    *         The default is NULL meaning no version information is written to the LDIF file.
     *
     *       wrap => 78
     *         Number of columns where output line wrapping shall occur.
@@ -412,13 +412,15 @@ class Net_LDAP2_LDIF extends PEAR
     public function write_version()
     {
         $this->_version_written = true;
-        return $this->_writeLine('version: '.$this->version().PHP_EOL, 'Net_LDAP2_LDIF error: unable to write version');
+	if (!is_null($this->version())) {
+	        return $this->_writeLine('version: '.$this->version().PHP_EOL, 'Net_LDAP2_LDIF error: unable to write version');
+	}
     }
 
     /**
     * Get or set LDIF version
     *
-    * If called without arguments it returns the version of the LDIF file or undef if no version has been set.
+    * If called without arguments it returns the version of the LDIF file or NULL if no version has been set.
     * If called with an argument it sets the LDIF version to VERSION.
     * According to RFC 2849 currently the only legal value for VERSION is 1.
     *
@@ -432,10 +434,10 @@ class Net_LDAP2_LDIF extends PEAR
             if ($version != 1) {
                 $this->_dropError('Net_LDAP2_LDIF error: illegal LDIF version set');
             } else {
-                $this->_version = $version;
+                $this->_options['version'] = $version;
             }
         }
-        return $this->_version;
+        return $this->_options['version'];
     }
 
     /**

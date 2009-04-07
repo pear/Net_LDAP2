@@ -192,7 +192,7 @@ class Net_LDAP2_LDIF extends PEAR
     *         Number of columns where output line wrapping shall occur.
     *         Default is 78. Setting it to 40 or lower inhibits wrapping.
     *
-    *       [NOT IMPLEMENTED] raw => REGEX
+    *       raw => REGEX
     *         Use REGEX to denote the names of attributes that are to be
     *         considered binary in search results if writing entries.
     *         Example: raw => "/(?i:^jpegPhoto|;binary)/i"
@@ -750,7 +750,8 @@ class Net_LDAP2_LDIF extends PEAR
             }
 
             // If converting is needed, do it
-            if ($base64 && !($this->_options['raw'] && preg_match($this->_options['raw'], $attr_name))) {
+            // Either we have some special chars or a matching "raw" regex
+            if ($base64 || ($this->_options['raw'] && preg_match($this->_options['raw'], $attr_name))) {
                 $attr_name .= ':';
                 $attr_value = base64_encode($attr_value);
             }

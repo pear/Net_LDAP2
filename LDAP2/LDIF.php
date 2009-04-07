@@ -739,7 +739,7 @@ class Net_LDAP2_LDIF extends PEAR
             // Test for illegal content char
             for ($i = 0; $i < strlen($attr_value); $i++) {
                 $char = substr($attr_value, $i, 1);
-                if (ord($char) >= 127 || in_array($init_ord, $unsafe)) {
+                if (ord($char) >= 127 || in_array($char, $unsafe)) {
                     $base64 = true;
                 }
             }

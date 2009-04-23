@@ -433,7 +433,8 @@ class Net_LDAP2 extends PEAR
             }
 
             //
-            // If we're supposed to use TLS, do so before we try to bind.
+            // If we're supposed to use TLS, do so before we try to bind,
+            // as some strict servers only allow binding via secure connections
             //
             if ($this->_config["starttls"] === true) {
                 if (self::isError($msg = $this->startTLS())) {

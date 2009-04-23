@@ -33,7 +33,6 @@ server_bindpw        = testpass
 
 
 ; Definitions for the tests. Adjust to suit the needs of your test server.
-;   base_dn:         Base of your DIT
 ;   existing_entry:  RDN for an entry that must exist (relative to base).
 ;                    The following attribute tests are performed on this entry.
 ;   existing_attrs:  Name of an existing attribute (single valued)

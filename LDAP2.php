@@ -58,7 +58,8 @@ class Net_LDAP2 extends PEAR
     /**
     * Class configuration array
     *
-    * host     = the ldap host to connect to (may be an array of several hosts to try)
+    * host     = the ldap host to connect to
+    *            (may be an array of several hosts to try)
     * port     = the server port
     * version  = ldap version (defaults to v 3)
     * starttls = when set, ldap_start_tls() is run after connecting.
@@ -70,11 +71,12 @@ class Net_LDAP2 extends PEAR
     * scope    = default search scope
     *
     * Newly added in 2.0.0RC4, for auto-reconnect:
-    * auto_reconnect  = if set to true then the class will automatically attempt to
-    *                   reconnect to the LDAP server in certain failure conditions
-    *                   when attempting a search, or other LDAP operation.  Defaults
-    *                   to false.  Note that if you set this to true, calls to search()
-    *                   may block indefinitely if there is a catastrophic server failure.
+    * auto_reconnect  = if set to true then the class will automatically
+    *                   attempt to reconnect to the LDAP server in certain
+    *                   failure conditionswhen attempting a search, or other
+    *                   LDAP operation.  Defaults to false.  Note that if you
+    *                   set this to true, calls to search() may block
+    *                   indefinitely if there is a catastrophic server failure.
     * min_backoff     = minimum reconnection delay period (in seconds).
     * current_backoff = initial reconnection delay period (in seconds).
     * max_backoff     = maximum reconnection delay period (in seconds).
@@ -143,13 +145,15 @@ class Net_LDAP2 extends PEAR
     /**
     * Cache for rootDSE objects
     *
+    * Hash with requested rootDSE attr names as key and rootDSE object as value
+    *
     * Since the RootDSE object itself may request a rootDSE object,
     * {@link rootDse()} caches successful requests.
     * Internally, Net_LDAP2 needs several lookups to this object, so
     * caching increases performance significally.
     *
     * @access protected
-    * @var array Hash with requested rootDSE attribute names as key and rootDSE object as value
+    * @var array
     */
     protected $_rootDSE_cache = array();
 
@@ -269,7 +273,9 @@ class Net_LDAP2 extends PEAR
             if (strlen($this->_config['host']) > 0) {
                 $this->_host_list = array($this->_config['host']);
             } else {
-                $this->_host_list = array(); // this will cause an error in performConnect(), so the user is notified
+                $this->_host_list = array();
+                // ^ this will cause an error in performConnect(),
+                // so the user is notified about the failure
             }
         }
 
@@ -335,9 +341,11 @@ class Net_LDAP2 extends PEAR
             // do the requested bind as we are
             // asked to bind manually
             if (is_null($dn)) {
-                $msg = @ldap_bind($this->_link); // anonymous bind
+                // anonymous bind
+                $msg = @ldap_bind($this->_link);
             } else {
-                $msg = @ldap_bind($this->_link, $dn, $password); // privileged bind
+                // privileged bind
+                $msg = @ldap_bind($this->_link, $dn, $password);
             }
             if (false === $msg) {
                 return PEAR::raiseError("Bind failed: " .
@@ -359,64 +367,50 @@ class Net_LDAP2 extends PEAR
     protected function performConnect()
     {
 
-        //
         // Return true if we are already connected.
-        //
         if ($this->_link !== false) {
             return true;
         }
 
-        //
         // Connnect to the LDAP server if we are not connected.  Note that
         // with some LDAP clients, ldapperformConnect returns a link value even
         // if no connection is made.  We need to do at least one anonymous
         // bind to ensure that a connection is actually valid.
         //
         // Ref: http://www.php.net/manual/en/function.ldap-connect.php
-        //
 
-        //
-        // Default error message in case all connection attempts fail but no message is set
-        //
+        // Default error message in case all connection attempts
+        // fail but no message is set
         $current_error = new PEAR_Error('Unknown connection error');
 
-        //
         // Catch empty $_host_list arrays.
-        //
         if (!is_array($this->_host_list) || count($this->_host_list) == 0) {
-            $current_error = PEAR::raiseError('No Servers configured! Please pass in an array of servers to Net_LDAP2');
+            $current_error = PEAR::raiseError('No Servers configured! Please '.
+               'pass in an array of servers to Net_LDAP2');
             return $current_error;
         }
 
-        //
         // Cycle through the host list.
-        //
         foreach ($this->_host_list as $host) {
 
-            //
             // Ensure we have a valid string for host name
-            //
             if (is_array($host)) {
-                $current_error = PEAR::raiseError('No Servers configured! Please pass in an one dimensional array of servers to Net_LDAP2! (multidimensional array detected!)');
+                $current_error = PEAR::raiseError('No Servers configured! '.
+                   'Please pass in an one dimensional array of servers to '.
+                   'Net_LDAP2! (multidimensional array detected!)');
                 continue;
             }
 
-            //
             // Skip this host if it is known to be down.
-            //
             if (in_array($host, $this->_down_host_list)) {
                 continue;
             }
 
-            //
             // Record the host that we are actually connecting to in case
             // we need it later.
-            //
             $this->_config['host'] = $host;
 
-            //
             // Attempt a connection.
-            //
             $this->_link = @ldapperformConnect($host, $this->_config['port']);
             if (false === $this->_link) {
                 $current_error = PEAR::raiseError('Could not connect to ' .
@@ -425,9 +419,7 @@ class Net_LDAP2 extends PEAR
                 continue;
             }
 
-            //
             // Set LDAP version before trying to bind.
-            //
             if (self::isError($msg = $this->setLDAPVersion())) {
                 $current_error           = $msg;
                 $this->_link             = false;
@@ -435,10 +427,8 @@ class Net_LDAP2 extends PEAR
                 continue;
             }
 
-            //
             // If we're supposed to use TLS, do so before we try to bind,
             // as some strict servers only allow binding via secure connections
-            //
             if ($this->_config["starttls"] === true) {
                 if (self::isError($msg = $this->startTLS())) {
                     $current_error           = $msg;
@@ -448,10 +438,8 @@ class Net_LDAP2 extends PEAR
                 }
             }
 
-            //
             // Attempt to bind to the server. If we have credentials configured,
             // we try to use them, otherwise its an anonymous bind.
-            //
             $msg = $this->bind();
             if (self::isError($msg)) {
                 // The bind failed, discard link and save error msg.
@@ -462,9 +450,7 @@ class Net_LDAP2 extends PEAR
                 continue;
             }
 
-            //
             // Set LDAP parameters, now we know we have a valid connection.
-            //
             if (isset($this->_config['options']) &&
                 is_array($this->_config['options']) &&
                 count($this->_config['options'])) {
@@ -479,17 +465,13 @@ class Net_LDAP2 extends PEAR
                 }
             }
 
-            //
             // At this stage we have connected, bound, and set up options,
             // so we have a known good LDAP server.  Time to go home.
-            //
             return true;
         }
 
 
-        //
         // All connection attempts have failed, return the last error.
-        //
         return $current_error;
     }
 
@@ -516,43 +498,33 @@ class Net_LDAP2 extends PEAR
     protected function performReconnect()
     {
 
-        //
         // Return true if we are already connected.
-        //
         if ($this->_link !== false) {
             return true;
         }
 
-        //
-        // Default error message in case all connection attempts fail but no message is set
-        //
+        // Default error message in case all connection attempts
+        // fail but no message is set
         $current_error = new PEAR_Error('Unknown connection error');
 
-        //
         // Sleep for a backoff period in seconds.
-        //
         sleep($this->_config['current_backoff']);
 
-        //
         // Retry all available connections.
-        //
         $this->_down_host_list = array();
         $msg = $this->performConnect();
 
-        //
         // Bail out if that fails.
-        //
         if (self::isError($msg)) {
-            $this->_config['current_backoff'] = $this->_config['current_backoff'] * 2;
+            $this->_config['current_backoff'] =
+               $this->_config['current_backoff'] * 2;
             if ($this->_config['current_backoff'] > $this->_config['max_backoff']) {
                 $this->_config['current_backoff'] = $this->_config['max_backoff'];
             }
             return $msg;
         }
 
-        //
         // Now we should be able to safely (re-)bind.
-        //
         $msg = $this->bind();
         if (self::isError($msg)) {
             $this->_config['current_backoff'] = $this->_config['current_backoff'] * 2;
@@ -560,19 +532,15 @@ class Net_LDAP2 extends PEAR
                 $this->_config['current_backoff'] = $this->_config['max_backoff'];
             }
 
-            //
             // _config['host'] should have had the last connected host stored in it
             // by performConnect().  Since we are unable to bind to that host we can safely
             // assume that it is down or has some other problem.
-            //
             $this->_down_host_list[] = $this->_config['host'];
             return $msg;
         }
 
-        //
         // At this stage we have connected, bound, and set up options,
-        // so we have a known good LDAP server.  Time to go home.
-        //
+        // so we have a known good LDAP server. Time to go home.
         $this->_config['current_backoff'] = $this->_config['min_backoff'];
         return true;
     }
@@ -585,17 +553,13 @@ class Net_LDAP2 extends PEAR
     */
     public function startTLS()
     {
-        //
         // Test to see if the server supports TLS first.
-        //
+        // This is done via testing the extensions offered by the server.
+        // The OID 1.3.6.1.4.1.1466.20037 tells us, if TLS is supported.
         $rootDSE = $this->rootDse();
         $supported_extensions = $rootDSE->getValue('supportedExtension');
 
         if (in_array('1.3.6.1.4.1.1466.20037', $supported_extensions)) {
-
-            //
-            // Yes, the server supports TLS.
-            //
             if (false === @ldap_start_tls($this->_link)) {
                 return $this->raiseError("TLS not started: " .
                                         @ldap_error($this->_link),
@@ -603,10 +567,6 @@ class Net_LDAP2 extends PEAR
             }
             return true;
         } else {
-
-            //
-            // No, the server does not support TLS.
-            //
             return $this->raiseError("Server reports that it does not support TLS");
         }
     }

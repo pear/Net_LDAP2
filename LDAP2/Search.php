@@ -93,10 +93,10 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * The $attributes array contains the names of the searched attributes and gets
     * passed from $Net_LDAP2->search() so the Net_LDAP2_Search object can tell
-    * what attributes was searched for ({@link _searchedAttrs())
+    * what attributes was searched for ({@link searchedAttrs())
     *
     * This variable gets set from the constructor and returned
-    * from {@link _searchedAttrs()}
+    * from {@link searchedAttrs()}
     *
     * @access protected
     * @var array
@@ -116,9 +116,9 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     /**
     * Constructor
     *
-    * @param resource          &$search    Search result identifier
+    * @param resource           &$search    Search result identifier
     * @param Net_LDAP2|resource &$ldap      Net_LDAP2 object or just a LDAP-Link resource
-    * @param array             $attributes (optional) Array with searched attribute names. (see {@link $_searchedAttrs})
+    * @param array              $attributes (optional) Array with searched attribute names. (see {@link $_searchedAttrs})
     *
     * @access public
     */
@@ -193,6 +193,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * Alias function of shiftEntry() for perl-ldap interface
     *
     * @see shiftEntry()
+    * @return Net_LDAP2_Entry|false
     */
     public function shift_entry()
     {
@@ -223,6 +224,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * Alias function of popEntry() for perl-ldap interface
     *
     * @see popEntry()
+    * @return Net_LDAP2_Entry|false
     */
     public function pop_entry()
     {
@@ -366,7 +368,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
             return $sorted;
         }
         foreach ($sorted as $key => $row) {
-            $entry = $this->_ldap->getEntry($row['dn'], $this->_searchedAttrs());
+            $entry = $this->_ldap->getEntry($row['dn'], $this->searchedAttrs());
             if (!PEAR::isError($entry)) {
                 array_push($return, $entry);
             } else {
@@ -499,7 +501,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @see $_searchedAttrs
     * @access protected
     */
-    public function _searchedAttrs()
+    protected function searchedAttrs()
     {
         return $this->_searchedAttrs;
     }

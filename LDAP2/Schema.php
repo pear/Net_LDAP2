@@ -13,6 +13,7 @@
 * @license   http://www.gnu.org/copyleft/lesser.html LGPL
 * @version   CVS: $Id$
 * @link      http://pear.php.net/package/Net_LDAP2/
+* @todo see the comment at the end of the file
 */
 
 /**
@@ -116,14 +117,14 @@ class Net_LDAP2_Schema extends PEAR
     /**
     * Fetch the Schema from an LDAP connection
     *
-    * @param Net_LDAP2 LDAP connection
-    * @param string $dn (optional) Subschema entry dn
+    * @param Net_LDAP2 $ldap LDAP connection
+    * @param string    $dn   (optional) Subschema entry dn
     *
-    * @author Jan Wagner <wagner@netsols.de>
     * @access public
     * @return Net_LDAP2_Schema|NET_LDAP2_Error
     */
-    public function fetch(&$ldap, $dn = null) {
+    public function fetch($ldap, $dn = null)
+    {
         if (!$ldap instanceof Net_LDAP2) {
             return PEAR::raiseError("Unable to fetch Schema: Parameter \$ldap must be a Net_LDAP2 object!");
         }
@@ -141,11 +142,9 @@ class Net_LDAP2_Schema extends PEAR
             }
         }
 
-        //
         // Support for buggy LDAP servers (e.g. Siemens DirX 6.x) that incorrectly
         // call this entry subSchemaSubentry instead of subschemaSubentry.
         // Note the correct case/spelling as per RFC 2251.
-        //
         if (is_null($dn)) {
             // get the subschema entry via root dse
             $dse = $ldap->rootDSE(array('subSchemaSubentry'));
@@ -157,11 +156,9 @@ class Net_LDAP2_Schema extends PEAR
             }
         }
 
-        //
         // Final fallback case where there is no subschemaSubentry attribute
         // in the root DSE (this is a bug for an LDAP v3 server so report this
         // to your LDAP vendor if you get this far).
-        //
         if (is_null($dn)) {
             $dn = 'cn=Subschema';
         }
@@ -317,6 +314,7 @@ class Net_LDAP2_Schema extends PEAR
     * @param Net_LDAP2_Entry &$entry Subschema entry
     *
     * @access public
+    * @return void
     */
     public function parse(&$entry)
     {
@@ -511,7 +509,7 @@ class Net_LDAP2_Schema extends PEAR
     }
 
     // [TODO] add method that allows us to see to which objectclasses a certain attribute belongs to
-    // it should return the result structured, e.g. sorted in "may" and "must". Optionally ot should
+    // it should return the result structured, e.g. sorted in "may" and "must". Optionally it should
     // be able to return it just "flat", e.g. array_merge()d.
     // We could use get_all() to achieve this easily, i think
 }

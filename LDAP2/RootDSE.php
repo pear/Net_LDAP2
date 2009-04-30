@@ -49,13 +49,13 @@ class Net_LDAP2_RootDSE extends PEAR
     /**
     * Fetches a RootDSE object from an LDAP connection
     *
-    * @param Net_LDAP2 $ldap Directory from which the RootDSE should be fetched
-    * @param array $attrs Array of attributes to search for
+    * @param Net_LDAP2 $ldap  Directory from which the RootDSE should be fetched
+    * @param array     $attrs Array of attributes to search for
     *
     * @access static
     * @return Net_LDAP2_RootDSE|Net_LDAP2_Error
     */
-    public static function fetch(&$ldap, $attrs = null)
+    public static function fetch($ldap, $attrs = null)
     {
         if (!$ldap instanceof Net_LDAP2) {
             return PEAR::raiseError("Unable to fetch Schema: Parameter \$ldap must be a Net_LDAP2 object!");
@@ -107,6 +107,7 @@ class Net_LDAP2_RootDSE extends PEAR
     * Alias function of getValue() for perl-ldap interface
     *
     * @see getValue()
+    * @return mixed
     */
     public function get_value()
     {
@@ -124,13 +125,14 @@ class Net_LDAP2_RootDSE extends PEAR
     */
     public function supportedExtension($oids)
     {
-        return $this->_checkAttr($oids, 'supportedExtension');
+        return $this->checkAttr($oids, 'supportedExtension');
     }
 
     /**
     * Alias function of supportedExtension() for perl-ldap interface
     *
     * @see supportedExtension()
+    * @return boolean
     */
     public function supported_extension()
     {
@@ -148,13 +150,14 @@ class Net_LDAP2_RootDSE extends PEAR
     */
     public function supportedVersion($versions)
     {
-        return $this->_checkAttr($versions, 'supportedLDAPVersion');
+        return $this->checkAttr($versions, 'supportedLDAPVersion');
     }
 
     /**
     * Alias function of supportedVersion() for perl-ldap interface
     *
     * @see supportedVersion()
+    * @return boolean
     */
     public function supported_version()
     {
@@ -172,13 +175,14 @@ class Net_LDAP2_RootDSE extends PEAR
     */
     public function supportedControl($oids)
     {
-        return $this->_checkAttr($oids, 'supportedControl');
+        return $this->checkAttr($oids, 'supportedControl');
     }
 
     /**
     * Alias function of supportedControl() for perl-ldap interface
     *
     * @see supportedControl()
+    * @return boolean
     */
     public function supported_control()
     {
@@ -196,13 +200,14 @@ class Net_LDAP2_RootDSE extends PEAR
     */
     public function supportedSASLMechanism($mechlist)
     {
-        return $this->_checkAttr($mechlist, 'supportedSASLMechanisms');
+        return $this->checkAttr($mechlist, 'supportedSASLMechanisms');
     }
 
     /**
     * Alias function of supportedSASLMechanism() for perl-ldap interface
     *
     * @see supportedSASLMechanism()
+    * @return boolean
     */
     public function supported_sasl_mechanism()
     {
@@ -219,7 +224,7 @@ class Net_LDAP2_RootDSE extends PEAR
     * @access protected
     * @return boolean
     */
-    public function _checkAttr($values, $attr)
+    protected function checkAttr($values, $attr)
     {
         if (!is_array($values)) $values = array($values);
 

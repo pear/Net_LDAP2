@@ -165,7 +165,10 @@ class Net_LDAP2 extends PEAR
     }
 
     /**
-    * Creates the initial ldap-object
+    * Configure Net_LDAP2, connect and bind
+    *
+    * Use this method as starting point of using Net_LDAP2
+    * to establish a connection to your LDAP server.
     *
     * Static function that returns either an error object or the new Net_LDAP2
     * object. Something like a factory. Takes a config array with the needed
@@ -214,7 +217,7 @@ class Net_LDAP2 extends PEAR
     public function __construct($config = array())
     {
         $this->PEAR('Net_LDAP2_Error');
-        $this->_setConfig($config);
+        $this->setConfig($config);
     }
 
     /**
@@ -225,7 +228,7 @@ class Net_LDAP2 extends PEAR
     * @access protected
     * @return void
     */
-    protected function _setConfig($config)
+    protected function setConfig($config)
     {
         //
         // Parameter check -- probably should raise an error here if config
@@ -266,7 +269,7 @@ class Net_LDAP2 extends PEAR
             if (strlen($this->_config['host']) > 0) {
                 $this->_host_list = array($this->_config['host']);
             } else {
-                $this->_host_list = array(); // this will cause an error in _connect(), so the user is notified
+                $this->_host_list = array(); // this will cause an error in performConnect(), so the user is notified
             }
         }
 
@@ -313,12 +316,12 @@ class Net_LDAP2 extends PEAR
             $oldpw = $this->_config["bindpw"];
 
             // overwrite bind credentials in config
-            // so _connect() knows about them
+            // so performConnect() knows about them
             $this->_config["binddn"] = $dn;
             $this->_config["bindpw"] = $password;
 
             // try to connect with provided credentials
-            $msg = $this->_connect();
+            $msg = $this->performConnect();
 
             // reset to previous config
             $this->_config["binddn"] = $olddn;
@@ -353,7 +356,7 @@ class Net_LDAP2 extends PEAR
     * @access protected
     * @return Net_LDAP2_Error|true    Net_LDAP2_Error object or true
     */
-    protected function _connect()
+    protected function performConnect()
     {
 
         //
@@ -365,7 +368,7 @@ class Net_LDAP2 extends PEAR
 
         //
         // Connnect to the LDAP server if we are not connected.  Note that
-        // with some LDAP clients, ldap_connect returns a link value even
+        // with some LDAP clients, ldapperformConnect returns a link value even
         // if no connection is made.  We need to do at least one anonymous
         // bind to ensure that a connection is actually valid.
         //
@@ -414,7 +417,7 @@ class Net_LDAP2 extends PEAR
             //
             // Attempt a connection.
             //
-            $this->_link = @ldap_connect($host, $this->_config['port']);
+            $this->_link = @ldapperformConnect($host, $this->_config['port']);
             if (false === $this->_link) {
                 $current_error = PEAR::raiseError('Could not connect to ' .
                     $host . ':' . $this->_config['port']);
@@ -510,7 +513,7 @@ class Net_LDAP2 extends PEAR
     * @access protected
     * @return Net_LDAP2_Error|true    Net_LDAP2_Error object or true
     */
-    protected function _reconnect()
+    protected function performReconnect()
     {
 
         //
@@ -534,7 +537,7 @@ class Net_LDAP2 extends PEAR
         // Retry all available connections.
         //
         $this->_down_host_list = array();
-        $msg = $this->_connect();
+        $msg = $this->performConnect();
 
         //
         // Bail out if that fails.
@@ -559,7 +562,7 @@ class Net_LDAP2 extends PEAR
 
             //
             // _config['host'] should have had the last connected host stored in it
-            // by _connect().  Since we are unable to bind to that host we can safely
+            // by performConnect().  Since we are unable to bind to that host we can safely
             // assume that it is down or has some other problem.
             //
             $this->_down_host_list[] = $this->_config['host'];
@@ -706,7 +709,7 @@ class Net_LDAP2 extends PEAR
                     // operation.  We should try again, possibly with a different
                     // server.
                     $this->_link = false;
-                    $this->_reconnect();
+                    $this->performReconnect();
                 } else {
                     // Errors other than the above catched are just passed
                     // back to the user so he may react upon them.
@@ -726,7 +729,7 @@ class Net_LDAP2 extends PEAR
     * entry will be deleted as well.
     *
     * @param string|Net_LDAP2_Entry $dn        DN-string or Net_LDAP2_Entry
-    * @param boolean               $recursive Should we delete all children recursive as well?
+    * @param boolean                $recursive Should we delete all children recursive as well?
     *
     * @access public
     * @return Net_LDAP2_Error|true    Net_LDAP2_Error object or true
@@ -779,7 +782,7 @@ class Net_LDAP2 extends PEAR
                     // operation.  We should try again, possibly with a 
                     // different server.
                     $this->_link = false;
-                    $this->_reconnect();
+                    $this->performReconnect();
 
                 } elseif ($error_code == 66) {
                     // Subentries present, server refused to delete.
@@ -830,13 +833,13 @@ class Net_LDAP2 extends PEAR
     * this method will instantly carry out an update() after each operation,
     * thus modifying "directly" on the server.
     *
-    * @param string|Net_LDAP2_Entry &$entry DN-string or Net_LDAP2_Entry
-    * @param array                 $parms  Array of changes
+    * @param string|Net_LDAP2_Entry $entry DN-string or Net_LDAP2_Entry
+    * @param array                  $parms Array of changes
     *
     * @access public
     * @return Net_LDAP2_Error|true Net_LDAP2_Error object or true
     */
-    public function modify(&$entry , $parms = array())
+    public function modify($entry, $parms = array())
     {
         if (is_string($entry)) {
             $entry = $this->getEntry($entry);
@@ -876,7 +879,7 @@ class Net_LDAP2 extends PEAR
                             // operation.  We should try again, possibly with a different
                             // server.
                             $this->_link = false;
-                            $this->_reconnect();
+                            $this->performReconnect();
 
                         } else {
 
@@ -915,7 +918,7 @@ class Net_LDAP2 extends PEAR
                             // operation.  We should try again, possibly with a different
                             // server.
                             $this->_link = false;
-                            $this->_reconnect();
+                            $this->performReconnect();
 
                         } else {
                             // Errors other than the above catched are just passed
@@ -968,7 +971,7 @@ class Net_LDAP2 extends PEAR
     *
     * @param string|Net_LDAP2_Entry  $base   LDAP searchbase
     * @param string|Net_LDAP2_Filter $filter LDAP search filter or a Net_LDAP2_Filter object
-    * @param array                  $params Array of options
+    * @param array                   $params Array of options
     *
     * @access public
     * @return Net_LDAP2_Search|Net_LDAP2_Error Net_LDAP2_Search object or Net_LDAP2_Error object
@@ -1051,7 +1054,7 @@ class Net_LDAP2 extends PEAR
                 } elseif (($err == 1) && ($this->_config['auto_reconnect'])) {
                     // Errorcode 1 = LDAP_OPERATIONS_ERROR but we can try a reconnect.
                     $this->_link = false;
-                    $this->_reconnect();
+                    $this->performReconnect();
                 } else {
                     $msg = "\nParameters:\nBase: $base\nFilter: $filter\nScope: $scope";
                     return $this->raiseError($this->errorMessage($err) . $msg, $err);
@@ -1271,13 +1274,13 @@ class Net_LDAP2 extends PEAR
     * Note that if you want to do a cross directory move, you need to
     * pass an Net_LDAP2_Entry object, otherwise the attributes will be empty.
     *
-    * @param string|Net_LDAP2_Entry &$entry      Entry DN or Entry object
-    * @param string                $newdn       New location
+    * @param string|Net_LDAP2_Entry $entry       Entry DN or Entry object
+    * @param string                 $newdn       New location
     * @param Net_LDAP2              $target_ldap (optional) Target directory for cross server move; should be passed via reference
     *
     * @return Net_LDAP2_Error|true
     */
-    public function move(&$entry, $newdn, $target_ldap = null)
+    public function move($entry, $newdn, $target_ldap = null)
     {
         if (is_string($entry)) {
             $entry_o = $this->getEntry($entry);
@@ -1554,7 +1557,7 @@ class Net_LDAP2 extends PEAR
     */
     public function utf8Encode($attributes)
     {
-        return $this->_utf8($attributes, 'utf8_encode');
+        return $this->utf8($attributes, 'utf8_encode');
     }
 
     /**
@@ -1572,7 +1575,7 @@ class Net_LDAP2 extends PEAR
     */
     public function utf8Decode($attributes)
     {
-        return $this->_utf8($attributes, 'utf8_decode');
+        return $this->utf8($attributes, 'utf8_decode');
     }
 
     /**
@@ -1584,7 +1587,7 @@ class Net_LDAP2 extends PEAR
     * @access protected
     * @return array|Net_LDAP2_Error Array of attributes with function applied to values or Error
     */
-    protected function _utf8($attributes, $function)
+    protected function utf8($attributes, $function)
     {
         if (!is_array($attributes) || array_key_exists(0, $attributes)) {
             return PEAR::raiseError('Parameter $attributes is expected to be an associative array');
@@ -1654,7 +1657,7 @@ class Net_LDAP2 extends PEAR
                 if ($this->_link !== false) {
                     return $this->_link;
                 } else {
-                    $this->_reconnect();
+                    $this->performReconnect();
                 }
             }
         }

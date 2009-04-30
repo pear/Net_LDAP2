@@ -31,6 +31,7 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
         'wrap'    => 50,
         'change'  => 0,
         'sort'    => 0,
+        'version' => 1   // mimic pre 2.0.0RC5 behavior, so test files need no adjusting
     );
 
     /**
@@ -337,7 +338,6 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
         $ldif->done();
 
         // Compare files, with expected attr adjusted
-        $expected[33] = preg_replace('/attr6:: OmJhZGluaXRjaGFy/', 'attr6: :badinitchar', $expected[33]);
         $this->assertEquals($expected, file($this->outfile));
 
 
@@ -348,6 +348,38 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(is_resource($ldif->handle()));
         $ldif->write_entry('malformed_parameter');
         $this->assertTrue((boolean)$ldif->error());
+    }
+
+    /**
+    * Test version writing
+    *
+    * In the default config, we supply a version which causes the ldif writer to
+    * spill out a version int. However, since 2.0.0RC5, the default behavior changed,
+    * so that no version is written by default (compatibility to perl interface).
+    * The following code tests that new behavior.
+    */
+    public function testWriteVersion() {
+        $testconf = $this->defaultConfig;
+
+        $expected = array_map('conv_lineend', file(dirname(__FILE__).'/ldif_data/unsorted_w50.ldif'));
+        // strip 4 starting lines because of comments in the file header:
+        array_shift($expected);array_shift($expected);
+        array_shift($expected);array_shift($expected);
+
+        // strip 1 additional line (the "version: 1" line that should not be written now)
+        // and adjust test config
+        array_shift($expected);
+        unset($testconf['version']);
+
+        // Write LDIF
+        $ldif = new Net_LDAP2_LDIF($this->outfile, 'w', $testconf);
+        $this->assertTrue(is_resource($ldif->handle()));
+        $ldif->write_entry($this->testentries);
+        $this->assertFalse((boolean)$ldif->error(), 'Failed writing entry to '.$this->outfile.': '.$ldif->error(true));
+        $ldif->done();
+
+        // Compare files
+        $this->assertEquals($expected, file($this->outfile));
     }
 
     /**
@@ -641,17 +673,15 @@ if (PHPUnit_MAIN_METHOD == "Net_LDAP2_LDIFTest::main") {
     Net_LDAP2_LDIFTest::main();
 }
 
-if (!function_exists('conv_lineend')) {
-    /**
-    * Function transfers line endings to current OS
-    *
-    * This is neccessary to make write tests platform indendent.
-    *
-    * @param string $line Line
-    * @return string
-    */
-    function conv_lineend($line) {
-        return rtrim($line).PHP_EOL;
-    }
+/**
+* Function transfers line endings to current OS
+*
+* This is neccessary to make write tests platform indendent.
+*
+* @param string $line Line
+* @return string
+*/
+function conv_lineend($line) {
+    return rtrim($line).PHP_EOL;
 }
 ?>

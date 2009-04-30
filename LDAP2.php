@@ -14,7 +14,7 @@
 * @copyright 2003-2007 Tarjej Huse, Jan Wagner, Del Elson, Benedikt Hallinger
 * @license   http://www.gnu.org/copyleft/lesser.html LGPL
 * @version   CVS: $Id$
-* @link      http://pear.php.net/package/Net_LDAP22/
+* @link      http://pear.php.net/package/Net_LDAP2/
 */
 
 /**
@@ -50,8 +50,7 @@ define('NET_LDAP2_VERSION', '2.0.0');
 * @author    Benedikt Hallinger <beni@php.net>
 * @copyright 2003-2007 Tarjej Huse, Jan Wagner, Del Elson, Benedikt Hallinger
 * @license   http://www.gnu.org/copyleft/lesser.html LGPL
-* @version   CVS: $Id$
-* @link      http://pear.php.net/package/Net_LDAP22/
+* @link      http://pear.php.net/package/Net_LDAP2/
 */
 class Net_LDAP2 extends PEAR
 {
@@ -366,7 +365,6 @@ class Net_LDAP2 extends PEAR
     */
     protected function performConnect()
     {
-
         // Return true if we are already connected.
         if ($this->_link !== false) {
             return true;
@@ -411,7 +409,7 @@ class Net_LDAP2 extends PEAR
             $this->_config['host'] = $host;
 
             // Attempt a connection.
-            $this->_link = @ldapperformConnect($host, $this->_config['port']);
+            $this->_link = @ldap_connect($host, $this->_config['port']);
             if (false === $this->_link) {
                 $current_error = PEAR::raiseError('Could not connect to ' .
                     $host . ':' . $this->_config['port']);

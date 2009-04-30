@@ -747,14 +747,14 @@ class Net_LDAP2_LDIF extends PEAR
 
             // Test for illegal init char
             $init_ord = ord(substr($attr_value, 0, 1));
-            if ($init_ord >= 127 || in_array($init_ord, $unsafe_init)) {
+            if ($init_ord > 127 || in_array($init_ord, $unsafe_init)) {
                 $base64 = true;
             }
 
             // Test for illegal content char
             for ($i = 0; $i < strlen($attr_value); $i++) {
-                $char = substr($attr_value, $i, 1);
-                if (ord($char) >= 127 || in_array($char, $unsafe)) {
+                $char_ord = ord(substr($attr_value, $i, 1));
+                if ($char_ord > 127 || in_array($char_ord, $unsafe)) {
                     $base64 = true;
                 }
             }

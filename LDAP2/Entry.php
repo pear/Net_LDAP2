@@ -32,6 +32,7 @@ require_once 'Util.php';
 * @package  Net_LDAP2
 * @author   Jan Wagner <wagner@netsols.de>
 * @author   Tarjej Huse <tarjei@bergfald.no>
+* @author   Benedikt Hallinger <beni@php.net>
 * @license  http://www.gnu.org/copyleft/lesser.html LGPL
 * @link     http://pear.php.net/package/Net_LDAP2/
 */
@@ -140,7 +141,7 @@ class Net_LDAP2_Entry extends PEAR
     * or {@link Net_LDAP2_Entry::createConnected()} instead!
     *
     * @param Net_LDAP2|ressource|array &$ldap Net_LDAP2 object, ldap-link ressource or array of attributes
-    * @param string|ressource         $entry Either a DN or a LDAP-Entry ressource
+    * @param string|ressource          $entry Either a DN or a LDAP-Entry ressource
     *
     * @access protected
     * @return none
@@ -167,7 +168,7 @@ class Net_LDAP2_Entry extends PEAR
             // this means, we have no link. This is a "virtual" entry.
             // We just set up the attributes so one can work with the object
             // as expected, but an update() fails unless setLDAP() is called.
-            $this->_setAttributes($ldap);
+            $this->setAttributes($ldap);
         }
 
         // if this is an entry existing in the directory,
@@ -175,7 +176,7 @@ class Net_LDAP2_Entry extends PEAR
         if (is_resource($this->_entry) && is_resource($this->_link)) {
             $this->_new = false;
             $this->_dn  = @ldap_get_dn($this->_link, $this->_entry);
-            $this->_setAttributes();  // fetch attributes from server
+            $this->setAttributes();  // fetch attributes from server
         }
     }
 
@@ -223,13 +224,13 @@ class Net_LDAP2_Entry extends PEAR
     *
     * The method should be called statically: $entry = Net_LDAP2_Entry::createConnected();
     *
-    * @param Net_LDAP2 $ldap Net_LDA2 object
+    * @param Net_LDAP2 $ldap  Net_LDA2 object
     * @param resource  $entry PHP LDAP entry resource
     *
     * @static
     * @return Net_LDAP2_Entry|Net_LDAP2_Error
     */
-    public static function createConnected(&$ldap, $entry)
+    public static function createConnected($ldap, $entry)
     {
         if (!$ldap instanceof Net_LDAP2) {
             return PEAR::raiseError("Unable to create connected entry: Parameter \$ldap needs to be a Net_LDAP2 object!");
@@ -266,8 +267,8 @@ class Net_LDAP2_Entry extends PEAR
     *          );
     * </code>
     *
-    * @param string    $dn    DN of the Entry
-    * @param array     $attrs Attributes of the entry
+    * @param string $dn    DN of the Entry
+    * @param array  $attrs Attributes of the entry
     *
     * @static
     * @return Net_LDAP2_Entry|Net_LDAP2_Error
@@ -282,7 +283,7 @@ class Net_LDAP2_Entry extends PEAR
         if ($entry instanceof Net_LDAP2_Error) {
             return $entry;
         } else {
-            $entry->markAsNew(FALSE);
+            $entry->markAsNew(false);
             return $entry;
         }
     }
@@ -325,6 +326,7 @@ class Net_LDAP2_Entry extends PEAR
     * to make your code more meaningful.
     *
     * @param string $newdn The new DN
+    *
     * @return true
     */
     public function move($newdn)
@@ -347,7 +349,7 @@ class Net_LDAP2_Entry extends PEAR
     * @access protected
     * @return void
     */
-    protected function _setAttributes($attributes = null)
+    protected function setAttributes($attributes = null)
     {
         /*
         * fetch attributes from the server
@@ -450,7 +452,7 @@ class Net_LDAP2_Entry extends PEAR
     */
     public function getValue($attr, $option = null)
     {
-        $attr = $this->_getAttrName($attr);
+        $attr = $this->getAttrName($attr);
 
         if (false == array_key_exists($attr, $this->_attributes)) {
             return PEAR::raiseError("Unknown attribute ($attr) requested");
@@ -498,7 +500,7 @@ class Net_LDAP2_Entry extends PEAR
     */
     public function exists($attr)
     {
-        $attr = $this->_getAttrName($attr);
+        $attr = $this->getAttrName($attr);
         return array_key_exists($attr, $this->_attributes);
     }
 
@@ -528,7 +530,7 @@ class Net_LDAP2_Entry extends PEAR
             return PEAR::raiseError("Parameter must be an array");
         }
         foreach ($attr as $k => $v) {
-            $k = $this->_getAttrName($k);
+            $k = $this->getAttrName($k);
             if (false == is_array($v)) {
                 // Do not add empty values
                 if ($v == null) {
@@ -598,7 +600,7 @@ class Net_LDAP2_Entry extends PEAR
                     $this->delete(array($del_attr_name => $name));
                 } else {
                     // mark for update() if this attr was not marked before
-                    $name = $this->_getAttrName($name);
+                    $name = $this->getAttrName($name);
                     if ($this->exists($name)) {
                         $this->_changes["delete"][$name] = null;
                         unset($this->_attributes[$name]);
@@ -614,7 +616,7 @@ class Net_LDAP2_Entry extends PEAR
                 } else {
                     // mark for update() if this attr was not marked before;
                     // this time it must consider the selected values also
-                    $name = $this->_getAttrName($name);
+                    $name = $this->getAttrName($name);
                     if ($this->exists($name)) {
                         if (false == is_array($values)) {
                             $values = array($values);
@@ -672,7 +674,7 @@ class Net_LDAP2_Entry extends PEAR
             return PEAR::raiseError("Parameter must be an array");
         }
         foreach ($attr as $k => $v) {
-            $k = $this->_getAttrName($k);
+            $k = $this->getAttrName($k);
             if (false == is_array($v)) {
                 // delete attributes with empty values
                 if ($v == null) {
@@ -846,7 +848,7 @@ class Net_LDAP2_Entry extends PEAR
     * @access protected
     * @return string The right name of the attribute
     */
-    protected function _getAttrName($attr)
+    protected function getAttrName($attr)
     {
         $name = strtolower($attr);
         if (array_key_exists($name, $this->_map)) {
@@ -901,8 +903,9 @@ class Net_LDAP2_Entry extends PEAR
     * assumed to be present in the directory server wich results in
     * modification when calling {@link update()}.
     *
-    * @access public
     * @param boolean $mark Value to set, defaults to "true"
+    *
+    * @return void
     */
     public function markAsNew($mark = true)
     {
@@ -940,7 +943,7 @@ class Net_LDAP2_Entry extends PEAR
     * </code>
     *
     * Please note that it is important to test for an Net_LDAP2_Error, because objects are
-    * evaluating to true by default, thus if a error occured, and you only check using "==" then
+    * evaluating to true by default, thus if an error occured, and you only check using "==" then
     * you get misleading results. Use the "identical" (===) operator to test for matches to
     * avoid this as shown above.
     *
@@ -950,7 +953,7 @@ class Net_LDAP2_Entry extends PEAR
     *
     * @return boolean|Net_LDAP2_Error  TRUE, if we had a match in one of the values, otherwise false. Net_LDAP2_Error in case something went wrong
     */
-    public function preg_match($regex, $attr_name, $matches = array())
+    public function pregMatch($regex, $attr_name, $matches = array())
     {
         $matches = array();
 
@@ -972,6 +975,18 @@ class Net_LDAP2_Entry extends PEAR
             }
         }
         return $match;
+    }
+
+    /**
+    * Alias of {@link pregMatch()} for compatibility to Net_LDAP 1
+    *
+    * @see pregMatch()
+    * @return boolean|Net_LDAP2_Error
+    */
+    public function preg_match()
+    {
+        $args = func_get_args();
+        return call_user_func_array(array( &$this, 'pregMatch' ), $args);
     }
 
     /**

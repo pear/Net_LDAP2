@@ -52,6 +52,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 <file baseinstalldir="Net" name="Search.php" role="php" />
                 <file baseinstalldir="Net" name="Util.php" role="php" />
                 <file baseinstalldir="Net" name="LDIF.php" role="php" />
+                <file baseinstalldir="Net" name="SchemaCache.interface.php" role="php" />
+                <file baseinstalldir="Net" name="SimpleFileSchemaCache.php" role="php" />
             </dir> <!-- /LDAP2 -->
             <dir name="doc">
                 <file baseinstalldir="Net" name="manual.html" role="doc" />

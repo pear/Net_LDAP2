@@ -1,6 +1,23 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
+/**
+* File containing the Net_LDAP2_Schema interface class.
+*
+* PHP version 5
+*
+* @category  Net
+* @package   Net_LDAP2
+* @author    Jan Wagner <wagner@netsols.de>
+* @author    Benedikt Hallinger <beni@php.net>
+* @copyright 2009 Jan Wagner, Benedikt Hallinger
+* @license   http://www.gnu.org/copyleft/lesser.html LGPL
+* @version   CVS: $Id$
+* @link      http://pear.php.net/package/Net_LDAP2/
+*/
 
+/**
+* Includes
+*/
 require_once 'PEAR.php';
 
 /**
@@ -31,7 +48,6 @@ define('NET_LDAP2_SYNTAX_OCTET_STRING',       '1.3.6.1.4.1.1466.115.121.1.40');
 * @author   Jan Wagner <wagner@netsols.de>
 * @author   Benedikt Hallinger <beni@php.net>
 * @license  http://www.gnu.org/copyleft/lesser.html LGPL
-* @version  CVS: $Id$
 * @link     http://pear.php.net/package/Net_LDAP22/
 */
 class Net_LDAP2_Schema extends PEAR

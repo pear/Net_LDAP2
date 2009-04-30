@@ -1,6 +1,22 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
+/**
+* File containing the Net_LDAP2_LDIF interface class.
+*
+* PHP version 5
+*
+* @category  Net
+* @package   Net_LDAP2
+* @author    Benedikt Hallinger <beni@php.net>
+* @copyright 2009 Benedikt Hallinger
+* @license   http://www.gnu.org/copyleft/lesser.html LGPL
+* @version   CVS: $Id$
+* @link      http://pear.php.net/package/Net_LDAP2/
+*/
 
+/**
+* Includes
+*/
 require_once 'PEAR.php';
 require_once 'Net/LDAP2.php';
 require_once 'Net/LDAP2/Entry.php';
@@ -42,7 +58,6 @@ require_once 'Net/LDAP2/Util.php';
 * @package  Net_LDAP2
 * @author   Benedikt Hallinger <beni@php.net>
 * @license  http://www.gnu.org/copyleft/lesser.html LGPL
-* @version  CVS: $Id$
 * @link     http://pear.php.net/package/Net_LDAP22/
 * @see      http://www.ietf.org/rfc/rfc2849.txt
 * @todo     Error handling should be PEARified

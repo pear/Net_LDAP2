@@ -1,6 +1,22 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
+/**
+* File containing the Net_LDAP2_Util interface class.
+*
+* PHP version 5
+*
+* @category  Net
+* @package   Net_LDAP2
+* @author    Benedikt Hallinger <beni@php.net>
+* @copyright 2009 Benedikt Hallinger
+* @license   http://www.gnu.org/copyleft/lesser.html LGPL
+* @version   CVS: $Id$
+* @link      http://pear.php.net/package/Net_LDAP2/
+*/
 
+/**
+* Includes
+*/
 require_once 'PEAR.php';
 
 /**
@@ -13,7 +29,6 @@ require_once 'PEAR.php';
 * @package  Net_LDAP2
 * @author   Benedikt Hallinger <beni@php.net>
 * @license  http://www.gnu.org/copyleft/lesser.html LGPL
-* @version  CVS: $Id$
 * @link     http://pear.php.net/package/Net_LDAP22/
 */
 class Net_LDAP2_Util extends PEAR

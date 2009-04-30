@@ -1,6 +1,24 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
+/**
+* File containing the Net_LDAP2_Entry interface class.
+*
+* PHP version 5
+*
+* @category  Net
+* @package   Net_LDAP2
+* @author    Jan Wagner <wagner@netsols.de>
+* @author    Tarjej Huse <tarjei@bergfald.no>
+* @author    Benedikt Hallinger <beni@php.net>
+* @copyright 2009 Tarjej Huse, Jan Wagner, Benedikt Hallinger
+* @license   http://www.gnu.org/copyleft/lesser.html LGPL
+* @version   CVS: $Id$
+* @link      http://pear.php.net/package/Net_LDAP2/
+*/
 
+/**
+* Includes
+*/
 require_once 'PEAR.php';
 require_once 'Util.php';
 
@@ -15,9 +33,7 @@ require_once 'Util.php';
 * @author   Jan Wagner <wagner@netsols.de>
 * @author   Tarjej Huse <tarjei@bergfald.no>
 * @license  http://www.gnu.org/copyleft/lesser.html LGPL
-* @version  CVS: $Id$
-* @link     http://pear.php.net/package/Net_LDAP22/
-
+* @link     http://pear.php.net/package/Net_LDAP2/
 */
 class Net_LDAP2_Entry extends PEAR
 {

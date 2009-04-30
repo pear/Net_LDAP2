@@ -1,6 +1,22 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
+/**
+* File containing the Net_LDAP2_RootDSE interface class.
+*
+* PHP version 5
+*
+* @category  Net
+* @package   Net_LDAP2
+* @author    Jan Wagner <wagner@netsols.de>
+* @copyright 2009 Jan Wagner
+* @license   http://www.gnu.org/copyleft/lesser.html LGPL
+* @version   CVS $Id$
+* @link      http://pear.php.net/package/Net_LDAP2/
+*/
 
+/**
+* Includes
+*/
 require_once 'PEAR.php';
 
 /**
@@ -10,7 +26,6 @@ require_once 'PEAR.php';
 * @package  Net_LDAP2
 * @author   Jan Wagner <wagner@netsols.de>
 * @license  http://www.gnu.org/copyleft/lesser.html LGPL
-* @version  CVS $Id$
 * @link     http://pear.php.net/package/Net_LDAP22/
 */
 class Net_LDAP2_RootDSE extends PEAR
@@ -38,7 +53,6 @@ class Net_LDAP2_RootDSE extends PEAR
     * @param array $attrs Array of attributes to search for
     *
     * @access static
-    * @author Jan Wagner <wagner@netsols.de>
     * @return Net_LDAP2_RootDSE|Net_LDAP2_Error
     */
     public static function fetch(&$ldap, $attrs = null)

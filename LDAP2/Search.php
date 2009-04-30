@@ -1,6 +1,23 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
+/**
+* File containing the Net_LDAP2_Search interface class.
+*
+* PHP version 5
+*
+* @category  Net
+* @package   Net_LDAP2
+* @author    Tarjej Huse <tarjei@bergfald.no>
+* @author    Benedikt Hallinger <beni@php.net>
+* @copyright 2009 Tarjej Huse, Benedikt Hallinger
+* @license   http://www.gnu.org/copyleft/lesser.html LGPL
+* @version   CVS $Id$
+* @link      http://pear.php.net/package/Net_LDAP2/
+*/
 
+/**
+* Includes
+*/
 require_once 'PEAR.php';
 
 /**
@@ -11,7 +28,6 @@ require_once 'PEAR.php';
 * @author   Tarjej Huse <tarjei@bergfald.no>
 * @author   Benedikt Hallinger <beni@php.net>
 * @license  http://www.gnu.org/copyleft/lesser.html LGPL
-* @version  CVS $Id$
 * @link     http://pear.php.net/package/Net_LDAP22/
 */
 class Net_LDAP2_Search extends PEAR implements Iterator

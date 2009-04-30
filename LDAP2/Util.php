@@ -102,7 +102,7 @@ class Net_LDAP2_Util extends PEAR
 
         // clear wrong splitting (possibly we have split too much)
         // /!\ Not clear, if this is neccessary here
-        //$dn_array = self::_correct_dn_splitting($dn_array, ',');
+        //$dn_array = self::correct_dn_splitting($dn_array, ',');
 
         // construct subarrays for multivalued RDNs and unescape DN value
         // also convert to output format and apply casefolding
@@ -303,7 +303,7 @@ class Net_LDAP2_Util extends PEAR
             $dn = preg_split('/(?<=[^\\\\])'.$options['separator'].'/', $dn);
 
             // clear wrong splitting (possibly we have split too much)
-            $dn = self::_correct_dn_splitting($dn, $options['separator']);
+            $dn = self::correct_dn_splitting($dn, $options['separator']);
         } else {
             // Is array, check, if the array is indexed or associative
             $assoc = false;
@@ -520,7 +520,7 @@ class Net_LDAP2_Util extends PEAR
     public static function split_rdn_multival($rdn)
     {
         $rdns = preg_split('/(?<!\\\\)\+/', $rdn);
-        $rdns = self::_correct_dn_splitting($rdns, '+');
+        $rdns = self::correct_dn_splitting($rdns, '+');
         return array_values($rdns);
     }
 
@@ -547,7 +547,7 @@ class Net_LDAP2_Util extends PEAR
     * @return array Corrected array
     * @access protected
     */
-    protected static function _correct_dn_splitting($dn = array(), $separator = ',')
+    protected static function correct_dn_splitting($dn = array(), $separator = ',')
     {
         foreach ($dn as $key => $dn_value) {
             $dn_value = $dn[$key]; // refresh value (foreach caches!)

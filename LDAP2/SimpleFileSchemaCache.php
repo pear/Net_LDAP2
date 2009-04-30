@@ -70,7 +70,7 @@ class Net_LDAP2_SimpleFileSchemaCache implements Net_LDAP2_SchemaCache
          $return = false; // Net_LDAP2 will load schema from LDAP
          if (file_exists($this->config['path'])) {
              $cache_maxage = filemtime($this->config['path']) + $this->config['max_age'];
-             if (time() <= $cache_maxage) {
+             if (time() <= $cache_maxage || $this->config['max_age'] == 0) {
                  $return = unserialize(file_get_contents($this->config['path']));
              }
          }

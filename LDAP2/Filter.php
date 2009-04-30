@@ -210,7 +210,7 @@ class Net_LDAP2_Filter extends PEAR
     * Call this method statically: $filter = Net_LDAP2_Filter('or', array($filter1, $filter2))
     * If the array contains filter strings instead of filter objects, we will try to parse them.
     *
-    * @param string                $log_op  The locicall operator. May be "and", "or", "not" or the subsequent logical equivalents "&", "|", "!"
+    * @param string                 $log_op  The locicall operator. May be "and", "or", "not" or the subsequent logical equivalents "&", "|", "!"
     * @param array|Net_LDAP2_Filter $filters array with Net_LDAP2_Filter objects
     *
     * @return Net_LDAP2_Filter|Net_LDAP2_Error
@@ -360,7 +360,7 @@ class Net_LDAP2_Filter extends PEAR
     */
     public function asString()
     {
-        if ($this->_isLeaf()) {
+        if ($this->isLeaf()) {
             $return = $this->_filter;
         } else {
             $return = '';
@@ -376,6 +376,7 @@ class Net_LDAP2_Filter extends PEAR
     * Alias for perl interface as_string()
     *
     * @see asString()
+    * @return string|Net_LDAP2_Error
     */
     public function as_string()
     {
@@ -450,7 +451,7 @@ class Net_LDAP2_Filter extends PEAR
     * @access protected
     * @return boolean
     */
-    protected function _isLeaf()
+    protected function isLeaf()
     {
         if (count($this->_subfilters) > 0) {
             return false; // Container!

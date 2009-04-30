@@ -224,7 +224,7 @@ class Net_LDAP2_LDIF extends PEAR
         // todo: maybe implement further checks on possible values
         foreach ($options as $option => $value) {
             if (!array_key_exists($option, $this->_options)) {
-                $this->_dropError('Net_LDAP2_LDIF error: option '.$option.' not known!');
+                $this->dropError('Net_LDAP2_LDIF error: option '.$option.' not known!');
                 return;
             } else {
                 $this->_options[$option] = strtolower($value);
@@ -236,7 +236,7 @@ class Net_LDAP2_LDIF extends PEAR
 
         // setup file mode
         if (!preg_match('/^[rwa]\+?$/', $mode)) {
-            $this->_dropError('Net_LDAP2_LDIF error: file mode '.$mode.' not supported!');
+            $this->dropError('Net_LDAP2_LDIF error: file mode '.$mode.' not supported!');
         } else {
             $this->_mode = $mode;
 
@@ -248,11 +248,11 @@ class Net_LDAP2_LDIF extends PEAR
                 $imode = substr($this->_mode, 0, 1);
                 if ($imode == 'r') {
                     if (!file_exists($file)) {
-                        $this->_dropError('Unable to open '.$file.' for read: file not found');
+                        $this->dropError('Unable to open '.$file.' for read: file not found');
                         $this->_mode = false;
                     }
                     if (!is_readable($file)) {
-                        $this->_dropError('Unable to open '.$file.' for read: permission denied');
+                        $this->dropError('Unable to open '.$file.' for read: permission denied');
                         $this->_mode = false;
                     }
                 }
@@ -260,12 +260,12 @@ class Net_LDAP2_LDIF extends PEAR
                 if (($imode == 'w' || $imode == 'a')) {
                     if (file_exists($file)) {
                         if (!is_writable($file)) {
-                            $this->_dropError('Unable to open '.$file.' for write: permission denied');
+                            $this->dropError('Unable to open '.$file.' for write: permission denied');
                             $this->_mode = false;
                         }
                     } else {
                         if (!@touch($file)) {
-                            $this->_dropError('Unable to create '.$file.' for write: permission denied');
+                            $this->dropError('Unable to create '.$file.' for write: permission denied');
                             $this->_mode = false;
                         }
                     }
@@ -275,7 +275,7 @@ class Net_LDAP2_LDIF extends PEAR
                     $this->_FH = @fopen($file, $this->_mode);
                     if (false === $this->_FH) {
                         // Fallback; should never be reached if tests above are good enough!
-                        $this->_dropError('Net_LDAP2_LDIF error: Could not open file '.$file);
+                        $this->dropError('Net_LDAP2_LDIF error: Could not open file '.$file);
                     } else {
                         $this->_FH_opened = true;
                     }
@@ -330,7 +330,7 @@ class Net_LDAP2_LDIF extends PEAR
         foreach ($entries as $entry) {
             $this->_entrynum++;
             if (!$entry instanceof Net_LDAP2_Entry) {
-                $this->_dropError('Net_LDAP2_LDIF error: entry '.$this->_entrynum.' is not an Net_LDAP2_Entry object');
+                $this->dropError('Net_LDAP2_LDIF error: entry '.$this->_entrynum.' is not an Net_LDAP2_Entry object');
             } else {
                 if ($this->_options['change']) {
                     // LDIF change mode
@@ -348,44 +348,44 @@ class Net_LDAP2_LDIF extends PEAR
                         if (!$this->_version_written) {
                             $this->write_version();
                         }
-                        $this->_writeDN($entry->currentDN());
+                        $this->writeDN($entry->currentDN());
                     }
 
                     // process changes
                     // TODO: consider DN add!
                     if ($entry->willBeDeleted()) {
-                        $this->_writeLine("changetype: delete".PHP_EOL);
+                        $this->writeLine("changetype: delete".PHP_EOL);
                     } elseif ($entry->willBeMoved()) {
-                        $this->_writeLine("changetype: modrdn".PHP_EOL);
+                        $this->writeLine("changetype: modrdn".PHP_EOL);
                         $olddn     = Net_LDAP2_Util::ldap_explode_dn($entry->currentDN(), array('casefold' => 'none')); // maybe gives a bug if using multivalued RDNs
                         $oldrdn    = array_shift($olddn);
                         $oldparent = implode(',', $olddn);
                         $newdn     = Net_LDAP2_Util::ldap_explode_dn($entry->dn(), array('casefold' => 'none')); // maybe gives a bug if using multivalued RDNs
                         $rdn       = array_shift($newdn);
                         $parent    = implode(',', $newdn);
-                        $this->_writeLine("newrdn: ".$rdn.PHP_EOL);
-                        $this->_writeLine("deleteoldrdn: 1".PHP_EOL);
+                        $this->writeLine("newrdn: ".$rdn.PHP_EOL);
+                        $this->writeLine("deleteoldrdn: 1".PHP_EOL);
                         if ($parent !== $oldparent) {
-                            $this->_writeLine("newsuperior: ".$parent.PHP_EOL);
+                            $this->writeLine("newsuperior: ".$parent.PHP_EOL);
                         }
                         // TODO: What if the entry has attribute changes as well?
                         //       I think we should check for that and make a dummy
                         //       entry with the changes that is written to the LDIF file
                     } elseif ($num_of_changes > 0) {
                         // write attribute change data
-                        $this->_writeLine("changetype: modify".PHP_EOL);
+                        $this->writeLine("changetype: modify".PHP_EOL);
                         foreach ($entry_attrs_changes as $changetype => $entry_attrs) {
                             foreach ($entry_attrs as $attr_name => $attr_values) {
-                                $this->_writeLine("$changetype: $attr_name".PHP_EOL);
-                                if ($attr_values !== null) $this->_writeAttribute($attr_name, $attr_values, $changetype);
-                                $this->_writeLine("-".PHP_EOL);
+                                $this->writeLine("$changetype: $attr_name".PHP_EOL);
+                                if ($attr_values !== null) $this->writeAttribute($attr_name, $attr_values, $changetype);
+                                $this->writeLine("-".PHP_EOL);
                             }
                         }
                     }
 
                     // finish this entrys data if we had changes
                     if ($is_changed) {
-                        $this->_finishEntry();
+                        $this->finishEntry();
                     }
                 } else {
                     // LDIF-content mode
@@ -406,11 +406,11 @@ class Net_LDAP2_LDIF extends PEAR
                     if (!$this->_version_written) {
                         $this->write_version();
                     }
-                    $this->_writeDN($entry->dn());
+                    $this->writeDN($entry->dn());
                     foreach ($entry_attrs as $attr_name => $attr_values) {
-                        $this->_writeAttribute($attr_name, $attr_values);
+                        $this->writeAttribute($attr_name, $attr_values);
                     }
-                    $this->_finishEntry();
+                    $this->finishEntry();
                 }
             }
         }
@@ -427,9 +427,9 @@ class Net_LDAP2_LDIF extends PEAR
     public function write_version()
     {
         $this->_version_written = true;
-	if (!is_null($this->version())) {
-	        return $this->_writeLine('version: '.$this->version().PHP_EOL, 'Net_LDAP2_LDIF error: unable to write version');
-	}
+        if (!is_null($this->version())) {
+            return $this->writeLine('version: '.$this->version().PHP_EOL, 'Net_LDAP2_LDIF error: unable to write version');
+        }
     }
 
     /**
@@ -447,7 +447,7 @@ class Net_LDAP2_LDIF extends PEAR
     {
         if ($version !== null) {
             if ($version != 1) {
-                $this->_dropError('Net_LDAP2_LDIF error: illegal LDIF version set');
+                $this->dropError('Net_LDAP2_LDIF error: illegal LDIF version set');
             } else {
                 $this->_options['version'] = $version;
             }
@@ -465,7 +465,7 @@ class Net_LDAP2_LDIF extends PEAR
     public function &handle()
     {
         if (!is_resource($this->_FH)) {
-            $this->_dropError('Net_LDAP2_LDIF error: invalid file resource');
+            $this->dropError('Net_LDAP2_LDIF error: invalid file resource');
             $null = null;
             return $null;
         } else {
@@ -570,11 +570,11 @@ class Net_LDAP2_LDIF extends PEAR
                 } elseif ($delim == ':<') {
                     // file inclusion
                     // TODO: Is this the job of the LDAP-client or the server?
-                    $this->_dropError('File inclusions are currently not supported');
+                    $this->dropError('File inclusions are currently not supported');
                     //$attributes[$attr][] = ...;
                 } else {
                     // since the pattern above, the delimeter cannot be something else.
-                    $this->_dropError('Net_LDAP2_LDIF parsing error: invalid syntax at parsing entry line: '.$line);
+                    $this->dropError('Net_LDAP2_LDIF parsing error: invalid syntax at parsing entry line: '.$line);
                     continue;
                 }
 
@@ -594,7 +594,7 @@ class Net_LDAP2_LDIF extends PEAR
         }
 
         if (false === $dn) {
-            $this->_dropError('Net_LDAP2_LDIF parsing error: unable to detect DN for entry');
+            $this->dropError('Net_LDAP2_LDIF parsing error: unable to detect DN for entry');
             return false;
         } else {
             $newentry = Net_LDAP2_Entry::createFresh($dn, $attributes);
@@ -645,7 +645,7 @@ class Net_LDAP2_LDIF extends PEAR
                 if ($data === false) {
                     // error only, if EOF not reached after fgets() call
                     if (!$this->eof()) {
-                        $this->_dropError('Net_LDAP2_LDIF error: error reading from file at input line '.$this->_input_line, $this->_input_line);
+                        $this->dropError('Net_LDAP2_LDIF error: error reading from file at input line '.$this->_input_line, $this->_input_line);
                     }
                     break;
                 } else {
@@ -692,7 +692,7 @@ class Net_LDAP2_LDIF extends PEAR
                             if (!$commentmode) {
                                 if ($datalines_read == 0) {
                                     // first line of entry: wrapped data is illegal
-                                    $this->_dropError('Net_LDAP2_LDIF error: illegal wrapping at input line '.$this->_input_line, $this->_input_line);
+                                    $this->dropError('Net_LDAP2_LDIF error: illegal wrapping at input line '.$this->_input_line, $this->_input_line);
                                 } else {
                                     $last                = array_pop($this->_lines_next);
                                     $last                = $last.trim($matches[1]);
@@ -708,7 +708,7 @@ class Net_LDAP2_LDIF extends PEAR
                             // entry, so just ignore this line
                             $commentmode = false;
                         } else {
-                            $this->_dropError('Net_LDAP2_LDIF error: invalid syntax at input line '.$this->_input_line, $this->_input_line);
+                            $this->dropError('Net_LDAP2_LDIF error: invalid syntax at input line '.$this->_input_line, $this->_input_line);
                             continue;
                         }
 
@@ -732,7 +732,7 @@ class Net_LDAP2_LDIF extends PEAR
     * @access protected
     * @return string LDIF string for that attribute and value
     */
-    protected function _convertAttribute($attr_name, $attr_value)
+    protected function convertAttribute($attr_name, $attr_value)
     {
         // Handle empty attribute or process
         if (strlen($attr_value) == 0) {
@@ -794,7 +794,7 @@ class Net_LDAP2_LDIF extends PEAR
     * @return string LDIF string for that DN
     * @todo I am not sure, if the UTF8 stuff is correctly handled right now
     */
-    protected function _convertDN($dn)
+    protected function convertDN($dn)
     {
         $base64 = false;
         // ASCII-chars that are NOT safe for the
@@ -835,15 +835,15 @@ class Net_LDAP2_LDIF extends PEAR
     * @access protected
     * @return void
     */
-    protected function _writeAttribute($attr_name, $attr_values)
+    protected function writeAttribute($attr_name, $attr_values)
     {
         // write out attribute content
         if (!is_array($attr_values)) {
             $attr_values = array($attr_values);
         }
         foreach ($attr_values as $attr_val) {
-            $line = $this->_convertAttribute($attr_name, $attr_val).PHP_EOL;
-            $this->_writeLine($line, 'Net_LDAP2_LDIF error: unable to write attribute '.$attr_name.' of entry '.$this->_entrynum);
+            $line = $this->convertAttribute($attr_name, $attr_val).PHP_EOL;
+            $this->writeLine($line, 'Net_LDAP2_LDIF error: unable to write attribute '.$attr_name.' of entry '.$this->_entrynum);
         }
     }
 
@@ -855,17 +855,17 @@ class Net_LDAP2_LDIF extends PEAR
     * @access protected
     * @return void
     */
-    protected function _writeDN($dn)
+    protected function writeDN($dn)
     {
         // prepare DN
         if ($this->_options['encode'] == 'base64') {
-            $dn = $this->_convertDN($dn).PHP_EOL;
+            $dn = $this->convertDN($dn).PHP_EOL;
         } elseif ($this->_options['encode'] == 'canonical') {
             $dn = Net_LDAP2_Util::canonical_dn($dn, array('casefold' => 'none')).PHP_EOL;
         } else {
             $dn = $dn.PHP_EOL;
         }
-        $this->_writeLine($dn, 'Net_LDAP2_LDIF error: unable to write DN of entry '.$this->_entrynum);
+        $this->writeLine($dn, 'Net_LDAP2_LDIF error: unable to write DN of entry '.$this->_entrynum);
     }
 
     /**
@@ -874,9 +874,9 @@ class Net_LDAP2_LDIF extends PEAR
     * @access protected
     * @return void
     */
-    protected function _finishEntry()
+    protected function finishEntry()
     {
-        $this->_writeLine(PHP_EOL, 'Net_LDAP2_LDIF error: unable to close entry '.$this->_entrynum);
+        $this->writeLine(PHP_EOL, 'Net_LDAP2_LDIF error: unable to close entry '.$this->_entrynum);
     }
 
     /**
@@ -888,10 +888,10 @@ class Net_LDAP2_LDIF extends PEAR
     * @access protected
     * @return true|false
     */
-    protected function _writeLine($line, $error = 'Net_LDAP2_LDIF error: unable to write to filehandle')
+    protected function writeLine($line, $error = 'Net_LDAP2_LDIF error: unable to write to filehandle')
     {
         if (is_resource($this->handle()) && fwrite($this->handle(), $line, strlen($line)) === false) {
-            $this->_dropError($error);
+            $this->dropError($error);
             return false;
         } else {
             return true;
@@ -907,7 +907,7 @@ class Net_LDAP2_LDIF extends PEAR
     * @access protected
     * @return void
     */
-    protected function _dropError($msg, $line = null)
+    protected function dropError($msg, $line = null)
     {
         $this->_error['error'] = new Net_LDAP2_Error($msg);
         if ($line !== null) $this->_error['line'] = $line;

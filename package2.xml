@@ -26,20 +26,17 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2009-05-08</date>
+    <date>2009-05-22: PROPOSED DATE, lets see if it works :D</date>
     <version>
-        <release>2.0.0RC6</release>
-        <api>2.0.0RC6</api>
+        <release>2.0.0</release>
+        <api>2.0.0</api>
     </version>
     <stability>
-        <release>beta</release>
-        <api>beta</api>
+        <release>stable</release>
+        <api>stable</api>
     </stability>
     <license>LGPL License</license>
     <notes>
-        * Bugfix in LDIF writer concerning needless base64 encoding of values
-        * New schema caching facility
-        * PHPCS fixes, some comment changes and general code cleanup
     </notes>
 
     <contents>
@@ -572,6 +569,23 @@ http://pear.php.net/dtd/package-2.0.xsd">
             * Fixed Bug #14903 and #15494, now bind attempt is also encrypted if TLS is requested
             * Fixed issue with repetitve adding or deleting values causing Net_LDAP to send the same change multiple times
             * Fixed Bug #15364 that caused a problem with setting the ldap version if only one version is supported by server
+            </notes>
+        </release>
+        <release>
+            <date>2009-05-08</date>
+            <version>
+                <release>2.0.0RC6</release>
+                <api>2.0.0RC6</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>beta</api>
+            </stability>
+            <license>LGPL License</license>
+            <notes>
+            * Bugfix in LDIF writer concerning needless base64 encoding of values
+            * New schema caching facility
+            * PHPCS fixes, some comment changes and general code cleanup
             </notes>
         </release>
     </changelog>

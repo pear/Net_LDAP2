@@ -26,7 +26,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date></date>
+    <date>2009-05-08</date>
     <version>
         <release>2.0.0RC6</release>
         <api>2.0.0RC6</api>
@@ -38,6 +38,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <license>LGPL License</license>
     <notes>
         * Bugfix in LDIF writer concerning needless base64 encoding of values
+        * New schema caching facility
         * PHPCS fixes, some comment changes and general code cleanup
     </notes>
 

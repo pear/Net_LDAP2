@@ -673,15 +673,17 @@ if (PHPUnit_MAIN_METHOD == "Net_LDAP2_LDIFTest::main") {
     Net_LDAP2_LDIFTest::main();
 }
 
-/**
-* Function transfers line endings to current OS
-*
-* This is neccessary to make write tests platform indendent.
-*
-* @param string $line Line
-* @return string
-*/
-function conv_lineend($line) {
-    return rtrim($line).PHP_EOL;
+if (!function_exists('conv_lineend')) {
+    /**
+    * Function transfers line endings to current OS
+    *
+    * This is neccessary to make write tests platform indendent.
+    *
+    * @param string $line Line
+    * @return string
+    */
+    function conv_lineend($line) {
+        return rtrim($line).PHP_EOL;
+    }
 }
 ?>

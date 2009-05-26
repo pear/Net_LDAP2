@@ -279,7 +279,7 @@ class Net_LDAP2_Entry extends PEAR
             return PEAR::raiseError("Unable to create entry object: Parameter \$attrs needs to be an array!");
         }
 
-        $entry = Net_LDAP2_Entry::createFresh($attrs, $dn);
+        $entry = Net_LDAP2_Entry::createFresh($dn, $attrs);
         if ($entry instanceof Net_LDAP2_Error) {
             return $entry;
         } else {

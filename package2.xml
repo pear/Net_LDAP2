@@ -37,6 +37,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
+        * Fixed bug #16242 (arguments for createFresh in wrong order when calling Net_LDAP2_Entry::createFresh())
     </notes>
 
     <contents>

@@ -1409,19 +1409,6 @@ class Net_LDAP2 extends PEAR
     }
 
     /**
-    * Tell whether variable is a Net_LDAP2_Error or not
-    *
-    * @param mixed $var A variable, most commonly some Net_LDAP2* object
-    *
-    * @access public
-    * @return boolean
-    */
-    public function isError($var)
-    {
-        return ($var instanceof Net_LDAP2_Error || parent::isError($var));
-    }
-
-    /**
     * Gets a rootDSE object
     *
     * This either fetches a fresh rootDSE object or returns it from

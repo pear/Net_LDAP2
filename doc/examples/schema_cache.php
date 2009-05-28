@@ -121,8 +121,8 @@ class MySessionSchemaCache implements Net_LDAP2_SchemaCache {
         // false to inidicate a minor error to Net_LDAP2.
         // This causes it to fetch a fresh object from LDAP.
         if (array_key_exists(__CLASS__, $_SESSION)
-        && $_SESSION(__CLASS__) instanceof Net_LDAP2_SchemaCache) {
-            return $_SESSION(__CLASS__);
+        && $_SESSION[__CLASS__] instanceof Net_LDAP2_SchemaCache) {
+            return $_SESSION[__CLASS__];
         } else {
             return false;
         }
@@ -140,7 +140,7 @@ class MySessionSchemaCache implements Net_LDAP2_SchemaCache {
         // If you feel that you want to return an error object, be sure
         // that you have read the comments in Net_LDAP2_SchemaCache.interface.php
         // or you will seriously hurt the performance of your application!!!!
-        $_SESSION(__CLASS__) = $schema;
+        $_SESSION[__CLASS__] = $schema;
         return true;
     }
 }

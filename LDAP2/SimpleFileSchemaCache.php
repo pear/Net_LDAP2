@@ -83,6 +83,11 @@ class Net_LDAP2_SimpleFileSchemaCache implements Net_LDAP2_SchemaCache
     * This method will be called, if Net_LDAP2 has fetched a fresh
     * schema object from LDAP and wants to init or refresh the cache.
     *
+    * To invalidate the cache and cause Net_LDAP2 to refresh the cache,
+    * you can call this method with null or false as value.
+    * The next call to $ldap->schema() will then refresh the caches object.
+    *
+    * @param mixed $schema The object that should be cached
     * @return true|Net_LDAP2_Error|false
     */
     public function storeSchema($schema) {

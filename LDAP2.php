@@ -140,7 +140,7 @@ class Net_LDAP2 extends PEAR
     * @see registerSchemaCache()
     * @var string
     */
-    protected $_schema_cache = '';
+    protected $_schema_cache = null;
 
     /**
     * Cache for attribute encoding checks
@@ -1468,15 +1468,17 @@ class Net_LDAP2 extends PEAR
         // If a schema caching object is registered, we use that to fetch
         // a schema object.
         // See registerSchemaCache() for more info on this.
-        if ($this->_schema_cache) {
-           $cached_schema = $this->_schema_cache->loadSchema();
-           if ($cached_schema instanceof Net_LDAP2_Error) {
-               return $cached_schema; // route error to client
-           } else {
-               if ($cached_schema instanceof Net_LDAP2_Schema) {
-                   $this->_schema = $cached_schema;
+        if ($this->_schema === null) {
+            if ($this->_schema_cache) {
+               $cached_schema = $this->_schema_cache->loadSchema();
+               if ($cached_schema instanceof Net_LDAP2_Error) {
+                   return $cached_schema; // route error to client
+               } else {
+                   if ($cached_schema instanceof Net_LDAP2_Schema) {
+                       $this->_schema = $cached_schema;
+                   }
                }
-           }
+            }
         }
 
         // Fetch schema, if not tried before and no cached version available.
@@ -1502,7 +1504,7 @@ class Net_LDAP2 extends PEAR
     }
 
     /**
-    * Enable persistent schema caching
+    * Enable/disable persistent schema caching
     *
     * Sometimes it might be useful to allow your scripts to cache
     * the schema information on disk, so the schema is not fetched
@@ -1512,9 +1514,12 @@ class Net_LDAP2 extends PEAR
     * This method allows you to register a custom object that
     * implements your schema cache. Please see the SchemaCache interface
     * (SchemaCache.interface.php) for informations on how to implement this.
+    * To unregister the cache, pass null as $cache parameter.
     *
     * For ease of use, Net_LDAP2 provides a simple file based cache
-    * which is used in the example below.
+    * which is used in the example below. You may use this, for example,
+    * to store the schema in a linux tmpfs which results in the schema
+    * beeing cached inside the RAM which allows nearly instant access.
     * <code>
     *    // Create the simple file cache object that comes along with Net_LDAP2
     *    $mySchemaCache_cfg = array(
@@ -1527,12 +1532,12 @@ class Net_LDAP2 extends PEAR
     *    // now each call to $ldap->schema() will get the schema from disk!
     * </code>
     *
-    * @param string $cache Name of the class implementing the Net_LDAP2_SchemaCache interface
+    * @param Net_LDAP2_SchemaCache|null $cache Object implementing the Net_LDAP2_SchemaCache interface
     *
     * @return true|Net_LDAP2_Error
     */
     public function registerSchemaCache($cache) {
-        if (!is_object($cache) || !in_array('Net_LDAP2_SchemaCache', class_implements($cache))) {
+        if (!is_null($cache) || !is_object($cache) || !in_array('Net_LDAP2_SchemaCache', class_implements($cache))) {
             return new Net_LDAP2_Error('Custom schema caching object is either no '.
                 'valid object or does not implement the Net_LDAP2_SchemaCache interface!');
         } else {

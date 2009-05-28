@@ -26,7 +26,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2009-05-22: PROPOSED DATE, lets see if it works :D</date>
+    <date>2009-05-28</date>
     <version>
         <release>2.0.0</release>
         <api>2.0.0</api>
@@ -67,6 +67,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 <file baseinstalldir="Net" name="examples/add_entry.php" role="doc" />
                 <file baseinstalldir="Net" name="examples/modify_entry.php" role="doc" />
                 <file baseinstalldir="Net" name="examples/modify_entry2.php" role="doc" />
+		<file baseinstalldir="Net" name="examples/schema_cache.php" role="doc" />
             </dir> <!-- /doc -->
             <dir name="tests">
                 <file baseinstalldir="Net" name="AllTests.php" role="test" />

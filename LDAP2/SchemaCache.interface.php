@@ -50,7 +50,8 @@ interface Net_LDAP2_SchemaCache
     * will be given back to the client, so only return errors if storing
     * of the cache is something crucial (e.g. for doing something else with it).
     * Normaly you dont want to give back errors in which case Net_LDAP2 needs to
-    * fetch the schema once per script run.
+    * fetch the schema once per script run and instead use the error
+    * returned from loadSchema().
     *
     * @return true|Net_LDAP2_Error
     */

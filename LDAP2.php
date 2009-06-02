@@ -427,14 +427,6 @@ class Net_LDAP2 extends PEAR
                 continue;
             }
 
-            // Set LDAP version before trying to bind.
-            if (self::isError($msg = $this->setLDAPVersion())) {
-                $current_error           = $msg;
-                $this->_link             = false;
-                $this->_down_host_list[] = $host;
-                continue;
-            }
-
             // If we're supposed to use TLS, do so before we try to bind,
             // as some strict servers only allow binding via secure connections
             if ($this->_config["starttls"] === true) {
@@ -444,6 +436,18 @@ class Net_LDAP2 extends PEAR
                     $this->_down_host_list[] = $host;
                     continue;
                 }
+            }
+
+            // Set LDAP version before trying to bind.
+            // (note to myself: if Problems arise because setLDAPVersion() should be
+            // called prior startTLS(), read Bug #16272. If this is the case, we must double
+            // try to set the LDAP version of the connection. It is not 100% clear at this moment
+            // if it is ok to start TLS before submitting the LDAP version, but it should.)
+            if (self::isError($msg = $this->setLDAPVersion())) {
+                $current_error           = $msg;
+                $this->_link             = false;
+                $this->_down_host_list[] = $host;
+                continue;
             }
 
             // Attempt to bind to the server. If we have credentials configured,

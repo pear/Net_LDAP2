@@ -571,7 +571,16 @@ class Net_LDAP2 extends PEAR
         // This is done via testing the extensions offered by the server.
         // The OID 1.3.6.1.4.1.1466.20037 tells us, if TLS is supported.
         $rootDSE = $this->rootDse();
+        if (self::isError($rootDSE)) {
+            return $this->raiseError("Unable to fetch rootDSE entry ".
+            "to see if TLS is supoported: ".$rootDSE->getMessage(), $rootDSE->getCode());
+        }
+
         $supported_extensions = $rootDSE->getValue('supportedExtension');
+        if (self::isError($supported_extensions)) {
+            return $this->raiseError("Unable to fetch rootDSE attribute 'supportedExtension' ".
+            "to see if TLS is supoported: ".$supported_extensions->getMessage(), $supported_extensions->getCode());
+        }
 
         if (in_array('1.3.6.1.4.1.1466.20037', $supported_extensions)) {
             if (false === @ldap_start_tls($this->_link)) {

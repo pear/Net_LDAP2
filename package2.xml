@@ -26,9 +26,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2009-05-28</date>
+    <date></date>
     <version>
-        <release>2.0.0</release>
+        <release>2.0.1</release>
         <api>2.0.0</api>
     </version>
     <stability>
@@ -37,8 +37,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
-        * Fixed bug #16242 (arguments for createFresh in wrong order when calling Net_LDAP2_Entry::createFresh())
-        * Fixed bug #16253 (strict checking of isError())
+        
     </notes>
 
     <contents>
@@ -589,6 +588,22 @@ http://pear.php.net/dtd/package-2.0.xsd">
             * Bugfix in LDIF writer concerning needless base64 encoding of values
             * New schema caching facility
             * PHPCS fixes, some comment changes and general code cleanup
+            </notes>
+        </release>
+        <release>
+            <date>2009-05-28</date>
+            <version>
+                <release>2.0.0</release>
+                <api>2.0.0</api>
+            </version>
+            <stability>
+                <release>stable</release>
+                <api>stable</api>
+            </stability>
+            <license>LGPL License</license>
+            <notes>
+                * Fixed bug #16242 (arguments for createFresh in wrong order when calling Net_LDAP2_Entry::createFresh())
+                * Fixed bug #16253 (strict checking of isError())
             </notes>
         </release>
     </changelog>

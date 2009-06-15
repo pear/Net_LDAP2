@@ -37,7 +37,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
-        
+       * Fixed Bugs #16272 and #16278 (Problem in starttls function)
     </notes>
 
     <contents>

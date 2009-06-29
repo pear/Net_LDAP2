@@ -1506,7 +1506,7 @@ class Net_LDAP2 extends PEAR
 
                 // If schema caching is active, advise the cache to store the schema
                 if ($this->_schema_cache) {
-                    $caching_result = $this->_schema_cache->storeSchema($schema);
+                    $caching_result = $this->_schema_cache->storeSchema($this->_schema);
                     if ($caching_result instanceof Net_LDAP2_Error) {
                         return $caching_result; // route error to client
                     }
@@ -1550,12 +1550,13 @@ class Net_LDAP2 extends PEAR
     * @return true|Net_LDAP2_Error
     */
     public function registerSchemaCache($cache) {
-        if (!is_null($cache) || !is_object($cache) || !in_array('Net_LDAP2_SchemaCache', class_implements($cache))) {
-            return new Net_LDAP2_Error('Custom schema caching object is either no '.
-                'valid object or does not implement the Net_LDAP2_SchemaCache interface!');
-        } else {
+        if (is_null($cache)
+        || (is_object($cache) && in_array('Net_LDAP2_SchemaCache', class_implements($cache))) ) {
             $this->_schema_cache = $cache;
             return true;
+        } else {
+            return new Net_LDAP2_Error('Custom schema caching object is either no '.
+                'valid object or does not implement the Net_LDAP2_SchemaCache interface!');
         }
     }
 

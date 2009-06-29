@@ -1497,19 +1497,17 @@ class Net_LDAP2 extends PEAR
         // Fetch schema, if not tried before and no cached version available.
         // If we are already fetching the schema, we will skip fetching.
         if ($this->_schema === null) {
-            if (!$this->_schema instanceof Net_LDAP2_Schema) {
-                // store a temporary error message so subsequent calls to schema() can
-                // detect, that we are fetching the schema already.
-                // Otherwise we will get a infinite loop at Net_LDAP2_Schema::fetch()
-                $this->_schema = new Net_LDAP2_Error('Schema not initialized');
-                $this->_schema = Net_LDAP2_Schema::fetch($this, $dn);
+            // store a temporary error message so subsequent calls to schema() can
+            // detect, that we are fetching the schema already.
+            // Otherwise we will get an infinite loop at Net_LDAP2_Schema::fetch()
+            $this->_schema = new Net_LDAP2_Error('Schema not initialized');
+            $this->_schema = Net_LDAP2_Schema::fetch($this, $dn);
 
-                // If schema caching is active, advise the cache to store the schema
-                if ($this->_schema_cache) {
-                    $caching_result = $this->_schema_cache->storeSchema($this->_schema);
-                    if ($caching_result instanceof Net_LDAP2_Error) {
-                        return $caching_result; // route error to client
-                    }
+            // If schema caching is active, advise the cache to store the schema
+            if ($this->_schema_cache) {
+                $caching_result = $this->_schema_cache->storeSchema($this->_schema);
+                if ($caching_result instanceof Net_LDAP2_Error) {
+                    return $caching_result; // route error to client
                 }
             }
         }

@@ -28,7 +28,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <!-- Information for this release -->
     <date></date>
     <version>
-        <release>2.0.2</release>
+        <release>2.0.3</release>
         <api>2.0.0</api>
     </version>
     <stability>
@@ -618,6 +618,21 @@ http://pear.php.net/dtd/package-2.0.xsd">
             <license>LGPL License</license>
             <notes>
                 * Fixed Bugs #16272 and #16278 (Problem in starttls function)
+            </notes>
+        </release>
+        <release>
+            <date>2009-06-29</date>
+            <version>
+                <release>2.0.2</release>
+                <api>2.0.0</api>
+            </version>
+            <stability>
+                <release>stable</release>
+                <api>stable</api>
+            </stability>
+            <license>LGPL License</license>
+            <notes>
+                * Fixed some bugs that rendered the new schema caching facility unusable
             </notes>
         </release>
     </changelog>

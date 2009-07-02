@@ -368,13 +368,22 @@ class Net_LDAP2 extends PEAR
     /**
     * Connect to the ldap-server
     *
-    * This function connects to the given LDAP server.
+    * This function connects to the LDAP server specified in
+    * the configuration, binds and set up the LDAP protocol as needed.
     *
     * @access protected
     * @return Net_LDAP2_Error|true    Net_LDAP2_Error object or true
     */
     protected function performConnect()
     {
+        // Note: Connecting is briefly described in RFC1777.
+        // Basicly it works like this:
+        //  1. set up TCP connection
+        //  2. secure that connection if neccessary
+        //  3. perform bind
+        //  4. setLDAPVersion to tell server which version we want to speak
+        //  5. set additional protocol options
+
         // Return true if we are already connected.
         if ($this->_link !== false) {
             return true;
@@ -438,26 +447,26 @@ class Net_LDAP2 extends PEAR
                 }
             }
 
-            // Set LDAP version before trying to bind.
-            // (note to myself: if Problems arise because setLDAPVersion() should be
-            // called prior startTLS(), read Bug #16272. If this is the case, we must double
-            // try to set the LDAP version of the connection. It is not 100% clear at this moment
-            // if it is ok to start TLS before submitting the LDAP version, but it should.)
-            if (self::isError($msg = $this->setLDAPVersion())) {
-                $current_error           = $msg;
-                $this->_link             = false;
-                $this->_down_host_list[] = $host;
-                continue;
-            }
-
             // Attempt to bind to the server. If we have credentials configured,
             // we try to use them, otherwise its an anonymous bind.
+            // As stated by RFC-1777, the bind request should be the first
+            // operation to be performed after the connection is established.
             $msg = $this->bind();
             if (self::isError($msg)) {
                 // The bind failed, discard link and save error msg.
                 // Then record the host as down and try next one
                 $this->_link             = false;
                 $current_error           = $msg;
+                $this->_down_host_list[] = $host;
+                continue;
+            }
+
+            // Set desired LDAP version.
+            // This is to tell the server that we want to use
+            // a certain protocol version.
+            if (self::isError($msg = $this->setLDAPVersion())) {
+                $current_error           = $msg;
+                $this->_link             = false;
                 $this->_down_host_list[] = $host;
                 continue;
             }

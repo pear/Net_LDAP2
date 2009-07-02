@@ -37,6 +37,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
+        * Fixed LDAP RFC-1777 violation: bind has to be performed prior setting LDAP version
+        * Fixed wrong version reported from version()
     </notes>
 
     <contents>

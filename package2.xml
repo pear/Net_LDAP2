@@ -26,9 +26,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2009-07-03</date>
+    <date></date>
     <version>
-        <release>2.0.3</release>
+        <release>2.0.4</release>
         <api>2.0.0</api>
     </version>
     <stability>
@@ -37,8 +37,6 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
-        * Fixed LDAP RFC-1777 violation: bind has to be performed prior setting LDAP version
-        * Fixed wrong version reported from version()
     </notes>
 
     <contents>
@@ -635,6 +633,22 @@ http://pear.php.net/dtd/package-2.0.xsd">
             <license>LGPL License</license>
             <notes>
                 * Fixed some bugs that rendered the new schema caching facility unusable
+            </notes>
+        </release>
+        <release>
+            <date>2009-07-03</date>
+            <version>
+                <release>2.0.3</release>
+                <api>2.0.0</api>
+            </version>
+            <stability>
+                <release>stable</release>
+                <api>stable</api>
+            </stability>
+            <license>LGPL License</license>
+            <notes>
+                * Fixed LDAP RFC-1777 violation: bind has to be performed prior setting LDAP version
+                * Fixed wrong version reported from version()
             </notes>
         </release>
     </changelog>

@@ -447,6 +447,21 @@ class Net_LDAP2 extends PEAR
                 }
             }
 
+            // Try to set the configured LDAP version on the connection if LDAP
+            // server needs that before binding (eg OpenLDAP).
+            // We use force here which means that the test in the rootDSE is skipped;
+            // this is neccessary, because some strict LDAP servers only allow to
+            // read the LDAP rootDSE (which tells us the supported protocol versions)
+            // with authenticated clients.
+            // This may fail in which case we try again after binding.
+            // In this case, most probably the bind() or setLDAPVersion()-call
+            // below will also fail, providing error messages.
+            $version_set = false;
+            $ignored_err = $this->setLDAPVersion(0, true);
+            if (!self::isError($ignored_err)) {
+                $version_set = true;
+            }
+
             // Attempt to bind to the server. If we have credentials configured,
             // we try to use them, otherwise its an anonymous bind.
             // As stated by RFC-1777, the bind request should be the first
@@ -461,14 +476,16 @@ class Net_LDAP2 extends PEAR
                 continue;
             }
 
-            // Set desired LDAP version.
+            // Set desired LDAP version if not set before
             // This is to tell the server that we want to use
             // a certain protocol version.
-            if (self::isError($msg = $this->setLDAPVersion())) {
-                $current_error           = $msg;
-                $this->_link             = false;
-                $this->_down_host_list[] = $host;
-                continue;
+            if (!$version_set) {
+                if (self::isError($msg = $this->setLDAPVersion())) {
+                    $current_error           = $msg;
+                    $this->_link             = false;
+                    $this->_down_host_list[] = $host;
+                    continue;
+                }
             }
 
             // Set LDAP parameters, now we know we have a valid connection.
@@ -1143,12 +1160,13 @@ class Net_LDAP2 extends PEAR
     /**
     * Set the LDAP_PROTOCOL_VERSION that is used on the connection.
     *
-    * @param int $version LDAP-version that should be used
+    * @param int     $version LDAP-version that should be used
+    * @param boolean $force   If set to true, the check against the rootDSE will be skipped
     *
     * @return Net_LDAP2_Error|true    Net_LDAP2_Error object or true
     * @todo Checking via the rootDSE takes much time - why? fetching and instanciation is quick!
     */
-    public function setLDAPVersion($version = 0)
+    public function setLDAPVersion($version = 0, $force = false)
     {
         if (!$version) {
             $version = $this->_config['version'];
@@ -1160,20 +1178,25 @@ class Net_LDAP2 extends PEAR
         // Todo: Why is this so horribly slow?
         // $this->rootDse() is very fast, as well as Net_LDAP2_RootDSE::fetch()
         // seems like a problem at copiyng the object inside PHP??
+        // Additionally, this is not always reproducable...
         //
-        $rootDSE = $this->rootDse();
-        if ($rootDSE instanceof Net_LDAP2_Error) {
-            return $rootDSE;
-        } else {
-            $supported_versions = $rootDSE->getValue('supportedLDAPVersion');
-            if (is_string($supported_versions)) {
-                $supported_versions = array($supported_versions);
-            }
-            if (in_array($version, $supported_versions)) {
-                return $this->setOption("LDAP_OPT_PROTOCOL_VERSION", $version);
+        if (!$force) {
+            $rootDSE = $this->rootDse();
+            if ($rootDSE instanceof Net_LDAP2_Error) {
+                return $rootDSE;
             } else {
-                return $this->raiseError("LDAP Server does not support protocol version " . $version);
+                $supported_versions = $rootDSE->getValue('supportedLDAPVersion');
+                if (is_string($supported_versions)) {
+                    $supported_versions = array($supported_versions);
+                }
+                $check_ok = in_array($version, $supported_versions);
             }
+        }
+
+        if ($force || $check_ok) {
+            return $this->setOption("LDAP_OPT_PROTOCOL_VERSION", $version);
+        } else {
+            return $this->raiseError("LDAP Server does not support protocol version " . $version);
         }
     }
 

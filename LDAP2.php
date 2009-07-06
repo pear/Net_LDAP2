@@ -466,19 +466,33 @@ class Net_LDAP2 extends PEAR
             // we try to use them, otherwise its an anonymous bind.
             // As stated by RFC-1777, the bind request should be the first
             // operation to be performed after the connection is established.
+            // This may give an protocol error if the server does not support
+            // V2 binds and the above call to setLDAPVersion() failed.
+            // In case the above call failed, we try an V2 bind here and set the
+            // version afterwards (with checking to the rootDSE).
             $msg = $this->bind();
             if (self::isError($msg)) {
                 // The bind failed, discard link and save error msg.
                 // Then record the host as down and try next one
+                if ($msg->getCode() == 0x02 && !$version_set) {
+                    // provide a finer grained error message
+                    // if protocol error arieses because of invalid version
+                    $msg = new Net_LDAP2_Error($msg->getMessage().
+                        " (could not set LDAP protocol version to ".
+                        $this->_config['version'].")",
+                        $msg->getCode());
+                }
                 $this->_link             = false;
                 $current_error           = $msg;
                 $this->_down_host_list[] = $host;
                 continue;
             }
 
-            // Set desired LDAP version if not set before
+            // Set desired LDAP version if not successfully set before.
             // This is to tell the server that we want to use
             // a certain protocol version.
+            // Here, a check against the rootDSE is performed, so we get a
+            // error message if the server does not support the version.
             if (!$version_set) {
                 if (self::isError($msg = $this->setLDAPVersion())) {
                     $current_error           = $msg;

@@ -380,9 +380,11 @@ class Net_LDAP2 extends PEAR
         // Basicly it works like this:
         //  1. set up TCP connection
         //  2. secure that connection if neccessary
-        //  3. perform bind
-        //  4. setLDAPVersion to tell server which version we want to speak
-        //  5. set additional protocol options
+        //  3a. setLDAPVersion to tell server which version we want to speak
+        //  3b. perform bind
+        //  3c. setLDAPVersion to tell server which version we want to speak
+        //      together with a test for supported versions
+        //  4. set additional protocol options
 
         // Return true if we are already connected.
         if ($this->_link !== false) {
@@ -449,6 +451,8 @@ class Net_LDAP2 extends PEAR
 
             // Try to set the configured LDAP version on the connection if LDAP
             // server needs that before binding (eg OpenLDAP).
+            // This could be necessary since rfc-1777 states that the protocol version
+            // has to be set at the bind request.
             // We use force here which means that the test in the rootDSE is skipped;
             // this is neccessary, because some strict LDAP servers only allow to
             // read the LDAP rootDSE (which tells us the supported protocol versions)
@@ -489,10 +493,11 @@ class Net_LDAP2 extends PEAR
             }
 
             // Set desired LDAP version if not successfully set before.
-            // This is to tell the server that we want to use
-            // a certain protocol version.
             // Here, a check against the rootDSE is performed, so we get a
             // error message if the server does not support the version.
+            // The rootDSE entry should tell us which LDAP versions are
+            // supported. However, some strict LDAP servers only allow
+            // bound suers to read the rootDSE.
             if (!$version_set) {
                 if (self::isError($msg = $this->setLDAPVersion())) {
                     $current_error           = $msg;

@@ -10,7 +10,7 @@
 * @author    Jan Wagner <wagner@netsols.de>
 * @copyright 2009 Jan Wagner
 * @license   http://www.gnu.org/copyleft/lesser.html LGPL
-* @version   CVS $Id$
+* @version   SVN: $Id$
 * @link      http://pear.php.net/package/Net_LDAP2/
 */
 

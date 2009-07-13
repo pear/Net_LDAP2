@@ -12,7 +12,7 @@
 * @author    Benedikt Hallinger <beni@php.net>
 * @copyright 2009 Tarjej Huse, Jan Wagner, Benedikt Hallinger
 * @license   http://www.gnu.org/copyleft/lesser.html LGPL
-* @version   CVS: $Id$
+* @version   SVN: $Id$
 * @link      http://pear.php.net/package/Net_LDAP2/
 */
 

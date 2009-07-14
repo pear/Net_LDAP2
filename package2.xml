@@ -37,6 +37,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
+	* Fixed bug #16438 (SimplefileSchemaCache could not be configured due to wrong var name)
     </notes>
 
     <contents>

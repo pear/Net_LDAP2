@@ -26,7 +26,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date></date>
+    <date>2009-07-14</date>
     <version>
         <release>2.0.5</release>
         <api>2.0.0</api>
@@ -37,7 +37,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
-	* Fixed bug #16438 (SimplefileSchemaCache could not be configured due to wrong var name)
+        * Fixed bug #16438 (SimplefileSchemaCache could not be configured due to wrong var name)
     </notes>
 
     <contents>

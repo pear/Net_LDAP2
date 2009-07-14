@@ -26,9 +26,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2009-07-14</date>
+    <date></date>
     <version>
-        <release>2.0.5</release>
+        <release>2.0.6</release>
         <api>2.0.0</api>
     </version>
     <stability>
@@ -37,7 +37,6 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPL License</license>
     <notes>
-        * Fixed bug #16438 (SimplefileSchemaCache could not be configured due to wrong var name)
     </notes>
 
     <contents>
@@ -665,6 +664,21 @@ http://pear.php.net/dtd/package-2.0.xsd">
             <license>LGPL License</license>
             <notes>
                 * Fixed Bug #16404 (Bind fails at OpenLDAP with protocol error)
+            </notes>
+        </release>
+        <release>
+            <date>2009-07-14</date>
+            <version>
+                <release>2.0.5</release>
+                <api>2.0.0</api>
+            </version>
+            <stability>
+                <release>stable</release>
+                <api>stable</api>
+            </stability>
+            <license>LGPL License</license>
+            <notes>
+                * Fixed bug #16438 (SimplefileSchemaCache could not be configured due to wrong var name)
             </notes>
         </release>
     </changelog>

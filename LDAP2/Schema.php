@@ -10,7 +10,7 @@
 * @author    Jan Wagner <wagner@netsols.de>
 * @author    Benedikt Hallinger <beni@php.net>
 * @copyright 2009 Jan Wagner, Benedikt Hallinger
-* @license   http://www.gnu.org/copyleft/lesser.html LGPL
+* @license   http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
 * @version   SVN: $Id$
 * @link      http://pear.php.net/package/Net_LDAP2/
 * @todo see the comment at the end of the file

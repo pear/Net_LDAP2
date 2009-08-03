@@ -14,4 +14,4 @@ Patches and comments are most welcome!
 Please submit them via PEARS Bug tracking feature or via mail
 to one of Net_LDAP2s developers. Use unified context diffs if possible!
 
-Tarjei
+The Net_LDAP2 Team

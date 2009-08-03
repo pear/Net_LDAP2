@@ -10,7 +10,7 @@
 * @author    Tarjej Huse <tarjei@bergfald.no>
 * @author    Benedikt Hallinger <beni@php.net>
 * @copyright 2009 Tarjej Huse, Benedikt Hallinger
-* @license   http://www.gnu.org/copyleft/lesser.html LGPL
+* @license   http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
 * @version   SVN: $Id$
 * @link      http://pear.php.net/package/Net_LDAP2/
 */

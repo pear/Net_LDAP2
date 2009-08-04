@@ -648,7 +648,9 @@ class Net_LDAP2_Entry extends PEAR
     *
     * The parameter has to an array of the following form:
     * array("attributename" => "single value",
-    *       "attribute2name" => array("value1", "value2"))
+    *       "attribute2name" => array("value1", "value2"),
+    *       "deleteme1" => null,
+    *       "deleteme2" => "")
     * If the attribute does not yet exist it will be added instead (see also $force).
     * If the attribue value is null, the attribute will de deleted.
     *
@@ -676,7 +678,10 @@ class Net_LDAP2_Entry extends PEAR
         foreach ($attr as $k => $v) {
             $k = $this->getAttrName($k);
             if (false == is_array($v)) {
-                // delete attributes with empty values
+                // delete attributes with empty values; treat ints as string
+                if (is_int($v)) {
+                    $v = "$v";
+                }
                 if ($v == null) {
                     $this->delete($k);
                     continue;

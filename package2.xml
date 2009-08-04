@@ -38,6 +38,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <license>LGPLv3 License</license>
     <notes>
         * switched LICENSE to LGPL v3
+        * added some documentation
     </notes>
 
     <contents>

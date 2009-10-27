@@ -81,9 +81,16 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
        $parsed_dmg5 = Net_LDAP2_Filter::parse('(&(filterpart>=ok)(part2=~ok)(filterpart3_notok---becauseinvalidoperator))');
        $this->assertType('PEAR_Error', $parsed_dmg5);
 
-       $parsed = Net_LDAP2_Filter::parse($this->filter_str);
-       $this->assertType('Net_LDAP2_Filter', $parsed);
-       $this->assertEquals($this->filter_str, $parsed->asString());
+       $parsed1 = Net_LDAP2_Filter::parse($this->filter_str);
+       $this->assertType('Net_LDAP2_Filter', $parsed1);
+       $this->assertEquals($this->filter_str, $parsed1->asString());
+
+       // To verify bug #16738 is fixed.
+       // In 2.0.6 there was a problem with the splitting of the filter parts if the next part was also an combined filter
+       $parsed2_str = "(&(&(objectClass=posixgroup)(objectClass=foogroup))(uniquemember=uid=eeggs,ou=people,o=foo))";
+       $parsed2 = Net_LDAP2_Filter::parse($parsed2_str);
+       $this->assertType('Net_LDAP2_Filter', $parsed2);
+       $this->assertEquals($parsed2_str, $parsed2->asString());
     }
 
 

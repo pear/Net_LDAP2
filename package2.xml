@@ -28,7 +28,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <!-- Information for this release -->
     <date></date>
     <version>
-        <release>2.0.7</release>
+        <release>2.0.8</release>
         <api>2.0.0</api>
     </version>
     <stability>
@@ -695,6 +695,21 @@ http://pear.php.net/dtd/package-2.0.xsd">
             <notes>
                 * switched LICENSE to LGPL v3
                 * added some documentation
+            </notes>
+        </release>
+        <release>
+            <date>2009-10-28</date>
+            <version>
+                <release>2.0.7</release>
+                <api>2.0.0</api>
+            </version>
+            <stability>
+                <release>stable</release>
+                <api>stable</api>
+            </stability>
+            <license>LGPLv3 License</license>
+            <notes>
+                * Corrected bug #16738 (Problem with Net_LDAP2_Filter::parse() with complex filter, when first subfilter was an combined filter too)
             </notes>
         </release>
     </changelog>

@@ -98,6 +98,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
             <pearinstaller>
                 <min>1.5.0</min>
             </pearinstaller>
+            <extension>
+                <name>ldap</name>
+            </extension>
         </required>
     </dependencies>
     <phprelease />

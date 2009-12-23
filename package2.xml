@@ -37,6 +37,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPLv3 License</license>
     <notes>
+	* Fixed Bug #16940 (Net_LDAP2::startTLS should ignore errors before ldap_start_tls() being called)
     </notes>
 
     <contents>

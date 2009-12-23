@@ -612,30 +612,47 @@ class Net_LDAP2 extends PEAR
     */
     public function startTLS()
     {
-        // Test to see if the server supports TLS first.
-        // This is done via testing the extensions offered by the server.
-        // The OID 1.3.6.1.4.1.1466.20037 tells us, if TLS is supported.
+        /* Test to see if the server supports TLS first.
+           This is done via testing the extensions offered by the server.
+           The OID 1.3.6.1.4.1.1466.20037 tells us, if TLS is supported.
+           Note, that not all servers allow to feth either the rootDSE or
+           attributes over an unencrypted channel, so we must ignore errors. */
         $rootDSE = $this->rootDse();
         if (self::isError($rootDSE)) {
-            return $this->raiseError("Unable to fetch rootDSE entry ".
-            "to see if TLS is supoported: ".$rootDSE->getMessage(), $rootDSE->getCode());
-        }
-
-        $supported_extensions = $rootDSE->getValue('supportedExtension');
-        if (self::isError($supported_extensions)) {
-            return $this->raiseError("Unable to fetch rootDSE attribute 'supportedExtension' ".
-            "to see if TLS is supoported: ".$supported_extensions->getMessage(), $supported_extensions->getCode());
-        }
-
-        if (in_array('1.3.6.1.4.1.1466.20037', $supported_extensions)) {
-            if (false === @ldap_start_tls($this->_link)) {
-                return $this->raiseError("TLS not started: " .
-                                        @ldap_error($this->_link),
-                                        @ldap_errno($this->_link));
-            }
-            return true;
+            /* IGNORE this error, because server may refuse fetching the
+               RootDSE over an unencrypted connection. */
+            //return $this->raiseError("Unable to fetch rootDSE entry ".
+            //"to see if TLS is supoported: ".$rootDSE->getMessage(), $rootDSE->getCode());
         } else {
-            return $this->raiseError("Server reports that it does not support TLS");
+            /* Fetch suceeded, see, if the server supports TLS. Again, we
+               ignore errors, because the server may refuse to return
+               attributes over unencryted connections. */
+            $supported_extensions = $rootDSE->getValue('supportedExtension');
+            if (self::isError($supported_extensions)) {
+                /* IGNORE error, because server may refuse attribute
+                   returning over an unencrypted connection. */
+                //return $this->raiseError("Unable to fetch rootDSE attribute 'supportedExtension' ".
+                //"to see if TLS is supoported: ".$supported_extensions->getMessage(), $supported_extensions->getCode());
+            } else {
+                // fetch succeedet, lets see if the server supports it.
+                // if not, then drop an error. If supported, then do nothing,
+                // because then we try to issue TLS afterwards.
+                if (!in_array('1.3.6.1.4.1.1466.20037', $supported_extensions)) {
+                    return $this->raiseError("Server reports that it does not support TLS.");
+                 }
+            }
+        }
+
+        // Try to establish TLS.
+        if (false === @ldap_start_tls($this->_link)) {
+            // Starting TLS failed. This may be an error, or because
+            // the server does not support it but did not enable us to
+            // detect that above.
+            return $this->raiseError("TLS could not be started: " .
+                                    @ldap_error($this->_link),
+                                    @ldap_errno($this->_link));
+        } else {
+            return true; // TLS is started now.
         }
     }
 

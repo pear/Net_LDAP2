@@ -689,13 +689,15 @@ class Net_LDAP2_LDIF extends PEAR
                             $datalines_read++;
                         } elseif (preg_match('/^\s(.+)$/', $data, $matches)) {
                             // wrapped data: unwrap if not in comment mode
+                            // note that the \s above is some more liberal than
+                            // the RFC requests as it also matches tabs etc.
                             if (!$commentmode) {
                                 if ($datalines_read == 0) {
                                     // first line of entry: wrapped data is illegal
                                     $this->dropError('Net_LDAP2_LDIF error: illegal wrapping at input line '.$this->_input_line, $this->_input_line);
                                 } else {
                                     $last                = array_pop($this->_lines_next);
-                                    $last                = $last.trim($matches[1]);
+                                    $last                = $last.$matches[1];
                                     $this->_lines_next[] = $last;
                                     $datalines_read++;
                                 }

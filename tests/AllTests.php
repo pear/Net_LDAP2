@@ -4,11 +4,9 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 // PHPUnit inlcudes
-require_once 'PHPUnit/Framework/TestSuite.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
 // Net_LDAP2 test suites includes
-chdir(dirname(__FILE__) . '/../');
 require_once 'Net_LDAP2_FilterTest.php';
 require_once 'Net_LDAP2_UtilTest.php';
 require_once 'Net_LDAP2Test.php';

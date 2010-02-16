@@ -20,9 +20,9 @@
   <email>beni@php.net</email>
   <active>yes</active>
  </lead>
- <date>2010-02-16</date>
+ <date>future</date>
  <version>
-  <release>2.0.8</release>
+  <release>2.0.9</release>
   <api>2.0.0</api>
  </version>
  <stability>
@@ -31,9 +31,6 @@
  </stability>
  <license>LGPLv3 License</license>
  <notes>
-* Fixed Bug #16940 (Net_LDAP2::startTLS should ignore errors before ldap_start_tls() being called)
-* Fixed Bug #17023 (improper handling of wrapped lines in LDIF files)
-* Fixed Bug #17057 (problem with parsing certain NOT-Filters)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
@@ -49,9 +46,9 @@
    <file baseinstalldir="Net" md5sum="7a4e60a718b46f1af26bcb5ed152fa0e" name="doc/examples/modify_entry2.php" role="doc" />
    <file baseinstalldir="Net" md5sum="9279cfaa392f216c745879bef5958862" name="doc/examples/schema_cache.php" role="doc" />
    <file baseinstalldir="Net" md5sum="c3f8c2de85caf3c5ff17e4b7d4dacc64" name="doc/examples/search_entries.php" role="doc" />
-   <file baseinstalldir="Net" md5sum="e6808e949c94287a8353aa6c8e01cbad" name="Net/LDAP2.php" role="php" />
+   <file baseinstalldir="Net" md5sum="23208fc7f088ae58ea76064b19700045" name="Net/LDAP2.php" role="php" />
    <file baseinstalldir="Net" md5sum="0eeb50d1377a190d52ef398ab46a0f09" name="Net/LDAP2/Entry.php" role="php" />
-   <file baseinstalldir="Net" md5sum="a47fbc910f962640e09546e592c65952" name="Net/LDAP2/Filter.php" role="php" />
+   <file baseinstalldir="Net" md5sum="7fb8c0a166ea6d5700027864d95f68cf" name="Net/LDAP2/Filter.php" role="php" />
    <file baseinstalldir="Net" md5sum="5aeee118d38b36ddf139e55e4cda88f8" name="Net/LDAP2/LDIF.php" role="php" />
    <file baseinstalldir="Net" md5sum="516f12c6c29882ebeb4e4468dc15b8b2" name="Net/LDAP2/RootDSE.php" role="php" />
    <file baseinstalldir="Net" md5sum="8f8af289fdfa2b1e7d93fb8b96b1a2ce" name="Net/LDAP2/Schema.php" role="php" />
@@ -64,7 +61,7 @@
    <file baseinstalldir="Net" md5sum="ccb1f94444301641296a93696d5c4684" name="tests/ldapldifconfig.ini.dist" role="test" />
    <file baseinstalldir="Net" md5sum="b1b3ff4218265f9cdfcc134429ed797e" name="tests/Net_LDAP2Test.php" role="test" />
    <file baseinstalldir="Net" md5sum="b685685ba3de34cb4ca1beb00d8d273f" name="tests/Net_LDAP2_EntryTest.php" role="test" />
-   <file baseinstalldir="Net" md5sum="2fe5da6d3a6590e667d5253defd280c5" name="tests/Net_LDAP2_FilterTest.php" role="test" />
+   <file baseinstalldir="Net" md5sum="67d62dd0387a9408f227878607a45277" name="tests/Net_LDAP2_FilterTest.php" role="test" />
    <file baseinstalldir="Net" md5sum="611bc5c89e2eb706ddcb36a6d3a96e85" name="tests/Net_LDAP2_LDIFTest.php" role="test" />
    <file baseinstalldir="Net" md5sum="cccb2dc78f8c512e2a94265460d7566d" name="tests/Net_LDAP2_RootDSETest.php" role="test" />
    <file baseinstalldir="Net" md5sum="69304a41c367ce060086fb194eb7940b" name="tests/Net_LDAP2_SearchTest.php" role="test" />
@@ -733,6 +730,23 @@ debug information.
    <notes>
 * Fixed Bug #16940 (Net_LDAP2::startTLS should ignore errors before ldap_start_tls() being called)
 * Fixed Bug #17023 (improper handling of wrapped lines in LDIF files)
+   </notes>
+  </release>
+  <release>
+   <date>2010-02-16</date>
+   <version>
+    <release>2.0.8</release>
+    <api>2.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license>LGPLv3 License</license>
+   <notes>
+* Fixed Bug #16940 (Net_LDAP2::startTLS should ignore errors before ldap_start_tls() being called)
+* Fixed Bug #17023 (improper handling of wrapped lines in LDIF files)
+* Fixed Bug #17057 (problem with parsing certain NOT-Filters)
    </notes>
   </release>
  </changelog>

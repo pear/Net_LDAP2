@@ -26,9 +26,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2010-02-16</date>
+    <date></date>
     <version>
-        <release>2.0.9</release>
+        <release>2.0.10</release>
         <api>2.0.0</api>
     </version>
     <stability>
@@ -37,7 +37,6 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPLv3 License</license>
     <notes>
-	* fixed package (package.xml was unclean so 2.0.8 wouldnt install)
     </notes>
 
     <contents>
@@ -750,6 +749,21 @@ debug information.
 * Fixed Bug #17023 (improper handling of wrapped lines in LDIF files)
 * Fixed Bug #17057 (problem with parsing certain NOT-Filters)
    </notes>
+  </release>
+  <release>
+    <date>2010-02-16</date>
+    <version>
+        <release>2.0.9</release>
+        <api>2.0.0</api>
+    </version>
+    <stability>
+        <release>stable</release>
+        <api>stable</api>
+    </stability>
+    <license>LGPLv3 License</license>
+    <notes>
+        * fixed package (package.xml was unclean so 2.0.8 wouldnt install)
+    </notes>
   </release>
  </changelog>
 </package>

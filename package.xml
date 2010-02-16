@@ -55,7 +55,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 <file name="SchemaCache.interface.php" role="php" />
                 <file name="SimpleFileSchemaCache.php" role="php" />
             </dir> <!-- /LDAP2 -->
-            <dir name="doc">
+          </dir> <!-- /Net -->
+          <dir name="doc">
                 <file name="manual.html" role="doc" />
                 <file name="README.txt" role="doc" />
                 <file name="RootDSE.txt" role="doc" />
@@ -68,8 +69,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 <file name="examples/modify_entry.php" role="doc" />
                 <file name="examples/modify_entry2.php" role="doc" />
                 <file name="examples/schema_cache.php" role="doc" />
-            </dir> <!-- /doc -->
-            <dir name="tests">
+          </dir> <!-- /doc -->
+          <dir name="tests">
                 <file name="AllTests.php" role="test" />
                 <file name="Net_LDAP2_EntryTest.php" role="test" />
                 <file name="Net_LDAP2_FilterTest.php" role="test" />
@@ -89,8 +90,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 <file name="ldif_data/unsorted_w50.ldif" role="test" />
                 <file name="ldif_data/unsorted_w50_WIN.ldif" role="test" />
                 <file name="ldif_data/changes.ldif" role="test" />
-            </dir> <!-- /tests -->
-          </dir> <!-- /Net -->
+          </dir> <!-- /tests -->
         </dir> <!-- / -->
     </contents>
     <dependencies>

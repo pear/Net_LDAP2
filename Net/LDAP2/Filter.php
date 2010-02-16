@@ -241,8 +241,13 @@ class Net_LDAP2_Filter extends PEAR
                     $filters = array($filter_o);
                 }
             } elseif (is_array($filters)) {
-                $err = PEAR::raiseError('Net_LDAP2_Filter combine error: operator is "not" but $filter is an array!');
-                return $err;
+                if (count($filters) != 1) {
+                    $err = PEAR::raiseError('Net_LDAP2_Filter combine error: operator is "not" but $filter is an array!');
+                    return $err;
+                } elseif (!($filters[0] instanceof Net_LDAP2_Filter)) {
+                     $err = PEAR::raiseError('Net_LDAP2_Filter combine error: operator is "not" but $filter is not a valid Net_LDAP2_Filter nor a filter string!');
+                     return $err;
+                }
             } else {
                 $err = PEAR::raiseError('Net_LDAP2_Filter combine error: operator is "not" but $filter is not a valid Net_LDAP2_Filter nor a filter string!');
                 return $err;

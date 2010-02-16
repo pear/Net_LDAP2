@@ -91,6 +91,19 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
        $parsed2 = Net_LDAP2_Filter::parse($parsed2_str);
        $this->assertType('Net_LDAP2_Filter', $parsed2);
        $this->assertEquals($parsed2_str, $parsed2->asString());
+
+        // To verify bug #17057 is fixed
+        // In 2.0.7 there was a problem parsing certain not-combined filter strings.
+       $parsed3_str = "(!(jpegPhoto=*))";
+       $parsed3    = Net_LDAP2_Filter::parse($parsed3_str);
+       $this->assertType('Net_LDAP2_Filter', $parsed3);
+       $this->assertEquals($parsed3_str, $parsed3->asString());
+
+       $parsed3_complex_str = "(&(someAttr=someValue)(!(jpegPhoto=*)))";
+       $parsed3_complex     = Net_LDAP2_Filter::parse($parsed3_complex_str);
+       $this->assertType('Net_LDAP2_Filter', $parsed3_complex);
+       $this->assertEquals($parsed3_complex_str, $parsed3_complex->asString());
+
     }
 
 

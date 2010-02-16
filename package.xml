@@ -26,7 +26,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date></date>
+    <date>2010-02-16</date>
     <version>
         <release>2.0.9</release>
         <api>2.0.0</api>
@@ -41,7 +41,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </notes>
 
     <contents>
-        <dir name="Net">
+        <dir name="/">
+	  <dir name="Net">
             <file name="LDAP2.php" role="php" />
             <dir name="LDAP2">
                 <file name="Entry.php" role="php" />
@@ -89,6 +90,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 <file name="ldif_data/unsorted_w50_WIN.ldif" role="test" />
                 <file name="ldif_data/changes.ldif" role="test" />
             </dir> <!-- /tests -->
+          </dir> <!-- /Net -->
         </dir> <!-- / -->
     </contents>
     <dependencies>

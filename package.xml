@@ -20,8 +20,7 @@
   <email>beni@php.net</email>
   <active>yes</active>
  </lead>
- <date>2010-02-12</date>
- <time>12:58:02</time>
+ <date>2010-02-16</date>
  <version>
   <release>2.0.8</release>
   <api>2.0.0</api>
@@ -34,6 +33,7 @@
  <notes>
 * Fixed Bug #16940 (Net_LDAP2::startTLS should ignore errors before ldap_start_tls() being called)
 * Fixed Bug #17023 (improper handling of wrapped lines in LDIF files)
+* Fixed Bug #17057 (problem with parsing certain NOT-Filters)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">

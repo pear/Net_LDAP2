@@ -42,52 +42,52 @@ http://pear.php.net/dtd/package-2.0.xsd">
 
     <contents>
         <dir name="Net">
-            <file baseinstalldir="Net" name="LDAP2.php" role="php" />
+            <file name="LDAP2.php" role="php" />
             <dir name="LDAP2">
-                <file baseinstalldir="Net" name="Entry.php" role="php" />
-                <file baseinstalldir="Net" name="Filter.php" role="php" />
-                <file baseinstalldir="Net" name="RootDSE.php" role="php" />
-                <file baseinstalldir="Net" name="Schema.php" role="php" />
-                <file baseinstalldir="Net" name="Search.php" role="php" />
-                <file baseinstalldir="Net" name="Util.php" role="php" />
-                <file baseinstalldir="Net" name="LDIF.php" role="php" />
-                <file baseinstalldir="Net" name="SchemaCache.interface.php" role="php" />
-                <file baseinstalldir="Net" name="SimpleFileSchemaCache.php" role="php" />
+                <file name="Entry.php" role="php" />
+                <file name="Filter.php" role="php" />
+                <file name="RootDSE.php" role="php" />
+                <file name="Schema.php" role="php" />
+                <file name="Search.php" role="php" />
+                <file name="Util.php" role="php" />
+                <file name="LDIF.php" role="php" />
+                <file name="SchemaCache.interface.php" role="php" />
+                <file name="SimpleFileSchemaCache.php" role="php" />
             </dir> <!-- /LDAP2 -->
             <dir name="doc">
-                <file baseinstalldir="Net" name="manual.html" role="doc" />
-                <file baseinstalldir="Net" name="README.txt" role="doc" />
-                <file baseinstalldir="Net" name="RootDSE.txt" role="doc" />
-                <file baseinstalldir="Net" name="Schema.txt" role="doc" />
-                <file baseinstalldir="Net" name="utf8.txt" role="doc" />
-                <file baseinstalldir="Net" name="examples/connecting.php" role="doc" />
-                <file baseinstalldir="Net" name="examples/fetch_entry.php" role="doc" />
-                <file baseinstalldir="Net" name="examples/search_entries.php" role="doc" />
-                <file baseinstalldir="Net" name="examples/add_entry.php" role="doc" />
-                <file baseinstalldir="Net" name="examples/modify_entry.php" role="doc" />
-                <file baseinstalldir="Net" name="examples/modify_entry2.php" role="doc" />
-                <file baseinstalldir="Net" name="examples/schema_cache.php" role="doc" />
+                <file name="manual.html" role="doc" />
+                <file name="README.txt" role="doc" />
+                <file name="RootDSE.txt" role="doc" />
+                <file name="Schema.txt" role="doc" />
+                <file name="utf8.txt" role="doc" />
+                <file name="examples/connecting.php" role="doc" />
+                <file name="examples/fetch_entry.php" role="doc" />
+                <file name="examples/search_entries.php" role="doc" />
+                <file name="examples/add_entry.php" role="doc" />
+                <file name="examples/modify_entry.php" role="doc" />
+                <file name="examples/modify_entry2.php" role="doc" />
+                <file name="examples/schema_cache.php" role="doc" />
             </dir> <!-- /doc -->
             <dir name="tests">
-                <file baseinstalldir="Net" name="AllTests.php" role="test" />
-                <file baseinstalldir="Net" name="Net_LDAP2_EntryTest.php" role="test" />
-                <file baseinstalldir="Net" name="Net_LDAP2_FilterTest.php" role="test" />
-                <file baseinstalldir="Net" name="Net_LDAP2_RootDSETest.php" role="test" />
-                <file baseinstalldir="Net" name="Net_LDAP2_SearchTest.php" role="test" />
-                <file baseinstalldir="Net" name="Net_LDAP2Test.php" role="test" />
-                <file baseinstalldir="Net" name="Net_LDAP2_UtilTest.php" role="test" />
-                <file baseinstalldir="Net" name="Net_LDAP2_LDIFTest.php" role="test" />
-                <file baseinstalldir="Net" name="ldapconfig.ini.dist" role="test" />
-                <file baseinstalldir="Net" name="ldapldifconfig.ini.dist" role="test" />
-                <file baseinstalldir="Net" name="ldif_data/malformed_encoding.ldif" role="test" />
-                <file baseinstalldir="Net" name="ldif_data/malformed_syntax.ldif" role="test" />
-                <file baseinstalldir="Net" name="ldif_data/malformed_wrapping.ldif" role="test" />
-                <file baseinstalldir="Net" name="ldif_data/sorted_w40.ldif" role="test" />
-                <file baseinstalldir="Net" name="ldif_data/sorted_w50.ldif" role="test" />
-                <file baseinstalldir="Net" name="ldif_data/unsorted_w30.ldif" role="test" />
-                <file baseinstalldir="Net" name="ldif_data/unsorted_w50.ldif" role="test" />
-                <file baseinstalldir="Net" name="ldif_data/unsorted_w50_WIN.ldif" role="test" />
-                <file baseinstalldir="Net" name="ldif_data/changes.ldif" role="test" />
+                <file name="AllTests.php" role="test" />
+                <file name="Net_LDAP2_EntryTest.php" role="test" />
+                <file name="Net_LDAP2_FilterTest.php" role="test" />
+                <file name="Net_LDAP2_RootDSETest.php" role="test" />
+                <file name="Net_LDAP2_SearchTest.php" role="test" />
+                <file name="Net_LDAP2Test.php" role="test" />
+                <file name="Net_LDAP2_UtilTest.php" role="test" />
+                <file name="Net_LDAP2_LDIFTest.php" role="test" />
+                <file name="ldapconfig.ini.dist" role="test" />
+                <file name="ldapldifconfig.ini.dist" role="test" />
+                <file name="ldif_data/malformed_encoding.ldif" role="test" />
+                <file name="ldif_data/malformed_syntax.ldif" role="test" />
+                <file name="ldif_data/malformed_wrapping.ldif" role="test" />
+                <file name="ldif_data/sorted_w40.ldif" role="test" />
+                <file name="ldif_data/sorted_w50.ldif" role="test" />
+                <file name="ldif_data/unsorted_w30.ldif" role="test" />
+                <file name="ldif_data/unsorted_w50.ldif" role="test" />
+                <file name="ldif_data/unsorted_w50_WIN.ldif" role="test" />
+                <file name="ldif_data/changes.ldif" role="test" />
             </dir> <!-- /tests -->
         </dir> <!-- / -->
     </contents>

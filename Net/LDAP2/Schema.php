@@ -168,12 +168,16 @@ class Net_LDAP2_Schema extends PEAR
                                 array('attributes' => array_values($schema_o->types),
                                         'scope' => 'base'));
         if (Net_LDAP2::isError($result)) {
-            return $result;
+            return PEAR::raiseError('Could not fetch Subschema entry: '.$result->getMessage());
         }
 
         $entry = $result->shiftEntry();
         if (!$entry instanceof Net_LDAP2_Entry) {
-            return PEAR::raiseError('Could not fetch Subschema entry');
+            if ($entry instanceof Net_LDAP2_Error) {
+				return PEAR::raiseError('Could not fetch Subschema entry: '.$entry->getMessage());
+			} else {
+				return PEAR::raiseError('Could not fetch Subschema entry (search returned '.$result->count().' entries. Check parameter \'basedn\')');
+			}
         }
 
         $schema_o->parse($entry);

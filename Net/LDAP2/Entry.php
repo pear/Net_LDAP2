@@ -474,8 +474,8 @@ class Net_LDAP2_Entry extends PEAR
             // If the attribute is not set at the entry, return an empty value,
             // because we do not know if the attribute can be set at the entry.
             // We can return NULL to indicate this.
-            if (!array_key_exists($attr, $this->_attributes[$attr])) {
-                return null;
+            if (!array_key_exists($attr, $this->_attributes)) {
+				return null;
             }
         }
 

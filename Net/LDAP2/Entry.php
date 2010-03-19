@@ -444,28 +444,42 @@ class Net_LDAP2_Entry extends PEAR
     * 'default': in all other cases an attribute value with a single value is
     *            returned as string, if it has multiple values it is returned
     *            as an array (without value count)
+    * If the objectClass attribute and a valid LDAP-Link is available at the
+    * entry, a schema chack is performed. Otherwise, if the requested attribute
+    * is not present at the entry, NULL is returned.
     *
-    * @param string $attr   Attribute name
-    * @param string $option Option
+    * @param string  $attr         Attribute name
+    * @param string  $option       Option
+    * @param boolean $schema_check If set to false, no schema check will be performed even if it would be possible.
     *
     * @access public
-    * @return string|array|PEAR_Error string, array or PEAR_Error
+    * @return string|array|PEAR_Error|null string, array, NULL or PEAR_Error
     */
-    public function getValue($attr, $option = null)
+    public function getValue($attr, $option = null, $schema_check = true)
     {
         $attr = $this->getAttrName($attr);
 
-        // This check is not entirely correct. If attributes are requested that are empty,
-        // they do not went into the _attributes array (since this attibute is not set at the entry)
-        // This check should be done against the schema, to see if the attribute
-        // is present at one of the entrys objectClasses.
-        // If this is the case, we can return 0, false or '' depending on the attributes syntax.
-        // If the attribute is not valid for this entries objectClass(es), we should drop the error below.
-        if (false == array_key_exists($attr, $this->_attributes)) {
-            //return PEAR::raiseError("Unknown attribute ($attr) requested");
-            return null;
+        // perform schema check if we are on LDAP and have the objectClass attribute available
+        if ($schema_check && $this->_ldap instanceof Net_LDAP2 && $this->exists('objectClass')) {
+            $schema       = $this->_ldap->schema();
+            $schema_attrs = array_keys($schema->getAll('attributes'));
+            // Todo: get attrs only for the entries OCLs! (currently its schema wide!)
+            foreach ($this->getAttrList() as $a) {
+                if (!in_array(strtolower($a), $schema_attrs)) {
+                    return PEAR::raiseError("Unknown attribute ($attr) requested (not defined in entries objectClass(es))!");
+                }
+            }
+        } else {
+            // No check possible or not wished:
+            // If the attribute is not set at the entry, return an empty value,
+            // because we do not know if the attribute can be set at the entry.
+            // We can return NULL to indicate this.
+            if (!array_key_exists($attr, $this->_attributes[$attr])) {
+                return null;
+            }
         }
 
+        // Get attribute values depending on $option
         $value = $this->_attributes[$attr];
 
         if ($option == "single" || (count($value) == 1 && $option != 'all')) {

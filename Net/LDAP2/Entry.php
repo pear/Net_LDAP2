@@ -419,6 +419,7 @@ class Net_LDAP2_Entry extends PEAR
     * The returned hash has the form
     * <code>array('attributename' => 'single value',
     *       'attributename' => array('value1', value2', value3'))</code>
+    * Only attributes present at the entry will be returned.
     *
     * @access public
     * @return array Hash of all attributes with their values
@@ -454,8 +455,15 @@ class Net_LDAP2_Entry extends PEAR
     {
         $attr = $this->getAttrName($attr);
 
+        // This check is not entirely correct. If attributes are requested that are empty,
+        // they do not went into the _attributes array (since this attibute is not set at the entry)
+        // This check should be done against the schema, to see if the attribute
+        // is present at one of the entrys objectClasses.
+        // If this is the case, we can return 0, false or '' depending on the attributes syntax.
+        // If the attribute is not valid for this entries objectClass(es), we should drop the error below.
         if (false == array_key_exists($attr, $this->_attributes)) {
-            return PEAR::raiseError("Unknown attribute ($attr) requested");
+            //return PEAR::raiseError("Unknown attribute ($attr) requested");
+            return null;
         }
 
         $value = $this->_attributes[$attr];

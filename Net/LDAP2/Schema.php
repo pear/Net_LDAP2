@@ -594,5 +594,29 @@ class Net_LDAP2_Schema extends PEAR
 
         return array('may' => $may, 'must' => $must);
     }
+
+    /**
+    * See if an attribute is available in a set of objectClasses
+    *
+    * @param string $attribute Attribute name or OID
+    * @param array $ocls       Names of OCLs to check for
+    *
+    * @return boolean TRUE, if the attribute is defined for at least one of the OCLs
+    */
+    public function checkAttribute($attribute, $ocls)
+    {
+        foreach ($ocls as $ocl) {
+            $ocl_entry = $this->get('objectclass', $ocl);
+            $ocl_may_attrs  = $this->may($ocl);
+            $ocl_must_attrs = $this->must($ocl);
+            if (is_array($ocl_may_attrs) && in_array($attribute, $ocl_may_attrs)) {
+                return true;
+            }
+            if (is_array($ocl_must_attrs) && in_array($attribute, $ocl_must_attrs)) {
+                return true;
+            }
+        }
+        return false; // no ocl for the ocls found.
+    }
 }
 ?>

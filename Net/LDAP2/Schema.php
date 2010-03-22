@@ -174,10 +174,10 @@ class Net_LDAP2_Schema extends PEAR
         $entry = $result->shiftEntry();
         if (!$entry instanceof Net_LDAP2_Entry) {
             if ($entry instanceof Net_LDAP2_Error) {
-				return PEAR::raiseError('Could not fetch Subschema entry: '.$entry->getMessage());
-			} else {
-				return PEAR::raiseError('Could not fetch Subschema entry (search returned '.$result->count().' entries. Check parameter \'basedn\')');
-			}
+                return PEAR::raiseError('Could not fetch Subschema entry: '.$entry->getMessage());
+            } else {
+                return PEAR::raiseError('Could not fetch Subschema entry (search returned '.$result->count().' entries. Check parameter \'basedn\')');
+            }
         }
 
         $schema_o->parse($entry);
@@ -187,7 +187,7 @@ class Net_LDAP2_Schema extends PEAR
     /**
     * Return a hash of entries for the given type
     *
-    * Returns a hash of entry for th givene type. Types may be:
+    * Returns a hash of entry for the givene type. Types may be:
     * objectclasses, attributes, ditcontentrules, ditstructurerules, matchingrules,
     * matchingruleuses, nameforms, syntaxes
     *
@@ -512,9 +512,87 @@ class Net_LDAP2_Schema extends PEAR
         return $return;
     }
 
-    // [TODO] add method that allows us to see to which objectclasses a certain attribute belongs to
-    // it should return the result structured, e.g. sorted in "may" and "must". Optionally it should
-    // be able to return it just "flat", e.g. array_merge()d.
-    // We could use get_all() to achieve this easily, i think
+    /**
+    * See if an schema element exists
+    *
+    * @param string $type Type of name, see get()
+    * @param string $name Name or OID
+    *
+    * @return boolean
+    */
+    public function exists($type, $name)
+    {
+        $entry = $this->get($type, $name);
+        if ($entry instanceof Net_LDAP2_ERROR) {
+                return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+    * See if an attribute is defined in the schema
+    *
+    * @param string $attribute Name or OID of the attribute
+    * @return boolean
+    */
+    public function attributeExists($attribute)
+    {
+        return $this->exists('attribute', $attribute);
+    }
+
+    /**
+    * See if an objectClass is defined in the schema
+    *
+    * @param string $ocl Name or OID of the objectClass
+    * @return boolean
+    */
+    public function objectClassExists($ocl)
+    {
+        return $this->exists('objectclass', $ocl);
+    }
+
+
+    /**
+    * See to which ObjectClasses an attribute is assigned
+    *
+    * The objectclasses are sorted into the keys 'may' and 'must'.
+    *
+    * @param string $attribute Name or OID of the attribute
+    *
+    * @return array|Net_LDAP2_Error Associative array with OCL names or Error
+    */
+    public function getAssignedOCLs($attribute)
+    {
+        $may  = array();
+        $must = array();
+
+        // Test if the attribute type is defined in the schema,
+        // if so, retrieve real name for lookups
+        $attr_entry = $this->get('attribute', $attribute);
+        if ($attr_entry instanceof Net_LDAP2_ERROR) {
+            return PEAR::raiseError("Attribute $attribute not defined in schema: ".$attr_entry->getMessage());
+        } else {
+            $attribute = $attr_entry['name'];
+        }
+
+
+        // We need to get all defined OCLs for this.
+        $ocls = $this->getAll('objectclasses');
+        foreach ($ocls as $ocl => $ocl_data) {
+            // Fetch the may and must attrs and see if our searched attr is contained.
+            // If so, record it in the corresponding array.
+            $ocl_may_attrs  = $this->may($ocl);
+            $ocl_must_attrs = $this->must($ocl);
+            if (is_array($ocl_may_attrs) && in_array($attribute, $ocl_may_attrs)) {
+                array_push($may, $ocl_data['name']);
+            }
+            if (is_array($ocl_must_attrs) && in_array($attribute, $ocl_must_attrs)) {
+                array_push($must, $ocl_data['name']);
+            }
+        }
+
+        return array('may' => $may, 'must' => $must);
+    }
 }
 ?>

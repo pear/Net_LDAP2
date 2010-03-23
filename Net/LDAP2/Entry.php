@@ -438,9 +438,8 @@ class Net_LDAP2_Entry extends PEAR
     *
     * The first parameter is the name of the attribute
     * The second parameter influences the way the value is returned:
-    * 'single': only the first value is returned as string
-    * 'all': all values including the value count are returned in an
-    *               array
+    * 'single':  only the first value is returned as string
+    * 'all':     all values including the value count are returned in an array
     * 'default': in all other cases an attribute value with a single value is
     *            returned as string, if it has multiple values it is returned
     *            as an array (without value count)
@@ -465,12 +464,12 @@ class Net_LDAP2_Entry extends PEAR
         // Users should do schema checks if they want to know if an attribute is
         // valid for an entrys OCLs.
         if (!array_key_exists($attr, $this->_attributes)) {
-            return '';
+            $value = array('');
+        } else {
+            $value = $this->_attributes[$attr];
         }
 
-        // Get attribute values depending on $option
-        $value = $this->_attributes[$attr];
-
+        // format the attribute values depending on $option
         if ($option == "single" || (count($value) == 1 && $option != 'all')) {
             $value = array_shift($value);
         }

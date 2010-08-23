@@ -18,7 +18,7 @@
 * Includes
 */
 require_once 'PEAR.php';
-require_once 'Util.php';
+require_once 'Net/LDAP2/Util.php';
 
 /**
 * Object representation of a part of a LDAP filter.

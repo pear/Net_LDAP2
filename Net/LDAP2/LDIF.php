@@ -556,10 +556,10 @@ class Net_LDAP2_LDIF extends PEAR
         $attributes = array();
         $dn = false;
         foreach ($lines as $line) {
-            if (preg_match('/^(\w+)(:|::|:<)\s(.+)$/', $line, $matches)) {
-                $attr  =& $matches[1];
-                $delim =& $matches[2];
-                $data  =& $matches[3];
+            if (preg_match('/^(\w+(;binary)?)(:|::|:<)\s(.+)$/', $line, $matches)) {
+                $attr  =& $matches[1] . $matches[2];
+                $delim =& $matches[3];
+                $data  =& $matches[4];
 
                 if ($delim == ':') {
                     // normal data
@@ -682,7 +682,7 @@ class Net_LDAP2_LDIF extends PEAR
                         if (preg_match('/^version:\s(.+)$/', $data, $match)) {
                             // version statement, set version
                             $this->version($match[1]);
-                        } elseif (preg_match('/^\w+::?\s.+$/', $data)) {
+                        } elseif (preg_match('/^\w+(;binary)?::?\s.+$/', $data)) {
                             // normal attribute: add line
                             $commentmode         = false;
                             $this->_lines_next[] = trim($data);

@@ -24,12 +24,12 @@ $changes = array(
     ),
     'replace' => array(
         'mail' => array('test1@example.org', 'test2@example.org')
-    )
+    ),
 
-    'delete' = array(
+    'delete' => array(
         'mail' => 'test2@example.org',
-        'telephoneNumber' => null     // the null value is important here, sincearray
-    )                                 //  mode (indexed, associative) is needed to be homogenous
+        'telephoneNumber' => null     // the null value is important here, since array
+    )                                 // mode (indexed, associative) is needed to be homogenous
 );
 
 // Now it is time to transfer the changes to the ldap

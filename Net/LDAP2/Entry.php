@@ -539,28 +539,32 @@ class Net_LDAP2_Entry extends PEAR
         if (false == is_array($attr)) {
             return PEAR::raiseError("Parameter must be an array");
         }
-        foreach ($attr as $k => $v) {
-            $k = $this->getAttrName($k);
-            if (false == is_array($v)) {
-                // Do not add empty values
-                if ($v == null) {
-                    continue;
-                } else {
-                    $v = array($v);
+        if ($this->isNew()) {
+            $this->setAttributes($attr);
+        } else {
+            foreach ($attr as $k => $v) {
+                $k = $this->getAttrName($k);
+                if (false == is_array($v)) {
+                    // Do not add empty values
+                    if ($v == null) {
+                        continue;
+                    } else {
+                        $v = array($v);
+                    }
                 }
+                // add new values to existing attribute or add new attribute
+                if ($this->exists($k)) {
+                    $this->_attributes[$k] = array_unique(array_merge($this->_attributes[$k], $v));
+                } else {
+                    $this->_map[strtolower($k)] = $k;
+                    $this->_attributes[$k]      = $v;
+                }
+                // save changes for update()
+                if (empty($this->_changes["add"][$k])) {
+                    $this->_changes["add"][$k] = array();
+                }
+                $this->_changes["add"][$k] = array_unique(array_merge($this->_changes["add"][$k], $v));
             }
-            // add new values to existing attribute or add new attribute
-            if ($this->exists($k)) {
-                $this->_attributes[$k] = array_unique(array_merge($this->_attributes[$k], $v));
-            } else {
-                $this->_map[strtolower($k)] = $k;
-                $this->_attributes[$k]      = $v;
-            }
-            // save changes for update()
-            if (empty($this->_changes["add"][$k])) {
-                $this->_changes["add"][$k] = array();
-            }
-            $this->_changes["add"][$k] = array_unique(array_merge($this->_changes["add"][$k], $v));
         }
         $return = true;
         return $return;

@@ -26,7 +26,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date></date>
+    <date>2011-01-19</date>
     <version>
         <release>2.0.11</release>
         <api>2.0.0</api>
@@ -37,6 +37,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPLv3 License</license>
     <notes>
+        * (doc issue) Fix for #17861: Missing komma in example
+        * Fix for #18202: Adding attributes to a Fresh Entry saving and laterly updating fails
     </notes>
 
     <contents>
@@ -767,22 +769,22 @@ debug information.
   </release>
   <release>
     <date>2010-08-23</date>
-    <version>
-        <release>2.0.10</release>
-        <api>2.0.0</api>
-    </version>
-    <stability>
-        <release>stable</release>
-        <api>stable</api>
-    </stability>
-    <license>LGPLv3 License</license>
-    <notes>
-        * Added schema handling methods to make schema checks more easily accessible
-        * Bugfix for #17245. The check in the code was not working properly. Schema checking is considered the users responsibility.
-          If now an attribute is requested that is not set at the entry, an empty string is returned.
-        * Bugfix for #17770. Some Net_LDAP2 files were included with relative path ("Util.php"), not absolute ("Net/LDAP2/Util.php").
-        * Bugfix for #17314. LDIF support for attributes with modifiers ("attr1;binary").
-    </notes>
+      <version>
+          <release>2.0.10</release>
+          <api>2.0.0</api>
+      </version>
+      <stability>
+          <release>stable</release>
+          <api>stable</api>
+      </stability>
+      <license>LGPLv3 License</license>
+      <notes>
+* Added schema handling methods to make schema checks more easily accessible
+* Bugfix for #17245. The check in the code was not working properly. Schema checking is considered the users responsibility.
+  If now an attribute is requested that is not set at the entry, an empty string is returned.
+* Bugfix for #17770. Some Net_LDAP2 files were included with relative path ("Util.php"), not absolute ("Net/LDAP2/Util.php").
+* Bugfix for #17314. LDIF support for attributes with modifiers ("attr1;binary").
+      </notes>
   </release>
  </changelog>
 </package>

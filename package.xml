@@ -26,9 +26,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>2011-01-19</date>
+    <date></date>
     <version>
-        <release>2.0.11</release>
+        <release>2.0.12</release>
         <api>2.0.0</api>
     </version>
     <stability>
@@ -37,10 +37,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPLv3 License</license>
     <notes>
-        * (doc issue) Fix for #17861: Missing komma in example
-        * Fix for #18202: Adding attributes to a Fresh Entry saving and laterly updating fails
     </notes>
-
     <contents>
         <dir name="/">
        <dir name="Net">
@@ -785,6 +782,22 @@ debug information.
 * Bugfix for #17770. Some Net_LDAP2 files were included with relative path ("Util.php"), not absolute ("Net/LDAP2/Util.php").
 * Bugfix for #17314. LDIF support for attributes with modifiers ("attr1;binary").
       </notes>
+  </release>
+  <release>
+    <date>2011-01-19</date>
+    <version>
+        <release>2.0.11</release>
+        <api>2.0.0</api>
+    </version>
+    <stability>
+        <release>stable</release>
+        <api>stable</api>
+    </stability>
+    <license>LGPLv3 License</license>
+    <notes>
+* (doc issue) Fix for #17861: Missing komma in example
+* Fix for #18202: Adding attributes to a Fresh Entry saving and laterly updating fails
+    </notes>
   </release>
  </changelog>
 </package>

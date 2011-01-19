@@ -878,6 +878,40 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $this->assertTrue(is_resource($ldap->getLink()));
         }
     }
+
+    /**
+    * Test for bug #18202: "Adding attributes to a Fresh Entry saving and laterly updating fails"
+    */
+    public function testEntryAddIsNotPersistent() {
+        if (!$this->ldapcfg) {
+            $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
+        } else {
+            $ldap =& $this->connect();
+
+            // setup test entry
+            $cn   = 'Net_LDAP2_Test_bug_18202';
+            $dn   = 'cn='.$cn.','.$this->ldapcfg['global']['server_base_dn'];
+            $data = array(
+                'objectClass' => array('top', 'inetOrgPerson'),
+                'givenName'   => 'bug 18202',
+                'sn'          => 'testentry',
+                'cn'          => $cn
+            );
+
+            // Test case
+            $entry = Net_LDAP2_Entry::createFresh($dn, $data);
+            $this->assertType('Net_LDAP2_Entry', $entry);
+            $this->assertTrue( $entry->add(array('uid' => 'Fu Bar')) );
+            $this->assertTrue( $ldap->add($entry) );
+            $this->assertTrue( $entry->replace(array('uid' => 'Foo Bar')) );
+            $this->assertTrue( $result = $entry->update() );
+    
+            // cleanup
+            $this->assertTrue($ldap->delete($entry),
+                    'Cleanup of test entry failed. Please remove manually: '.$entry->dn());
+        }
+    }
+
 }
 
 // Call Net_LDAP2Test::main() if this source file is executed directly.

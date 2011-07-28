@@ -12,8 +12,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
                 features but has some own too.
                  With Net_LDAP2 you have:
                  * A simple object-oriented interface to connections, searches entries and filters.
-                 * Support for tls and ldap v3.
-                 * Simple modification, deletion and creation of ldap entries.
+                 * Support for TLS and LDAP v3.
+                 * Simple modification, deletion and creation of LDAP entries.
                  * Support for schema handling.
 
                  Net_LDAP2 layers itself on top of PHP's existing ldap extensions.

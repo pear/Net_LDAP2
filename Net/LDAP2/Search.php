@@ -472,11 +472,11 @@ class Net_LDAP2_Search extends PEAR implements Iterator
         }
         // ldap_count_entries is slow (see pear bug #18752) with large results,
         // so we cache the result internally.
-        if ($this->count_cache === null) {
-            $this->count_cache = @ldap_count_entries($this->_link, $this->_search);
+        if ($this->_count_cache === null) {
+            $this->_count_cache = @ldap_count_entries($this->_link, $this->_search);
         }
 
-        return $this->count_cache;
+        return $this->_count_cache;
     }
 
     /**

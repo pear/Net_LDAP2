@@ -37,6 +37,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPLv3 License</license>
     <notes>
+        * inmproved performance with large search results
     </notes>
     <contents>
         <dir name="/">

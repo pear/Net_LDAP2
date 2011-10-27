@@ -26,7 +26,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date></date>
+    <date>2011-10-27</date>
     <version>
         <release>2.0.12</release>
         <api>2.0.0</api>
@@ -38,6 +38,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <license>LGPLv3 License</license>
     <notes>
         * inmproved performance with large search results
+        * Fixed some minor issues with Net_LDAP2_Filter and Net_LDAP2->dnExists()
+        * Added NOT filter to Net_LDAP2_Filter::create() so negating is more easily now
     </notes>
     <contents>
         <dir name="/">

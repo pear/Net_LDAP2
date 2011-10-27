@@ -1256,30 +1256,21 @@ class Net_LDAP2 extends PEAR
             return PEAR::raiseError('Parameter $dn is not a string nor an entry object!');
         }
 
-        // make dn relative to parent
-        $base = Net_LDAP2_Util::ldap_explode_dn($dn, array('casefold' => 'none', 'reverse' => false, 'onlyvalues' => false));
-        if (self::isError($base)) {
-            return $base;
-        }
-        $entry_rdn = array_shift($base);
-        if (is_array($entry_rdn)) {
-            // maybe the dn consist of a multivalued RDN, we must build the dn in this case
-            // because the $entry_rdn is an array!
-            $filter_dn = Net_LDAP2_Util::canonical_dn($entry_rdn);
-        }
-        $base = Net_LDAP2_Util::canonical_dn($base);
+        // search LDAP for that DN by performing a baselevel search for any
+        // object. We can only find the DN in question this way, or nothing.
+        $s_opts = array(
+            'scope'      => 'base',
+            'sizelimit'  => 1,
+            'attributes' => '1.1' // select no attrs
+        );
+        $search = $this->search($dn, '(objectClass=*)', $s_opts);
 
-        $result = @ldap_list($this->_link, $base, $entry_rdn, array(), 1, 1);
-        if (@ldap_count_entries($this->_link, $result)) {
-            return true;
+        if (self::isError($search)) {
+            return $search;
         }
-        if (ldap_errno($this->_link) == 32) {
-            return false;
-        }
-        if (ldap_errno($this->_link) != 0) {
-            return PEAR::raiseError(ldap_error($this->_link), ldap_errno($this->_link));
-        }
-        return false;
+
+        // retun wehter the DN exists; that is, we found an entry
+        return ($search->count() == 0)? false : true;
     }
 
 

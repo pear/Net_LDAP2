@@ -135,7 +135,7 @@ class Net_LDAP2_Filter extends PEAR
     *    - approx:         One of the attributes values is similar to $value
     *
     * Negation ("not") can be done by prepending the above operators with the
-    * "not" keyword, see example below. 
+    * "not" or "!" keyword, see example below. 
     *
     * If $escape is set to true (default) then $value will be escaped
     * properly. If it is set to false then $value will be treaten as raw filter value string.
@@ -182,6 +182,7 @@ class Net_LDAP2_Filter extends PEAR
         switch ($match) {
         case 'equals':
         case '=':
+        case '==':
             $leaf_filter->_filter = '(' . $attr_name . '=' . $value . ')';
             break;
         case 'begins':

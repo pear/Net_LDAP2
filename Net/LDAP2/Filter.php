@@ -134,6 +134,9 @@ class Net_LDAP2_Filter extends PEAR
     *    - lessOrEqual:    The attributes value is less or equal than $value
     *    - approx:         One of the attributes values is similar to $value
     *
+    * Negation ("not") can be done by prepending the above operators with the
+    * "not" keyword, see example below. 
+    *
     * If $escape is set to true (default) then $value will be escaped
     * properly. If it is set to false then $value will be treaten as raw filter value string.
     * You should escape yourself using {@link Net_LDAP2_Util::escape_filter_value()}!
@@ -141,10 +144,13 @@ class Net_LDAP2_Filter extends PEAR
     * Examples:
     * <code>
     *   // This will find entries that contain an attribute "sn" that ends with "foobar":
-    *   $filter = new Net_LDAP2_Filter('sn', 'ends', 'foobar');
+    *   $filter = Net_LDAP2_Filter::create('sn', 'ends', 'foobar');
     *
     *   // This will find entries that contain an attribute "sn" that has any value set:
-    *   $filter = new Net_LDAP2_Filter('sn', 'any');
+    *   $filter = Net_LDAP2_Filter::create('sn', 'any');
+    *
+    *   // This will build a negated equals filter:
+    *   $filter = Net_LDAP2_Filter::create('sn', 'not equals', 'foobar');
     * </code>
     *
     * @param string  $attr_name Name of the attribute the filter should apply to
@@ -161,8 +167,21 @@ class Net_LDAP2_Filter extends PEAR
             $array = Net_LDAP2_Util::escape_filter_value(array($value));
             $value = $array[0];
         }
-        switch (strtolower($match)) {
+
+        $match = strtolower($match);
+
+        // detect negation
+        $neg_matches   = array();
+        $negate_filter = false;
+        if (preg_match('/^(?:not|!)[\s_-](.+)/', $match, $neg_matches)) {
+            $negate_filter = true;
+            $match         = $neg_matches[1];
+        }
+
+        // build basic filter
+        switch ($match) {
         case 'equals':
+        case '=':
             $leaf_filter->_filter = '(' . $attr_name . '=' . $value . ')';
             break;
         case 'begins':
@@ -175,9 +194,11 @@ class Net_LDAP2_Filter extends PEAR
             $leaf_filter->_filter = '(' . $attr_name . '=*' . $value . '*)';
             break;
         case 'greater':
+        case '>':
             $leaf_filter->_filter = '(' . $attr_name . '>' . $value . ')';
             break;
         case 'less':
+        case '<':
             $leaf_filter->_filter = '(' . $attr_name . '<' . $value . ')';
             break;
         case 'greaterorequal':
@@ -199,6 +220,12 @@ class Net_LDAP2_Filter extends PEAR
         default:
             return PEAR::raiseError('Net_LDAP2_Filter create error: matching rule "' . $match . '" not known!');
         }
+        
+        // negate if requested
+        if ($negate_filter) {
+           $leaf_filter = Net_LDAP2_Filter::combine('!', $leaf_filter);
+        }
+
         return $leaf_filter;
     }
 
@@ -207,10 +234,10 @@ class Net_LDAP2_Filter extends PEAR
     *
     * This static method combines two or more filter objects and returns one single
     * filter object that contains all the others.
-    * Call this method statically: $filter = Net_LDAP2_Filter('or', array($filter1, $filter2))
+    * Call this method statically: $filter = Net_LDAP2_Filter::combine('or', array($filter1, $filter2))
     * If the array contains filter strings instead of filter objects, we will try to parse them.
     *
-    * @param string                 $log_op  The locicall operator. May be "and", "or", "not" or the subsequent logical equivalents "&", "|", "!"
+    * @param string                 $log_op  The locical operator. May be "and", "or", "not" or the subsequent logical equivalents "&", "|", "!"
     * @param array|Net_LDAP2_Filter $filters array with Net_LDAP2_Filter objects
     *
     * @return Net_LDAP2_Filter|Net_LDAP2_Error

@@ -117,6 +117,7 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
         $testval  = 'testval';
         $combinations = array(
             'equals'         => "/\($testattr=$testval\)/",
+            'equals'         => "/\($testattr=$testval\)/",
             'begins'         => "/\($testattr=$testval\*\)/",
             'ends'           => "/\($testattr=\*$testval\)/",
             'contains'       => "/\($testattr=\*$testval\*\)/",
@@ -127,7 +128,18 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
             'approx'         => "/\($testattr~=$testval\)/",
             'any'            => "/\($testattr=\*\)/"
         );
+        // generate negating tests with supported operator combinations
+        foreach ($combinations as $match => $regex) {
+            $regex = preg_replace('#^/|/$#', '', $regex); // treat regex, so we can extend it easily
+            $combinations['not '.$match] = "/\(!$regex\)/";
+            $combinations['not_'.$match] = "/\(!$regex\)/";
+            $combinations['not-'.$match] = "/\(!$regex\)/";
+            $combinations['! '.$match]   = "/\(!$regex\)/";
+            $combinations['!_'.$match]   = "/\(!$regex\)/";
+            $combinations['!-'.$match]   = "/\(!$regex\)/";
+        }
 
+        // perform tests
         foreach ($combinations as $match => $regex) {
             // escaping is tested in util class
             $filter = Net_LDAP2_Filter::create($testattr, $match, $testval, false);

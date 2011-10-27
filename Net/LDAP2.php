@@ -745,7 +745,7 @@ class Net_LDAP2 extends PEAR
                 // We have a failure.  What type?  We may be able to reconnect
                 // and try again.
                 $error_code = @ldap_errno($link);
-                $error_name = $this->errorMessage($error_code);
+                $error_name = Net_LDAP2::errorMessage($error_code);
 
                 if (($error_name === 'LDAP_OPERATIONS_ERROR') &&
                     ($this->_config['auto_reconnect'])) {
@@ -819,9 +819,9 @@ class Net_LDAP2 extends PEAR
                 // We have a failure.  What type?
                 // We may be able to reconnect and try again.
                 $error_code = @ldap_errno($link);
-                $error_name = $this->errorMessage($error_code);
+                $error_name = Net_LDAP2::errorMessage($error_code);
 
-                if (($this->errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
+                if ((Net_LDAP2::errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
                     ($this->_config['auto_reconnect'])) {
                     // The server has become disconnected before trying the
                     // operation.  We should try again, possibly with a 
@@ -915,9 +915,9 @@ class Net_LDAP2 extends PEAR
                         // We have a failure.  What type?  We may be able to reconnect
                         // and try again.
                         $error_code = $msg->getCode();
-                        $error_name = $this->errorMessage($error_code);
+                        $error_name = Net_LDAP2::errorMessage($error_code);
 
-                        if (($this->errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
+                        if ((Net_LDAP2::errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
                             ($this->_config['auto_reconnect'])) {
 
                             // The server has become disconnected before trying the
@@ -954,9 +954,9 @@ class Net_LDAP2 extends PEAR
                         // We have a failure.  What type?  We may be able to reconnect
                         // and try again.
                         $error_code = $msg->getCode();
-                        $error_name = $this->errorMessage($error_code);
+                        $error_name = Net_LDAP2::errorMessage($error_code);
 
-                        if (($this->errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
+                        if ((Net_LDAP2::errorMessage($error_code) === 'LDAP_OPERATIONS_ERROR') &&
                             ($this->_config['auto_reconnect'])) {
 
                             // The server has become disconnected before trying the
@@ -1095,14 +1095,14 @@ class Net_LDAP2 extends PEAR
                     return $obj = new Net_LDAP2_Search ($search, $this, $attributes);
                 } elseif ($err == 87) {
                     // bad search filter
-                    return $this->raiseError($this->errorMessage($err) . "($filter)", $err);
+                    return $this->raiseError(Net_LDAP2::errorMessage($err) . "($filter)", $err);
                 } elseif (($err == 1) && ($this->_config['auto_reconnect'])) {
                     // Errorcode 1 = LDAP_OPERATIONS_ERROR but we can try a reconnect.
                     $this->_link = false;
                     $this->performReconnect();
                 } else {
                     $msg = "\nParameters:\nBase: $base\nFilter: $filter\nScope: $scope";
-                    return $this->raiseError($this->errorMessage($err) . $msg, $err);
+                    return $this->raiseError(Net_LDAP2::errorMessage($err) . $msg, $err);
                 }
             } else {
                 return $obj = new Net_LDAP2_Search($search, $this, $attributes);
@@ -1131,7 +1131,7 @@ class Net_LDAP2 extends PEAR
                         $msg = @ldap_err2str($err);
                     } else {
                         $err = NET_LDAP2_ERROR;
-                        $msg = $this->errorMessage($err);
+                        $msg = Net_LDAP2::errorMessage($err);
                     }
                     return $this->raiseError($msg, $err);
                 }
@@ -1163,7 +1163,7 @@ class Net_LDAP2 extends PEAR
                         $msg = @ldap_err2str($err);
                     } else {
                         $err = NET_LDAP2_ERROR;
-                        $msg = $this->errorMessage($err);
+                        $msg = Net_LDAP2::errorMessage($err);
                     }
                     return $this->raiseError($msg, $err);
                 }
@@ -1408,7 +1408,7 @@ class Net_LDAP2 extends PEAR
     *
     * @return string The errorstring for the error.
     */
-    public function errorMessage($errorcode)
+    public static function errorMessage($errorcode)
     {
         $errorMessages = array(
                               0x00 => "LDAP_SUCCESS",

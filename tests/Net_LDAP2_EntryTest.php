@@ -104,7 +104,7 @@ class Net_LDAP2_EntryTest extends PHPUnit_Framework_TestCase {
                 'filter' => '(ou=*)',
             );
         $ldap = Net_LDAP2::connect($lcfg);
-        $this->assertType('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check credentials and host address. If those are correct, file a bug!');
+        $this->assertInstanceOf('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check credentials and host address. If those are correct, file a bug!');
         return $ldap;
     }
 
@@ -125,7 +125,7 @@ class Net_LDAP2_EntryTest extends PHPUnit_Framework_TestCase {
                 'attr2' => array('mv1', 'mv2')
                 )
         );
-        $this->assertType('Net_LDAP2_Entry', $t, 'Creating fresh entry failed but was supposed to succeed!');
+        $this->assertInstanceOf('Net_LDAP2_Entry', $t, 'Creating fresh entry failed but was supposed to succeed!');
     }
 
     /**

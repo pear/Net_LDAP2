@@ -102,7 +102,7 @@ class Net_LDAP2_SearchTest extends PHPUnit_Framework_TestCase {
                 'filter' => '(ou=*)',
             );
         $ldap = Net_LDAP2::connect($lcfg);
-        $this->assertType('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check credentials and host address. If those are correct, file a bug!');
+        $this->assertInstanceOf('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check credentials and host address. If those are correct, file a bug!');
         return $ldap;
     }
 
@@ -286,19 +286,19 @@ class Net_LDAP2_SearchTest extends PHPUnit_Framework_TestCase {
             * search and test each method
             */
             $search = $ldap->search(null, '(ou=Net_LDAP2*)');
-            $this->assertType('Net_LDAP2_Search', $search);
+            $this->assertInstanceOf('Net_LDAP2_Search', $search);
             $this->assertEquals(2, $search->count());
 
             // current() is supposed to return first valid element
             $e1 = $search->current();
-            $this->assertType('Net_LDAP2_Entry', $e1);
+            $this->assertInstanceOf('Net_LDAP2_Entry', $e1);
             $this->assertEquals($e1->dn(), $search->key());
             $this->assertTrue($search->valid());
 
             // shift to next entry
             $search->next();
             $e2 = $search->current();
-            $this->assertType('Net_LDAP2_Entry', $e2);
+            $this->assertInstanceOf('Net_LDAP2_Entry', $e2);
             $this->assertEquals($e2->dn(), $search->key());
             $this->assertTrue($search->valid());
 
@@ -312,14 +312,14 @@ class Net_LDAP2_SearchTest extends PHPUnit_Framework_TestCase {
             // which should return the first entry a second time
             $search->rewind();
             $e1_1 = $search->current();
-            $this->assertType('Net_LDAP2_Entry', $e1_1);
+            $this->assertInstanceOf('Net_LDAP2_Entry', $e1_1);
             $this->assertEquals($e1_1->dn(), $search->key());
             $this->assertTrue($search->valid());
             $this->assertEquals($e1->dn(), $e1_1->dn());
 
             // Dont rewind but call current, should return first entry again
             $e1_2 = $search->current();
-            $this->assertType('Net_LDAP2_Entry', $e1_2);
+            $this->assertInstanceOf('Net_LDAP2_Entry', $e1_2);
             $this->assertEquals($e1_2->dn(), $search->key());
             $this->assertTrue($search->valid());
             $this->assertEquals($e1->dn(), $e1_2->dn());
@@ -328,7 +328,7 @@ class Net_LDAP2_SearchTest extends PHPUnit_Framework_TestCase {
             // which should return the first entry a third time
             $search->rewind();
             $e1_3 = $search->current();
-            $this->assertType('Net_LDAP2_Entry', $e1_3);
+            $this->assertInstanceOf('Net_LDAP2_Entry', $e1_3);
             $this->assertEquals($e1_3->dn(), $search->key());
             $this->assertTrue($search->valid());
             $this->assertEquals($e1->dn(), $e1_3->dn());
@@ -337,7 +337,7 @@ class Net_LDAP2_SearchTest extends PHPUnit_Framework_TestCase {
             * Try methods on empty search result
             */
             $search = $ldap->search(null, '(ou=Net_LDAP2Test_NotExistentEntry)');
-            $this->assertType('Net_LDAP2_Search', $search);
+            $this->assertInstanceOf('Net_LDAP2_Search', $search);
             $this->assertEquals(0, $search->count());
             $this->assertFalse($search->current());
             $this->assertFalse($search->key());
@@ -352,7 +352,7 @@ class Net_LDAP2_SearchTest extends PHPUnit_Framework_TestCase {
             * then, rewind and do it again several times
             */
             $search2 = $ldap->search(null, '(ou=Net_LDAP2*)');
-            $this->assertType('Net_LDAP2_Search', $search2);
+            $this->assertInstanceOf('Net_LDAP2_Search', $search2);
             $this->assertEquals(2, $search2->count());
             for ($i = 0; $i <= 5; $i++) {
                 $counter = 0;
@@ -360,7 +360,7 @@ class Net_LDAP2_SearchTest extends PHPUnit_Framework_TestCase {
                     $counter++;
 
                     // check on type
-                    $this->assertType('Net_LDAP2_Entry', $entry);
+                    $this->assertInstanceOf('Net_LDAP2_Entry', $entry);
 
                     // check on key
                     $this->assertThat(strlen($dn), $this->greaterThan(1));

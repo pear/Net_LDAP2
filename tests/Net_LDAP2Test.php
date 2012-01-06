@@ -101,7 +101,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
                 'filter' => '(ou=*)',
             );
         $ldap = Net_LDAP2::connect($lcfg);
-        $this->assertType('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check credentials and host address. If those are correct, file a bug!');
+        $this->assertInstanceOf('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check credentials and host address. If those are correct, file a bug!');
         return $ldap;
     }
 
@@ -148,14 +148,14 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
                     'host' => 'pear.net-ldap.test.hostunknown.cno',
                 );
             $ldap = Net_LDAP2::connect($lcfg);
-            $this->assertType('Net_LDAP2_Error', $ldap, 'Connect succeeded but was supposed to fail!');
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap, 'Connect succeeded but was supposed to fail!');
 
             // Failing with multiple hosts
             $lcfg = array(
                     'host' => array('pear.net-ldap.test.hostunknown1.cno', 'pear.net-ldap.test.hostunknown2.cno'),
                 );
             $ldap = Net_LDAP2::connect($lcfg);
-            $this->assertType('Net_LDAP2_Error', $ldap, 'Connect succeeded but was supposed to fail!');
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap, 'Connect succeeded but was supposed to fail!');
 
             // Simple working connect and privilegued bind
             $ldap =& $this->connect();
@@ -171,7 +171,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
                     'bindpw' => $this->ldapcfg['global']['server_bindpw'],
                 );
             $ldap = Net_LDAP2::connect($lcfg);
-            $this->assertType('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check credentials and host address. If those are correct, file a bug!');
+            $this->assertInstanceOf('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check credentials and host address. If those are correct, file a bug!');
         }
     }
 
@@ -193,7 +193,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
                     'port'   => $this->ldapcfg['global']['server_port'],
                 );
             $ldap = Net_LDAP2::connect($lcfg);
-            $this->assertType('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check address and if server supports anonymous bind. If those are correct, file a bug!');
+            $this->assertInstanceOf('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check address and if server supports anonymous bind. If those are correct, file a bug!');
         } else {
             $this->markTestSkipped('Server does not support anonymous bind (see ldapconfig.ini). Skipping test.');
         }
@@ -220,7 +220,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
                     'starttls' => true
                 );
             $ldap = Net_LDAP2::connect();
-            $this->assertType('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check credentials and host address. If those are correct, file a bug!');
+            $this->assertInstanceOf('Net_LDAP2', $ldap, 'Connect failed but was supposed to work. Check credentials and host address. If those are correct, file a bug!');
         } else {
              $this->markTestSkipped('Server does not support TLS (see ldapconfig.ini). Skipping test.');
         }
@@ -245,7 +245,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
                     'sn'          => 'TestEntry'
                 )
             );
-            $this->assertType('Net_LDAP2_Entry', $fresh_entry);
+            $this->assertInstanceOf('Net_LDAP2_Entry', $fresh_entry);
             $this->assertTrue($ldap->add($fresh_entry));
 
             // Deleting this Entry
@@ -265,8 +265,8 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         } else {
             $ldap =& $this->connect();
             // some parameter checks
-            $this->assertType('Net_LDAP2_Error', $ldap->delete(1234));
-            $this->assertType('Net_LDAP2_Error', $ldap->delete($ldap));
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap->delete(1234));
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap->delete($ldap));
 
             // in order to test subtree deletion, we need some little tree
             // which we need to establish first
@@ -311,11 +311,11 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             // Tree established now. We can run some tests now :D
 
             // Try to delete some non existent entry inside that subtree (fails)
-            $this->assertType('Net_LDAP2_Error', $ldap->delete(
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap->delete(
                 'cn=not_existent,ou=test1,'.$testdn));
 
             // Try to delete main test ou without recursive set (fails too)
-            $this->assertType('Net_LDAP2_Error', $ldap->delete($testdn));
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap->delete($testdn));
 
             // Retry with subtree delete, this should work
             $this->assertTrue($ldap->delete($testdn, true));
@@ -372,7 +372,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $actual_entry = $ldap->getEntry($local_entry->dn(), array(
                 'objectClass', 'ou','postalAddress', 'street', 'telephoneNumber', 'postalcode',
                 'facsimileTelephoneNumber', 'l', 'businessCategory', 'description'));
-            $this->assertType('Net_LDAP2_Entry', $actual_entry);
+            $this->assertInstanceOf('Net_LDAP2_Entry', $actual_entry);
             $expected_attributes = array(
                 'objectClass' => array('top', 'organizationalUnit'),
                 'ou' => 'Net_LDAP2_Test_modify',
@@ -447,16 +447,16 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $res = $ldap->search(null, '(ou=Net_LDAP2*)',
                 array('attributes' => '1.1')
             );
-            $this->assertType('Net_LDAP2_Search', $res);
+            $this->assertInstanceOf('Net_LDAP2_Search', $res);
             $this->assertThat($res->count(), $this->greaterThanOrEqual(2));
 
             // Same, but with Net_LDAP2_Filter object
             $filtero = Net_LDAP2_Filter::create('ou', 'begins', 'Net_LDAP2');
-            $this->assertType('Net_LDAP2_Filter', $filtero);
+            $this->assertInstanceOf('Net_LDAP2_Filter', $filtero);
             $res = $ldap->search(null, $filtero,
                 array('attributes' => '1.1')
             );
-            $this->assertType('Net_LDAP2_Search', $res);
+            $this->assertInstanceOf('Net_LDAP2_Search', $res);
             $this->assertThat($res->count(), $this->greaterThanOrEqual(2));
 
             // Search using default filter for base-onelevel scope
@@ -464,7 +464,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $res = $ldap->search(null, null,
                 array('scope' => 'one', 'attributes' => '1.1')
             );
-            $this->assertType('Net_LDAP2_Search', $res);
+            $this->assertInstanceOf('Net_LDAP2_Search', $res);
             $this->assertThat($res->count(), $this->greaterThanOrEqual(2));
 
             // Base-search using custom base (string)
@@ -472,7 +472,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $res = $ldap->search($ou1->dn(), null,
                 array('scope' => 'base', 'attributes' => '1.1')
             );
-            $this->assertType('Net_LDAP2_Search', $res);
+            $this->assertInstanceOf('Net_LDAP2_Search', $res);
             $this->assertEquals(1, $res->count());
 
             // Search using custom base, this time using an entry object
@@ -481,7 +481,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $res = $ldap->search($ou1, '(ou=*)',
                 array('scope' => 'base', 'attributes' => '1.1')
             );
-            $this->assertType('Net_LDAP2_Search', $res);
+            $this->assertInstanceOf('Net_LDAP2_Search', $res);
             $this->assertEquals(1, $res->count());
 
             // Search using default filter for base-onelevel scope with sizelimit
@@ -490,7 +490,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $res = $ldap->search(null, null,
                 array('scope' => 'one', 'sizelimit' => 1, 'attributes' => '1.1')
             );
-            $this->assertType('Net_LDAP2_Search', $res);
+            $this->assertInstanceOf('Net_LDAP2_Search', $res);
             $this->assertEquals(1, $res->count());
             $this->assertTrue($res->sizeLimitExceeded()); // sizelimit should be exceeded now
 
@@ -498,30 +498,30 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $res = $ldap->search(null, 'somebadfilter',
                 array('attributes' => '1.1')
             );
-            $this->assertType('Net_LDAP2_Error', $res);
+            $this->assertInstanceOf('Net_LDAP2_Error', $res);
 
             // Bad base
             $res = $ldap->search('badbase', null,
                 array('attributes' => '1.1')
             );
-            $this->assertType('Net_LDAP2_Error', $res);
+            $this->assertInstanceOf('Net_LDAP2_Error', $res);
 
             // Passing Error object as base and as filter object
             $error = new Net_LDAP2_Error('Testerror');
             $res = $ldap->search($error, null, // error base
                 array('attributes' => '1.1')
             );
-            $this->assertType('Net_LDAP2_Error', $res);
+            $this->assertInstanceOf('Net_LDAP2_Error', $res);
             $res = $ldap->search(null, $error, // error filter
                 array('attributes' => '1.1')
             );
-            $this->assertType('Net_LDAP2_Error', $res);
+            $this->assertInstanceOf('Net_LDAP2_Error', $res);
 
             // Nullresult
             $res = $ldap->search(null, '(cn=nevermatching_filter)',
                 array('scope' => 'base', 'attributes' => '1.1')
             );
-            $this->assertType('Net_LDAP2_Search', $res);
+            $this->assertInstanceOf('Net_LDAP2_Search', $res);
             $this->assertEquals(0, $res->count());
 
 
@@ -601,11 +601,11 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $this->assertFalse($ldap->dnExists($ou1));
 
             // Passing an float instead of a string
-            $this->assertType('Net_LDAP2_Error', $ldap->dnExists(1.234));
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap->dnExists(1.234));
 
             // Pasing an error object
             $error = new Net_LDAP2_Error('Testerror');
-            $this->assertType('Net_LDAP2_Error', $ldap->dnExists($error));
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap->dnExists($error));
         }
     }
 
@@ -620,10 +620,10 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $dn   = $this->ldapcfg['test']['existing_entry'].','.$this->ldapcfg['global']['server_base_dn'];
 
             // existing DN
-            $this->assertType('Net_LDAP2_Entry', $ldap->getEntry($dn), "$dn was supposed to be found. Please check your ldapconfig.ini!");
+            $this->assertInstanceOf('Net_LDAP2_Entry', $ldap->getEntry($dn), "$dn was supposed to be found. Please check your ldapconfig.ini!");
 
             // Not existing DN
-            $this->assertType('Net_LDAP2_Error',
+            $this->assertInstanceOf('Net_LDAP2_Error',
                 $ldap->getEntry('cn=notexistent,'.$this->ldapcfg['global']['server_base_dn']));
         }
     }
@@ -713,18 +713,18 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $this->assertTrue($ldap2->dnExists($ou_1_l1->dn()));
 
             // Try to move over an existing entry
-             $this->assertType('Net_LDAP2_Error', $ldap->move($ou_2, $ou_3->dn(), $ldap2));
+             $this->assertInstanceOf('Net_LDAP2_Error', $ldap->move($ou_2, $ou_3->dn(), $ldap2));
 
             // Try cross directory move without providing an valid entry but a DN
-            $this->assertType('Net_LDAP2_Error',
+            $this->assertInstanceOf('Net_LDAP2_Error',
                 $ldap->move($ou_1_l1->dn(), 'l=movedcrossdir2,'.$ou_2->dn(), $ldap2));
 
             // Try passing an invalid entry object
-            $this->assertType('Net_LDAP2_Error',
+            $this->assertInstanceOf('Net_LDAP2_Error',
                 $ldap->move($ldap, 'l=move_item,'.$ou_2->dn()));
 
             // Try passing an invalid ldap object
-            $this->assertType('Net_LDAP2_Error',
+            $this->assertInstanceOf('Net_LDAP2_Error',
                 $ldap->move($ou_1_l1, 'l=move_item,'.$ou_2->dn(), $ou_1));
 
             // cleanup test tree
@@ -768,13 +768,13 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
 
             // copy over the entry to another tree with rename
             $entrycp = $ldap->copy($entry, 'l=test_copied,'.$ou2->dn());
-            $this->assertType('Net_LDAP2_Entry', $entrycp);
+            $this->assertInstanceOf('Net_LDAP2_Entry', $entrycp);
             $this->assertNotEquals($entry->dn(), $entrycp->dn());
             $this->assertTrue($ldap->dnExists($entrycp->dn()));
 
             // copy same again (fails, entry exists)
             $entrycp_f = $ldap->copy($entry, 'l=test_copied,'.$ou2->dn());
-            $this->assertType('Net_LDAP2_Error', $entrycp_f);
+            $this->assertInstanceOf('Net_LDAP2_Error', $entrycp_f);
 
             // use only DNs to copy (fails)
             $entrycp = $ldap->copy($entry->dn(), 'l=test_copied2,'.$ou2->dn());
@@ -806,7 +806,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
             $ldap =& $this->connect();
-            $this->assertType('Net_LDAP2_RootDSE', $ldap->rootDSE());
+            $this->assertInstanceOf('Net_LDAP2_RootDSE', $ldap->rootDSE());
         }
     }
 
@@ -818,7 +818,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
             $ldap =& $this->connect();
-            $this->assertType('Net_LDAP2_Schema', $ldap->schema());
+            $this->assertInstanceOf('Net_LDAP2_Schema', $ldap->schema());
         }
     }
 
@@ -837,8 +837,8 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $this->assertEquals($no_utf8, $ldap->utf8Encode($no_utf8));
 
             // wrong parameter
-            $this->assertType('Net_LDAP2_Error', $ldap->utf8Encode('foobar'));
-            $this->assertType('Net_LDAP2_Error', $ldap->utf8Encode(array('foobar')));
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap->utf8Encode('foobar'));
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap->utf8Encode(array('foobar')));
         }
     }
 
@@ -852,7 +852,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $ldap  =& $this->connect();
             $entry = $ldap->getEntry($this->ldapcfg['test']['existing_entry'].','.$this->ldapcfg['global']['server_base_dn'],
                 array($this->ldapcfg['test']['utf8_attr'], $this->ldapcfg['test']['noutf8_attr']));
-            $this->assertType('Net_LDAP2_Entry', $entry, 'Unable to fetch test entry, check ldapconfig.ini');
+            $this->assertInstanceOf('Net_LDAP2_Entry', $entry, 'Unable to fetch test entry, check ldapconfig.ini');
             $raw_utf8 = array($this->ldapcfg['test']['utf8_attr'] => $entry->getValue($this->ldapcfg['test']['utf8_attr'], 'single'));
             $this->assertTrue(is_string($raw_utf8[$this->ldapcfg['test']['utf8_attr']]));
             $no_utf8  = array($this->ldapcfg['test']['noutf8_attr'] => $entry->getValue($this->ldapcfg['test']['noutf8_attr'], 'single'));
@@ -862,8 +862,8 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $this->assertEquals($no_utf8, $ldap->utf8Decode($no_utf8));
 
             // wrong parameter
-            $this->assertType('Net_LDAP2_Error', $ldap->utf8Decode('foobar'));
-            $this->assertType('Net_LDAP2_Error', $ldap->utf8Decode(array('foobar')));
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap->utf8Decode('foobar'));
+            $this->assertInstanceOf('Net_LDAP2_Error', $ldap->utf8Decode(array('foobar')));
         }
     }
 
@@ -900,7 +900,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
 
             // Test case
             $entry = Net_LDAP2_Entry::createFresh($dn, $data);
-            $this->assertType('Net_LDAP2_Entry', $entry);
+            $this->assertInstanceOf('Net_LDAP2_Entry', $entry);
             $this->assertTrue( $entry->add(array('uid' => 'Fu Bar')) );
             $this->assertTrue( $ldap->add($entry) );
             $this->assertTrue( $entry->replace(array('uid' => 'Foo Bar')) );

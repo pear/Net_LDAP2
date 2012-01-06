@@ -4,16 +4,17 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 // PHPUnit inlcudes
-require_once 'PHPUnit/TextUI/TestRunner.php';
+require_once 'PHPUnit/Autoload.php';
 
 // Net_LDAP2 test suites includes
-require_once 'Net_LDAP2_FilterTest.php';
-require_once 'Net_LDAP2_UtilTest.php';
-require_once 'Net_LDAP2Test.php';
-require_once 'Net_LDAP2_EntryTest.php';
-require_once 'Net_LDAP2_RootDSETest.php';
-require_once 'Net_LDAP2_SearchTest.php';
-require_once 'Net_LDAP2_LDIFTest.php';
+$dir = dirname(__FILE__);
+require_once "$dir/Net_LDAP2_FilterTest.php";
+require_once "$dir/Net_LDAP2_UtilTest.php";
+require_once "$dir/Net_LDAP2Test.php";
+require_once "$dir/Net_LDAP2_EntryTest.php";
+require_once "$dir/Net_LDAP2_RootDSETest.php";
+require_once "$dir/Net_LDAP2_SearchTest.php";
+require_once "$dir/Net_LDAP2_LDIFTest.php";
 
 class Net_LDAP2_AllTests
 {

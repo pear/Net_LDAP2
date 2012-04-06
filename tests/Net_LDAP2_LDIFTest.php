@@ -427,14 +427,14 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
 
         /*
         * no changes should produce empty file
-        */
+
         $ldif = new Net_LDAP2_LDIF($this->outfile, 'w', $testconf);
         $this->assertTrue(is_resource($ldif->handle()));
         $ldif->write_entry($testentries);
         $this->assertFalse((boolean)$ldif->error(), 'Failed writing entry to '.$this->outfile.': '.$ldif->error(true));
         $ldif->done();
         $this->assertEquals(array(), file($this->outfile));
-
+        */
         /*
         * changes test
         */

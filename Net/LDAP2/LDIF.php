@@ -340,6 +340,7 @@ class Net_LDAP2_LDIF extends PEAR
                                            + count($entry_attrs_changes['replace'])
                                            + count($entry_attrs_changes['delete']);
 
+
                     $is_changed = ($num_of_changes > 0 || $entry->willBeDeleted() || $entry->willBeMoved());
 
                     // write version if not done yet

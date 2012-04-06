@@ -468,7 +468,7 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
         // strip 4 starting lines because of comments in the file header:
         array_shift($expected);array_shift($expected);
         array_shift($expected);array_shift($expected);
-        $this->assertEquals($expected, file($this->outfile));
+        $this->assertEquals(implode("", $expected), file_get_contents($this->outfile));
     }
 
     /**

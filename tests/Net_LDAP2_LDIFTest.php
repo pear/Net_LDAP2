@@ -43,7 +43,7 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
     * @var string
     */
     var $testentries_data = array(
-        'cn=test1,ou=example,dc=cno' => array(
+        'cn=test1,ou=example,dc=com' => array(
             'cn'    => 'test1',
             'attr3' => array('foo', 'bar'),
             'attr1' => 12345,
@@ -51,7 +51,7 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
             'objectclass' => 'oc1',
             'attr2' => array('1234', 'baz')),
 
-        'cn=test blabla,ou=example,dc=cno' => array(
+        'cn=test blabla,ou=example,dc=com' => array(
             'cn'    => 'test blabla',
             'attr3' => array('foo', 'bar'),
             'attr1' => 12345,
@@ -60,7 +60,7 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
             'attr2' => array('1234', 'baz'),
             'verylong' => 'fhu08rhvt7b478vt5hv78h45nfgt45h78t34hhhhhhhhhv5bg8h6ttttttttt3489t57nhvgh4788trhg8999vnhtgthgui65hgb5789thvngwr789cghm738'),
 
-        'cn=test צהü,ou=example,dc=cno' => array(
+        'cn=test צהü,ou=example,dc=com' => array(
             'cn'    => 'test צהü',
             'attr3' => array('foo', 'bar'),
             'attr1' => 12345,
@@ -70,7 +70,7 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
             'attr5' => 'endspace ',
             'attr6' => ':badinitchar'),
 
-        ':cn=endspace,dc=cno ' => array(
+        ':cn=endspace,dc=com ' => array(
             'cn'    => 'endspace')
     );
 
@@ -419,8 +419,8 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
      */
     public function testWrite_entryChanges() {
         $testentries = $this->testentries;
-        $testentries[] = Net_LDAP2_Entry::createFresh('cn=foo,ou=example,dc=cno', array('cn' => 'foo'));
-        $testentries[] = Net_LDAP2_Entry::createFresh('cn=footest,ou=example,dc=cno', array('cn' => 'foo'));
+        $testentries[] = Net_LDAP2_Entry::createFresh('cn=foo,ou=example,dc=com', array('cn' => 'foo'));
+        $testentries[] = Net_LDAP2_Entry::createFresh('cn=footest,ou=example,dc=com', array('cn' => 'foo'));
 
         $testconf = $this->defaultConfig;
         $testconf['change'] = 1;
@@ -453,8 +453,8 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
         $testentries[3]->delete();
 
         // rename and move
-        $testentries[4]->dn('cn=Bar,ou=example,dc=cno');
-        $testentries[5]->dn('cn=foobartest,ou=newexample,dc=cno');
+        $testentries[4]->dn('cn=Bar,ou=example,dc=com');
+        $testentries[5]->dn('cn=foobartest,ou=newexample,dc=com');
 
         // carry out write
         $ldif = new Net_LDAP2_LDIF($this->outfile, 'w', $testconf);

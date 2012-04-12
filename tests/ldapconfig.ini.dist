@@ -25,7 +25,7 @@
 [global]
 server_cap_tls       = false
 server_cap_anonymous = true
-server_base_dn       = "ou=example,dc=cno"
+server_base_dn       = "ou=example,dc=com"
 server_address       = localhost
 server_port          = 389
 server_binddn        = "cn=admin"
@@ -46,6 +46,6 @@ existing_entry  = "cn=existing"
 existing_attrs  = sn
 existing_attrsv = testentry
 existing_attrm  = mail
-existing_attrmv = "test.entry@example.cno|te@example.cno"
+existing_attrmv = "test.entry@example.com|te@example.com"
 utf8_attr       = ou
 noutf8_attr     = givenName

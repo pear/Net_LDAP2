@@ -27,13 +27,21 @@ THE GUIDE
 =========
 
 1. Install and configure OpenLDAP
- - base:           dc=example,dc=cno
- - admin-dn:       cn=admin,dc=example,dc=cno
+Config:
+ - base:           dc=example,dc=com
+ - admin:          admin (will map to cn=admin,dc=example,dc=com)
  - admin-password: test
 
-2. import basic data
+Needed schemas: core, inetorgperson
+Note that the core schema is usually already present and you have good chances
+that the inetorgperson one is there too.
+You can apply the schema ldifs after the initial install of openldap with ldapadd:
+  Net_LDAP2/trunk/tests$  ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/inetorgperson.ldif
+
+
+2. Import basic Ner_LDAP2 test data
 Net_LDAP2 provides an basic LDIF file that maps to the test cases initial config:
-  Net_LDAP2/trunk/tests$ ldapadd -D cn=admin,dc=example,dc=cno -W -H ldapi:/// -f ldif_data/INITIAL_TESTDATA.ldif
+  Net_LDAP2/trunk/tests$ ldapadd -D cn=admin,dc=example,dc=com -W -H ldapi:/// -f ldif_data/INITIAL_TESTDATA.ldif
 
 3. configure test suite
 Copy the default config to a real one:

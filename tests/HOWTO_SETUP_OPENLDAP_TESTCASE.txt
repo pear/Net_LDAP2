@@ -1,0 +1,43 @@
++----------------------------------------+
+| Howto for a OpenLDAP based test server |
++----------------------------------------+
+
+
+PREFACE
+=======
+
+This file describes briefly, how you can set up an OpenLDAP-based
+test server where you can run the tests on.
+The test cases and ini-files match this guide, so after following it,
+you can readily start to run all tests out of the box.
+
+ /!\  DO NOT DO THIS ON A PRODUCTION MACHINE OR  /!\
+ /!\       ONE CONNECTED TO THE INTERNET         /!\
+
+If you already have a test server in place, then:
+ - You don't need to install or configure OpenLDAP
+ - Adjust the DN in Net_LDAP2/trunk/tests/ldif_data/INITIAL_TESTDATA.ldif
+   to match your tree
+ - Adjust your ldapconfig.ini to match your servers setup
+
+
+
+
+THE GUIDE
+=========
+
+1. Install and configure OpenLDAP
+ - base:           dc=example,dc=cno
+ - admin-dn:       cn=admin,dc=example,dc=cno
+ - admin-password: test
+
+2. import basic data
+Net_LDAP2 provides an basic LDIF file that maps to the test cases initial config:
+  Net_LDAP2/trunk/tests$ ldapadd -D cn=admin,dc=example,dc=cno -W -H ldapi:/// -f ldif_data/INITIAL_TESTDATA.ldif
+
+3. configure test suite
+Copy the default config to a real one:
+  Net_LDAP2/trunk/tests$ cp ldapconfig.ini.dist ldapconfig.ini
+
+4. run the tests
+

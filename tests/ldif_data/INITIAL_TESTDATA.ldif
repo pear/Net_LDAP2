@@ -1,0 +1,13 @@
+dn: cn=existing,dc=example,dc=cno
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: existing
+sn: testentry
+mail: test.entry@example.cno
+mail: te@example.cno
+ou:: UGFsbcO2
+givenName: i am
+description: A test entry for PEAR::Net_LDAP2
+

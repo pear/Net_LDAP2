@@ -28,8 +28,8 @@ server_cap_anonymous = true
 server_base_dn       = "ou=example,dc=cno"
 server_address       = localhost
 server_port          = 389
-server_binddn        = "cn=testuser"
-server_bindpw        = testpass
+server_binddn        = "cn=admin"
+server_bindpw        = test
 
 
 ; Definitions for the tests. Adjust to suit the needs of your test server.
@@ -43,9 +43,9 @@ server_bindpw        = testpass
 ;   noutf8_attr:     Name of attribute without UTF8 value
 [test]
 existing_entry  = "cn=existing"
-existing_attrs  = attr1
-existing_attrsv = 12345
-existing_attrm  = attr2
-existing_attrmv = "1234|baz"
-utf8_attr       = attr4
-noutf8_attr     = attr1
+existing_attrs  = sn
+existing_attrsv = testentry
+existing_attrm  = mail
+existing_attrmv = "test.entry@example.cno|te@example.cno"
+utf8_attr       = ou
+noutf8_attr     = givenName

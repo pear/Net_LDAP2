@@ -81,8 +81,11 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
        $parsed_dmg5 = Net_LDAP2_Filter::parse('(&(filterpart>=ok)(part2=~ok)(filterpart3_notok---becauseinvalidoperator))');
        $this->assertInstanceOf('PEAR_Error', $parsed_dmg5);
 
-       $parsed_dmg6 = Net_LDAP2_Filter::parse('(|(invalid-because-too-many-close-parens=x)(a=c)))');
+       // To verify bug #19364 is fixed
+       $parsed_dmg6 = Net_LDAP2_Filter::parse('(|((invalid-because-too-many-open-parens=x)(a=c))');
        $this->assertInstanceOf('PEAR_Error', $parsed_dmg6);
+       $parsed_dmg7 = Net_LDAP2_Filter::parse('(|(invalid-because-too-many-close-parens=x)(a=c)))');
+       $this->assertInstanceOf('PEAR_Error', $parsed_dmg7);
 
        $parsed1 = Net_LDAP2_Filter::parse($this->filter_str);
        $this->assertInstanceOf('Net_LDAP2_Filter', $parsed1);

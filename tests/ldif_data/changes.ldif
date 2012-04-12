@@ -3,7 +3,7 @@
 #
 #
 version: 1
-dn: cn=test1,ou=example,dc=cno
+dn: cn=test1,ou=example,dc=com
 changetype: modify
 delete: attr1
 -
@@ -13,7 +13,7 @@ attr2: baz
 delete: attr4
 -
 
-dn:: Y249dGVzdCD25Pwsb3U9ZXhhbXBsZSxkYz1jbm8=
+dn:: Y249dGVzdCD25Pwsb3U9ZXhhbXBsZSxkYz1jb20= 
 changetype: modify
 add: newattr
 newattr: foo
@@ -28,17 +28,17 @@ attr2: newvalue1for2
 attr2: newvalue2for2
 -
 
-dn:: OmNuPWVuZHNwYWNlLGRjPWNubyA=
+dn:: OmNuPWVuZHNwYWNlLGRjPWNvbSA=
 changetype: delete
 
-dn: cn=foo,ou=example,dc=cno
+dn: cn=foo,ou=example,dc=com
 changetype: modrdn
 newrdn: cn=Bar
 deleteoldrdn: 1
 
-dn: cn=footest,ou=example,dc=cno
+dn: cn=footest,ou=example,dc=com
 changetype: modrdn
 newrdn: cn=foobartest
 deleteoldrdn: 1
-newsuperior: ou=newexample,dc=cno
+newsuperior: ou=newexample,dc=com
 

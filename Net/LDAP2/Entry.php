@@ -309,7 +309,7 @@ class Net_LDAP2_Entry extends PEAR
     public function dn($dn = null)
     {
         if (false == is_null($dn)) {
-            if (is_null($this->_dn)) {
+            if (is_null($this->_dn) || $this->_new) {
                 $this->_dn = $dn;
             } else {
                 $this->_newdn = $dn;
@@ -799,7 +799,8 @@ class Net_LDAP2_Entry extends PEAR
             $parent = Net_LDAP2_Util::canonical_dn($parent);
 
             // rename/move
-            if (false == @ldap_rename($link, $this->_dn, $child, $parent, true)) {
+            if (false == @ldap_rename($link, $this->_dn, $child, $parent, false)) {
+
                 return PEAR::raiseError("Entry not renamed: " .
                                         @ldap_error($link), @ldap_errno($link));
             }

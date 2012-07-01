@@ -810,51 +810,55 @@ class Net_LDAP2_Entry extends PEAR
         }
 
         /*
-        * Carry out modifications to the entry
+        * Retrieve a entry that has all attributes we need so that the list of changes to build is created accurately
         */
+        $fullEntry = $ldap->getEntry( $this->dn() );
+        if ( Net_LDAP2::isError($fullEntry) ) {
+            return PEAR::raiseError("Could not retrieve a full set of attributes to reconcile changes with");
+        }
+        $modifications = array();
+
         // ADD
         foreach ($this->_changes["add"] as $attr => $value) {
-            // if attribute exists, add new values
-            if ($this->exists($attr)) {
-                if (false === @ldap_mod_add($link, $this->dn(), array($attr => $value))) {
-                    return PEAR::raiseError("Could not add new values to attribute $attr: " .
-                                            @ldap_error($link), @ldap_errno($link));
-                }
-            } else {
-                // new attribute
-                if (false === @ldap_modify($link, $this->dn(), array($attr => $value))) {
-                    return PEAR::raiseError("Could not add new attribute $attr: " .
-                                            @ldap_error($link), @ldap_errno($link));
-                }
-            }
-            // all went well here, I guess
-            unset($this->_changes["add"][$attr]);
+            // if attribute exists, we need to combine old and new values
+            if ($fullEntry->exists($attr)) {
+                $currentValue = $fullEntry->getValue($attr, "all");
+                $value = array_merge( $currentValue, $value );
+            } 
+            
+            $modifications[$attr] = $value;
         }
 
         // DELETE
         foreach ($this->_changes["delete"] as $attr => $value) {
             // In LDAPv3 you need to specify the old values for deleting
             if (is_null($value) && $ldap->getLDAPVersion() === 3) {
-                $value = $this->_original[$attr];
+                $value = $fullEntry->getValue($attr);
             }
-            if (false === @ldap_mod_del($link, $this->dn(), array($attr => $value))) {
-                return PEAR::raiseError("Could not delete attribute $attr: " .
-                                        @ldap_error($link), @ldap_errno($link));
+            if (!is_array($value)) {
+                $value = array($value);
             }
-            unset($this->_changes["delete"][$attr]);
+            
+            // Find out what is missing from $value and exclude it
+            $currentValue = isset($modifications[$attr]) ? $modifications[$attr] : $fullEntry->getValue($attr, "all");
+            $modifications[$attr] = array_values( array_diff( $currentValue, $value ) );
         }
 
         // REPLACE
         foreach ($this->_changes["replace"] as $attr => $value) {
-            if (false === @ldap_modify($link, $this->dn(), array($attr => $value))) {
-                return PEAR::raiseError("Could not replace attribute $attr values: " .
-                                        @ldap_error($link), @ldap_errno($link));
-            }
-            unset($this->_changes["replace"][$attr]);
+            $modifications[$attr] = $value;
         }
 
-        // all went well, so _original (server) becomes _attributes (local copy)
-        $this->_original = $this->_attributes;
+        // COMMIT
+        if (false === @ldap_modify($link, $this->dn(), $modifications)) {
+            return PEAR::raiseError("Could not modify the entry: " . @ldap_error($link), @ldap_errno($link));
+        }
+
+        // all went well, so _original (server) becomes _attributes (local copy), reset _changes too...
+        $this->_changes['add']     = array();
+        $this->_changes['delete']  = array();
+        $this->_changes['replace'] = array();
+        $this->_original           = $this->_attributes;
 
         $return = true;
         return $return;

@@ -445,7 +445,8 @@ class Net_LDAP2_Entry extends PEAR
     *            as an array (without value count)
     *
     * If the attribute is not set at this entry (no value or not defined in
-    * schema), an empty string is returned.
+    * schema), "false" is returned when $option is 'single' or 'default, and an
+    * empty array when 'all'.
     *
     * You may use Net_LDAP2_Schema->checkAttribute() to see if the attribute
     * is defined for the objectClasses of this entry.
@@ -454,7 +455,7 @@ class Net_LDAP2_Entry extends PEAR
     * @param string  $option       Option
     *
     * @access public
-    * @return string|array|PEAR_Error string, array or PEAR_Error
+    * @return string|array
     */
     public function getValue($attr, $option = null)
     {
@@ -464,14 +465,16 @@ class Net_LDAP2_Entry extends PEAR
         // Users should do schema checks if they want to know if an attribute is
         // valid for an entrys OCLs.
         if (!array_key_exists($attr, $this->_attributes)) {
-            $value = array('');
+            $value = array();
         } else {
             $value = $this->_attributes[$attr];
         }
 
         // format the attribute values depending on $option
-        if ($option == "single" || (count($value) == 1 && $option != 'all')) {
-            $value = array_shift($value);
+        if (($option == "single" && count($value)) || (count($value) == 1 && $option != 'all')) {
+            $value = $value[0];
+        } else if($option == 'single' && !count($value)) {
+            $value = false;
         }
 
         return $value;
@@ -983,11 +986,6 @@ class Net_LDAP2_Entry extends PEAR
 
         // fetch attribute values
         $attr = $this->getValue($attr_name, 'all');
-        if (Net_LDAP2::isError($attr)) {
-            return $attr;
-        } else {
-            unset($attr['count']);
-        }
 
         // perform preg_match() on all values
         $match = false;

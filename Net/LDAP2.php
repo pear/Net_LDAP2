@@ -1637,7 +1637,7 @@ class Net_LDAP2 extends PEAR
     }
 
     /**
-    * Encodes given attributes to UTF8 if needed by schema
+    * Encodes given attributes from ISO-8859-1 to UTF-8 if needed by schema
     *
     * This function takes attributes in an array and then checks against the schema if they need
     * UTF8 encoding. If that is so, they will be encoded. An encoded array will be returned and
@@ -1658,7 +1658,7 @@ class Net_LDAP2 extends PEAR
     }
 
     /**
-    * Decodes the given attribute values if needed by schema
+    * Decodes the given attribute values from UTF-8 to ISO-8859-1 if needed by schema
     *
     * $attributes is expected to be an array with keys describing
     * the attribute names and the values as the value of this attribute:
@@ -1676,7 +1676,7 @@ class Net_LDAP2 extends PEAR
     }
 
     /**
-    * Encodes or decodes attribute values if needed
+    * Encodes or decodes UTF-8/ISO-8859-1 attribute values if needed by schema
     *
     * @param array $attributes Array of attributes
     * @param array $function   Function to apply to attribute values

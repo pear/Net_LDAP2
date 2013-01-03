@@ -183,16 +183,19 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     public function &shiftEntry()
     {
         if (is_null($this->_entry)) {
-            $this->_entry = @ldap_first_entry($this->_link, $this->_search);
+            if(!$this->_entry = @ldap_first_entry($this->_link, $this->_search)) {
+                $false = false;
+                return $false;
+            }
             $entry = Net_LDAP2_Entry::createConnected($this->_ldap, $this->_entry);
-            if ($entry instanceof Net_LDAP2_Error) $entry = false;
+            if ($entry instanceof PEAR_Error) $entry = false;
         } else {
             if (!$this->_entry = @ldap_next_entry($this->_link, $this->_entry)) {
                 $false = false;
                 return $false;
             }
             $entry = Net_LDAP2_Entry::createConnected($this->_ldap, $this->_entry);
-            if ($entry instanceof Net_LDAP2_Error) $entry = false;
+            if ($entry instanceof PEAR_Error) $entry = false;
         }
         return $entry;
     }

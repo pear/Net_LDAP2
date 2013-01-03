@@ -106,7 +106,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     /**
     * Cache variable for storing entries fetched internally
     *
-    * This currently is only used by {@link pop_entry()}
+    * This currently is not used by all functions and need consolidation.
     *
     * @access protected
     * @var array
@@ -152,7 +152,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     }
 
     /**
-    * Returns an array of entry objects
+    * Returns an array of entry objects.
     *
     * @return array Array of entry objects.
     */
@@ -160,15 +160,19 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     {
         $entries = array();
 
-        while ($entry = $this->shiftEntry()) {
-            $entries[] = $entry;
+        if (false === $this->_entry_cache) {
+            // cache is empty: fetch from LDAP
+            while ($entry = $this->shiftEntry()) {
+                $entries[] = $entry;
+            }
+            $this->_entry_cache = $entries; // store result in cache
         }
 
-        return $entries;
+        return $this->_entry_cache;
     }
 
     /**
-    * Get the next entry in the searchresult.
+    * Get the next entry in the searchresult from LDAP server.
     *
     * This will return a valid Net_LDAP2_Entry object or false, so
     * you can use this method to easily iterate over the entries inside

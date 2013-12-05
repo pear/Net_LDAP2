@@ -26,6 +26,10 @@ If you already have a test server in place, then:
 THE GUIDE
 =========
 
+0. PHP, phpunit
+Of course you will need this to run the tests...
+
+
 1. Install and configure OpenLDAP
 Config:
  - base:           dc=example,dc=com

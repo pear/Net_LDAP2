@@ -38,14 +38,23 @@ that the inetorgperson one is there too.
 You can apply the schema ldifs after the initial install of openldap with ldapadd:
   Net_LDAP2/trunk/tests$  ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/inetorgperson.ldif
 
+A note for debian users:
+Since some recent version the installer does not ask for the baseDN anymore.
+Before using apt to install, you may need to manipulate the /etc/hosts, so the
+command `dnsdomainname` will return 'example.com'. Then just do `apt-get install slapd`.
+The other solution is to adjust all ldif files here and also the test case php scripts.
+
 
 2. Import basic Net_LDAP2 test data
 Net_LDAP2 provides an basic LDIF file that maps to the test cases initial config:
   Net_LDAP2/trunk/tests$ ldapadd -D cn=admin,dc=example,dc=com -W -H ldapi:/// -f ldif_data/INITIAL_TESTDATA.ldif
 
+
 3. configure test suite
 Copy the default config to a real one:
   Net_LDAP2/trunk/tests$ cp ldapconfig.ini.dist ldapconfig.ini
 
-4. run the tests
 
+4. run the tests
+ - all tests:       Net_LDAP2/trunk/tests$ phpunit AllTests.php
+ - a specific test: Net_LDAP2/trunk/tests$ phpunit Net_LDAP2_UtilTest.php

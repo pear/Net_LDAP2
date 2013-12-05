@@ -531,7 +531,7 @@ class Net_LDAP2_Util extends PEAR
     * The split will occur at the first unescaped delimeter character.
     * In case an invalid delimeter is given, no split will be performed and an
     * one element array gets returned.
-    * Optional also filter-assertion delimeters can be considered (>, <, >=, <=, =~).
+    * Optional also filter-assertion delimeters can be considered (>, <, >=, <=, ~=).
     *
     * @param string  $attr      Attribute and Value Syntax ("foo=bar")
     * @param boolean $extended  If set to true, also filter-assertion delimeter will be matched
@@ -546,7 +546,7 @@ class Net_LDAP2_Util extends PEAR
         if (!$extended) {
             return preg_split('/(?<!\\\\)(=)/', $attr, 2, $withDelim);
         } else {
-            return preg_split('/(?<!\\\\)(>=|<=|>|<|=~|=)/', $attr, 2, $withDelim);
+            return preg_split('/(?<!\\\\)(>=|<=|>|<|~=|=)/', $attr, 2, $withDelim);
         }
     }
 

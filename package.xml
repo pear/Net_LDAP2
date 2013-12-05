@@ -37,7 +37,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPLv3 License</license>
     <notes>
-        * ???
+        * Fixed minor bugs in Filter class
+        * Util::split_attribute_string(): Added support for extended match operators from filters
+        * Util::split_attribute_string(): Added support for delimeter retrieval
     </notes>
     <contents>
         <dir name="/">

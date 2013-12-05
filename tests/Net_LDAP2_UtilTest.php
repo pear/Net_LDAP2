@@ -345,6 +345,49 @@ class Net_LDAP2_UtilTest extends PHPUnit_Framework_TestCase {
             $this->assertEquals($expected, Net_LDAP2_Util::canonical_dn($test_assoc),  'Associative array encoding test ('.$char.') failed');
         }
     }
+
+    /**
+    * Test if split_attribute_string() works
+    */
+    public function testSplitAttributeString() {
+        // test default behavour
+        $this->assertEquals(array('fooAttr', 'barValue'), Net_LDAP2_Util::split_attribute_string("fooAttr=barValue"));
+        $this->assertEquals(array('fooAttr', '=barValue'), Net_LDAP2_Util::split_attribute_string("fooAttr==barValue"));
+        $this->assertEquals(array('fooAttr', 'bar=Value'), Net_LDAP2_Util::split_attribute_string("fooAttr=bar=Value"));
+        $this->assertEquals(array('foo\=Attr', 'barValue'), Net_LDAP2_Util::split_attribute_string("foo\=Attr=barValue"));
+	$this->assertEquals(array('fooAttr', 'bar\=Value'), Net_LDAP2_Util::split_attribute_string("fooAttr=bar\=Value"));
+
+        // test default behaviour with delim
+        $this->assertEquals(array('fooAttr', '=', 'barValue'), Net_LDAP2_Util::split_attribute_string("fooAttr=barValue", false, true));
+        $this->assertEquals(array('fooAttr', '=', '=barValue'), Net_LDAP2_Util::split_attribute_string("fooAttr==barValue", false, true));
+        $this->assertEquals(array('fooAttr', '=', 'bar=Value'), Net_LDAP2_Util::split_attribute_string("fooAttr=bar=Value", false, true));
+        $this->assertEquals(array('foo\=Attr', '=', 'barValue'), Net_LDAP2_Util::split_attribute_string("foo\=Attr=barValue", false, true));
+
+        // test basic extended splitting and delimter return
+	$test_delimeters = array('=', '=~', '>', '>=', '<','<=');
+        foreach ($test_delimeters as $td) {
+            // default behavior with simple parameters
+            $this->assertEquals(array('fooAttr', 'barValue'), Net_LDAP2_Util::split_attribute_string("fooAttr${td}barValue", true));
+            $this->assertEquals(array('fooAttr', 'barValue'), Net_LDAP2_Util::split_attribute_string("fooAttr${td}barValue", true, false));
+
+            // test proper escaping
+            $tde = addcslashes($td, '=~><');
+            $this->assertEquals(array("foo${tde}Attr", 'barValue'), Net_LDAP2_Util::split_attribute_string("foo${tde}Attr${td}barValue", true));
+        }
+
+        // negative test case: perform no split
+        $this->assertEquals(array('fooAttr barValue'), Net_LDAP2_Util::split_attribute_string('fooAttr barValue'));
+        $this->assertEquals(array('fooAttr barValue'), Net_LDAP2_Util::split_attribute_string('fooAttr barValue', true, true));
+	$this->assertEquals(array('fooAttr>barValue'), Net_LDAP2_Util::split_attribute_string('fooAttr>barValue')); // extended splitting used, but not activated
+
+        // negative testcase: wrong escaping used
+        $this->assertEquals(array('fooAttr\>', 'barValue'), Net_LDAP2_Util::split_attribute_string('fooAttr\>=barValue', false, false));
+        $this->assertEquals(array('fooAttr\>', '=', 'barValue'), Net_LDAP2_Util::split_attribute_string('fooAttr\>=barValue', true, true));
+	$this->assertEquals(array('fooAttr', '>', '\=barValue'), Net_LDAP2_Util::split_attribute_string('fooAttr>\=barValue', true, true));
+	$this->assertEquals(array('fooAttr\>\=barValue'), Net_LDAP2_Util::split_attribute_string('fooAttr\>\=barValue', true, true));
+
+    }
+
 }
 
 // Call Net_LDAP2_UtilTest::main() if this source file is executed directly.

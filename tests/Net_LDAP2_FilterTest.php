@@ -328,6 +328,174 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
         $filter_not_dmg8 = Net_LDAP2_Filter::combine('and', array($filter_not1, null));
         $this->assertInstanceOf('PEAR_Error', $filter_not_dmg8);
     }
+
+    /**
+    * Test getComponents()
+    */
+    public function testGetComponents() {
+        // make up some filters to test
+        $filter = Net_LDAP2_Filter::create('foo', 'equals', 'bar');
+        $this->assertEquals(array('foo', '=', 'bar'), $filter->getComponents());
+
+        $filter = Net_LDAP2_Filter::create('foo', 'begins', 'bar');
+        $this->assertEquals(array('foo', '=', 'bar*'), $filter->getComponents());
+
+        $filter = Net_LDAP2_Filter::create('foo', 'ends', 'bar');
+        $this->assertEquals(array('foo', '=', '*bar'), $filter->getComponents());
+
+        $filter = Net_LDAP2_Filter::create('foo', 'contains', 'bar');
+        $this->assertEquals(array('foo', '=', '*bar*'), $filter->getComponents());
+
+        $filter = Net_LDAP2_Filter::create('foo', 'any');
+        $this->assertEquals(array('foo', '=', '*'), $filter->getComponents());
+
+        $filter = Net_LDAP2_Filter::create('foo', 'greater', '1234');
+        $this->assertEquals(array('foo', '>', '1234'), $filter->getComponents());
+
+        $filter = Net_LDAP2_Filter::create('foo', 'less', '1234');
+        $this->assertEquals(array('foo', '<', '1234'), $filter->getComponents());
+
+        $filter = Net_LDAP2_Filter::create('foo', 'greaterOrEqual', '1234');
+        $this->assertEquals(array('foo', '>=', '1234'), $filter->getComponents());
+
+        $filter = Net_LDAP2_Filter::create('foo', 'lessOrEqual', '1234');
+        $this->assertEquals(array('foo', '<=', '1234'), $filter->getComponents());
+
+        $filter = Net_LDAP2_Filter::create('foo', 'approx', '1234');
+        $this->assertEquals(array('foo', '~=', '1234'), $filter->getComponents());
+
+
+        // negative testing: non-leaf filter
+        $filter = Net_LDAP2_Filter::combine('and', array(Net_LDAP2_Filter::create('foo', 'any'), Net_LDAP2_Filter::create('foo', 'equals', 'bar')));
+        $this->assertInstanceOf('PEAR_Error', $filter->getComponents());
+
+    }
+
+    /**
+    * Test match()
+    */
+    public function testMatch() {
+        // make up some local test entry
+        $entry1 = Net_LDAP2_Entry::createFresh('cn=Simpson Homer,l=springfield,c=usa',
+            array(
+                'cn'             => 'Simpson Homer',
+                'sn'             => 'Simpson',
+                'givenName'      => 'Homer',
+                'fingers'        => 5,
+                'hairColor'      => 'black',
+                'donutsConsumed' => 4521875663232,
+                'height'         => '175',
+                'mail'           => 'homer@iLikeBlueToweredHair.com',
+                'objectClass'    => array('top', 'person', 'inetOrgPerson', 'myFancyTestClass'),
+                )
+        );
+        $entry2 = Net_LDAP2_Entry::createFresh('cn=Simpson Bart,l=springfield,c=usa',
+            array(
+                'cn'             => 'Simpson Bart',
+                'sn'             => 'Simpson',
+                'givenName'      => 'Bart',
+                'fingers'        => 5,
+                'hairColor'      => 'yellow',
+                'height'         => '120',
+                'mail'           => 'bart@iHateSchool.com',
+                'objectClass'    => array('top', 'person', 'inetOrgPerson', 'myFancyTestClass'),
+                )   
+        );
+        $entry3 = Net_LDAP2_Entry::createFresh('cn=Brockman Kent,l=springfield,c=usa',
+            array(      
+                'cn'             => 'Brockman Kent',
+                'sn'             => 'Brockman',
+                'givenName'      => 'Kent',
+                'fingers'        => 5,
+                'hairColor'      => 'white',
+                'height'         => '185',
+                'mail'           => 'kent.brockman@channel6.com',
+                'objectClass'    => array('top', 'person', 'inetOrgPerson', 'myFancyTestClass'),
+                )   
+        );
+
+        $allEntries = array($entry1, $entry2, $entry3);
+
+        // Simple matching on single entry
+        $filter = Net_LDAP2_Filter::create('cn', 'equals', 'Simpson Homer');
+        $this->assertEquals(1, $filter->matches($entry1));
+
+        $filter = Net_LDAP2_Filter::create('mail', 'begins', 'Hom');
+        $this->assertEquals(1, $filter->matches($entry1));
+
+        $filter = Net_LDAP2_Filter::create('objectClass', 'contains', 'org');  // note the lowercase of 'org', as DirSTR is usually syntax CaseIgnore
+        $this->assertEquals(1, $filter->matches($entry1));
+
+        // Simple negative tests on single entry
+        $filter = Net_LDAP2_Filter::create('givenName', 'equals', 'Lisa-is-nonexistent');
+        $this->assertEquals(0, $filter->matches($entry1));
+
+        // Simple tests with multiple entries
+        $filter = Net_LDAP2_Filter::create('cn', 'begins', 'Nomatch');
+        $this->assertEquals(0, $filter->matches($allEntries));
+
+        $filter = Net_LDAP2_Filter::create('cn', 'begins', 'Simpson Ho');
+        $this->assertEquals(1, $filter->matches($allEntries));
+
+        $filter = Net_LDAP2_Filter::create('cn', 'begins', 'Simpson');
+        $this->assertEquals(2, $filter->matches($allEntries));
+
+        // test with retrieving the resulting entries
+        $filter = Net_LDAP2_Filter::create('cn', 'begins', 'Simpson Ho');
+        $filterresult = array();
+        $this->assertEquals(1, $filter->matches($allEntries, $filterresult));
+        $this->assertEquals(count($filterresult), $filter->matches($allEntries, $filterresult), "returned result and result counter differ!");
+        $this->assertEquals($entry1->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry!");
+
+        // make sure return values are consistent with input and that all entries are found
+        $filter = Net_LDAP2_Filter::parse('(objectClass=*)');
+        $filterresult = array();
+        $this->assertEquals(count($allEntries), $filter->matches($allEntries, $filterresult), "returned result does not match input data count");
+        $this->assertEquals(count($filterresult), $filter->matches($allEntries, $filterresult), "returned result and result counter differ!");
+
+        // NOT combination test
+        $filter = Net_LDAP2_Filter::create('givenName', 'not equals', 'Homer');
+        $filterresult = array();
+        $this->assertEquals(2, $filter->matches($allEntries, $filterresult));
+        $this->assertEquals($entry2->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry!");
+        $this->assertEquals($entry3->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry!");
+        
+        // OR combination test
+        $filter1 = Net_LDAP2_Filter::create('sn', 'equals', 'Simpson');
+        $filter2 = Net_LDAP2_Filter::create('givenName', 'equals', 'Kent');
+        $filter_or = Net_LDAP2_Filter::combine('or', array($filter1, $filter2));
+        $filterresult = array();
+        $this->assertEquals(3, $filter_or->matches($allEntries, $filterresult));
+
+        // AND combination test
+        $filter1 = Net_LDAP2_Filter::create('sn', 'equals', 'Simpson');
+        $filter2 = Net_LDAP2_Filter::create('givenName', 'equals', 'Bart');
+        $filter_and = Net_LDAP2_Filter::combine('and', array($filter1, $filter2));
+        $filterresult = array();
+        $filter_and->matches($allEntries, $filterresult);
+        $this->assertEquals(1, $filter_and->matches($allEntries, $filterresult), "AND Filter failed '".$filter_and->asString()."'");
+
+        // AND, NOT and OR combined test
+        $filter1 = Net_LDAP2_Filter::combine('or', array(
+                Net_LDAP2_Filter::create('hairColor', 'equals', 'white'), // kent or...
+                Net_LDAP2_Filter::create('hairColor', 'equals', 'black')  // ...homer
+            ));
+        $filter2 = Net_LDAP2_Filter::create('givenName', 'not equals', 'Homer'); // all except homer
+        $filter_final = Net_LDAP2_Filter::combine('and', array($filter1, $filter2));
+        $this->assertEquals(2, $filter1->matches($allEntries)); // kent and homer
+        $this->assertEquals(2, $filter2->matches($allEntries)); // kent and bart
+        $filterresult = array();
+        $this->assertEquals(1, $filter_final->matches($allEntries, $filterresult)); // should leave only kent
+        $this->assertEquals($entry3->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry! filter='".$filter_final->asString()."'");
+        
+        // [TODO]: Further tests for >, <, >=, <= and ~=, when they are implemented.
+        // ...until then: negative testing for those cases
+        foreach (array('>', '<', '>=', '<=', '~=') as $to) {
+            $filter = Net_LDAP2_Filter::parse("(fingers${to}5)");
+            $this->assertInstanceOf('PEAR_Error', $filter->matches($allEntries), "Valid operator succeeded: WRITE THE TESTCASE FOR IT!");
+        }
+    }
+
 }
 
 // Call Net_LDAP2_FilterTest::main() if this source file is executed directly.

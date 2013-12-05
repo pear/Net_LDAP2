@@ -422,7 +422,7 @@ class Net_LDAP2_Filter extends PEAR
                 if (stristr($matches[1], ')(')) {
                     return PEAR::raiseError("Filter parsing error: invalid filter syntax - multiple leaf components detected!");
                 } else {
-                    $filter_parts = Net_LDAP2_Util::split_attribute_string($attr, true, true);
+                    $filter_parts = Net_LDAP2_Util::split_attribute_string($matches[1], true, true);
                     if (count($filter_parts) != 3) {
                         return PEAR::raiseError("Filter parsing error: invalid filter syntax - unknown matching rule used");
                     } else {

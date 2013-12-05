@@ -445,7 +445,7 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
         $filterresult = array();
         $this->assertEquals(1, $filter->matches($allEntries, $filterresult));
         $this->assertEquals(count($filterresult), $filter->matches($allEntries, $filterresult), "returned result and result counter differ!");
-        $this->assertEquals($entry1->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry!");
+        $this->assertEquals($entry1->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry! filter='".$filter->asString()."'");
 
         // make sure return values are consistent with input and that all entries are found
         $filter = Net_LDAP2_Filter::parse('(objectClass=*)');
@@ -453,12 +453,23 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(count($allEntries), $filter->matches($allEntries, $filterresult), "returned result does not match input data count");
         $this->assertEquals(count($filterresult), $filter->matches($allEntries, $filterresult), "returned result and result counter differ!");
 
+	// Test for compliant "any" filtering:
+	// Only entries should be returned, that have the attribute
+	// Negation: Only Entries that don't have the attribute set at all
+	$filter = Net_LDAP2_Filter::create('donutsConsumed', 'any'); // only homer consume donuts
+	$filterresult = array();
+	$this->assertEquals(1, $filter->matches($allEntries, $filterresult));
+	$this->assertEquals($entry1->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry! filter='".$filter->asString()."'");
+	
+	$filter = Net_LDAP2_Filter::combine('not', $filter); // all but homer consume donuts
+        $this->assertEquals(count($allEntries)-1, $filter->matches($allEntries, $filterresult), "Filtered entry does not equal expected entry! filter='".$filter->asString()."'");
+
         // NOT combination test
         $filter = Net_LDAP2_Filter::create('givenName', 'not equals', 'Homer');
         $filterresult = array();
         $this->assertEquals(2, $filter->matches($allEntries, $filterresult));
-        $this->assertEquals($entry2->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry!");
-        $this->assertEquals($entry3->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry!");
+        $this->assertEquals($entry2->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry! filter='".$filter->asString()."'");
+        $this->assertEquals($entry3->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry! filter='".$filter->asString()."'");
         
         // OR combination test
         $filter1 = Net_LDAP2_Filter::create('sn', 'equals', 'Simpson');

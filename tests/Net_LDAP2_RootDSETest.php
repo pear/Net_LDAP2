@@ -34,7 +34,7 @@ class Net_LDAP2_RootDSETest extends PHPUnit_Framework_TestCase {
      * @access protected
      */
     protected function setUp() {
-        $this->markTestSkipped('Test not implemented yet.');
+        $this->markTestIncomplete('Test not implemented yet.');
     }
 
     /**

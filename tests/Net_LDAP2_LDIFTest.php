@@ -129,6 +129,8 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
      * @access protected
      */
     protected function tearDown() {
+	// uncomment this if you debug the test cases so you will have output available
+	if (file_exists($this->outfile)) @unlink($this->outfile);
     }
 
     /**

@@ -409,29 +409,38 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * Tests if entriy changes are correctly written
-     */
-    public function testWrite_entryChanges() {
-        $testentries = $this->testentries;
-        $testentries[] = Net_LDAP2_Entry::createFresh('cn=foo,ou=example,dc=com', array('cn' => 'foo'));
-        $testentries[] = Net_LDAP2_Entry::createFresh('cn=footest,ou=example,dc=com', array('cn' => 'foo'));
+    * Tests writing change files with no changes
+    */
+    public function testWrite_entryChangesEmpty() {
+        $testentries = array(
+            Net_LDAP2_Entry::createFresh('cn=foo,ou=example,dc=com', array('cn' => 'foo')),
+            Net_LDAP2_Entry::createFresh('cn=footest,ou=example,dc=com', array('cn' => 'foo'))
+        );
 
         $testconf = $this->defaultConfig;
         $testconf['change'] = 1;
-
-        /*
-        * no changes should produce empty file
 
         $ldif = new Net_LDAP2_LDIF($this->outfile, 'w', $testconf);
         $this->assertTrue(is_resource($ldif->handle()));
         $ldif->write_entry($testentries);
         $this->assertFalse((boolean)$ldif->error(), 'Failed writing entry to '.$this->outfile.': '.$ldif->error(true));
         $ldif->done();
-        $this->assertEquals(array(), file($this->outfile));
-        */
-        /*
-        * changes test
-        */
+        $this->assertEquals(0, filesize($this->outfile));
+   
+    }
+
+    /**
+     * Tests if entry changes are correctly written
+     */
+    public function testWrite_entryChanges() {
+        $testentries = $this->testentries;
+        $testentries[] = Net_LDAP2_Entry::createFresh('cn=foo,ou=example,dc=com', array('cn' => 'foo'));
+        $testentries[] = Net_LDAP2_Entry::createFresh('cn=footest,ou=example,dc=com', array('cn' => 'foo'));
+	$this->assertEquals(6, count($testentries), "Init error: Expected count of test entries wrong, check test datasetup!");
+
+        $testconf = $this->defaultConfig;
+        $testconf['change'] = 1;
+
         //prepare some changes
         $testentries[0]->delete('attr1'); // del whole attr
         $testentries[0]->delete(array('attr2' => 'baz')); // del spec. value
@@ -450,19 +459,27 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
         $testentries[4]->dn('cn=Bar,ou=example,dc=com');
         $testentries[5]->dn('cn=foobartest,ou=newexample,dc=com');
 
+	// make sure we correctly get changes back from the API
+	foreach ($testentries as $te) {
+		$this->assertGreaterThanOrEqual(2, count($te->getChanges()),
+			'Probable BUG in Net_LDAP2_Entry detected! Changed entries do not report those changes back! (entry: '.$te->dn().')');
+	}
+
         // carry out write
         $ldif = new Net_LDAP2_LDIF($this->outfile, 'w', $testconf);
         $this->assertTrue(is_resource($ldif->handle()));
         $ldif->write_entry($testentries);
         $this->assertFalse((boolean)$ldif->error(), 'Failed writing entry to '.$this->outfile.': '.$ldif->error(true));
+	$this->assertGreaterThan(0, filesize($this->outfile), "File '".$this->outfile."' is empty but should have content!");
         $ldif->done();
 
-        //compare results
+        // compare results
         $expected = array_map('conv_lineend', file(dirname(__FILE__).'/ldif_data/changes.ldif'));
         // strip 4 starting lines because of comments in the file header:
         array_shift($expected);array_shift($expected);
         array_shift($expected);array_shift($expected);
-        $this->assertEquals(implode("", $expected), file_get_contents($this->outfile), "Written file does not equal expected contents (".realpath($this->outfile).")");
+	$writtenFileContents = array_map('conv_lineend', file($this->outfile));
+        $this->assertEquals($expected, $writtenFileContents, "Written file does not equal expected contents (".realpath($this->outfile).")");
     }
 
     /**

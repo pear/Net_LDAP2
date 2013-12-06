@@ -309,7 +309,7 @@ class Net_LDAP2_Entry extends PEAR
     public function dn($dn = null)
     {
         if (false == is_null($dn)) {
-            if (is_null($this->_dn) || $this->_new) {
+            if (is_null($this->_dn) ) {
                 $this->_dn = $dn;
             } else {
                 $this->_newdn = $dn;
@@ -776,6 +776,14 @@ class Net_LDAP2_Entry extends PEAR
             $this->_changes['delete']  = array();
             $this->_changes['replace'] = array();
             $this->_original           = $this->_attributes;
+
+            // In case the "new" entry was moved after creation, we must
+            // adjust the internal DNs as the entry was already created
+            // with the most current DN.
+            if (false == is_null($this->_newdn)) {
+                $this->_dn    = $this->_newdn;
+                $this->_newdn = null;
+            }
 
             $return = true;
             return $return;

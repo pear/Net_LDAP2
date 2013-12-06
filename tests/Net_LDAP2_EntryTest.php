@@ -139,6 +139,24 @@ class Net_LDAP2_EntryTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+    * Test currentDN and API of move
+    */
+    public function testCurrentDN() {
+        $entry = Net_LDAP2_Entry::createFresh('cn=footest,ou=example,dc=com', array('cn' => 'foo'));
+
+	// test initial state
+	$this->assertEquals($entry->dn(), $entry->currentDN()); // equal DNs
+        $this->assertFalse($entry->willBeMoved());
+
+	// prepare move
+	$entry->dn('cn=newDN,ou=example,dc=com');
+
+	// test again
+	$this->assertNotEquals($entry->dn(), $entry->currentDN()); // equal DNs
+        $this->assertTrue($entry->willBeMoved());
+    }
+
+    /**
      * @todo Implement testDn().
      */
     public function testDn() {

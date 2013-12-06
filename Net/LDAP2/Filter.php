@@ -615,7 +615,7 @@ class Net_LDAP2_Filter extends PEAR
                 list($attribute, $match, $assertValue) = $this->getComponents();
                 switch ($match) {
                     case '=':
-                        $regexp = '/'.str_replace('*', '.*', $assertValue).'/i'; // not case sensitive unless specified by schema
+                        $regexp = '/^'.str_replace('*', '.*', $assertValue).'$/i'; // not case sensitive unless specified by schema
                         $entry_matched = $entry->pregMatch($regexp, $attribute);
                     break;
                 

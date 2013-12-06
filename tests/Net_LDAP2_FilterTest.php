@@ -419,6 +419,8 @@ class Net_LDAP2_FilterTest extends PHPUnit_Framework_TestCase {
         // Simple matching on single entry
         $filter = Net_LDAP2_Filter::create('cn', 'equals', 'Simpson Homer');
         $this->assertEquals(1, $filter->matches($entry1));
+	$filter = Net_LDAP2_Filter::create('cn', 'equals', 'son');
+        $this->assertEquals(0, $filter->matches($entry1));
 
         $filter = Net_LDAP2_Filter::create('mail', 'begins', 'Hom');
         $this->assertEquals(1, $filter->matches($entry1));

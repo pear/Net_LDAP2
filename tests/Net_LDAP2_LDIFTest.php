@@ -118,14 +118,9 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
         }
 
         // create outfile if not exists and enforce proper access rights
-        if (!file_exists($this->outfile)) {
-            if (!touch($this->outfile)) {
-                $this->markTestSkipped('Unable to create '.$this->outfile.', skipping test');
-            }
-        }
-        if (!chmod($this->outfile, 0644)) {
-            $this->markTestSkipped('Unable to chmod(0644) '.$this->outfile.', skipping test');
-        }
+	if (file_exists($this->outfile)) @unlink($this->outfile);
+        $this->assertTrue(touch($this->outfile), 'Init error: Unable to create '.$this->outfile);
+        $this->assertTrue(chmod($this->outfile, 0644), 'Init error: Unable to chmod(0644) '.$this->outfile);
     }
 
     /**
@@ -134,7 +129,6 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
      * @access protected
      */
     protected function tearDown() {
-       @unlink($this->outfile);
     }
 
     /**
@@ -468,7 +462,7 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
         // strip 4 starting lines because of comments in the file header:
         array_shift($expected);array_shift($expected);
         array_shift($expected);array_shift($expected);
-        $this->assertEquals(implode("", $expected), file_get_contents($this->outfile));
+        $this->assertEquals(implode("", $expected), file_get_contents($this->outfile), "Written file does not equal expected contents (".realpath($this->outfile).")");
     }
 
     /**

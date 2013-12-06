@@ -364,10 +364,10 @@ class Net_LDAP2_UtilTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array('foo\=Attr', '=', 'barValue'), Net_LDAP2_Util::split_attribute_string("foo\=Attr=barValue", false, true));
 
         // test basic extended splitting and delimter return
-	$test_delimeters = array('=', '=~', '>', '>=', '<','<=');
+	$test_delimeters = array('=', '~=', '>', '>=', '<','<=');
         foreach ($test_delimeters as $td) {
             // default behavior with simple parameters
-            $this->assertEquals(array('fooAttr', 'barValue'), Net_LDAP2_Util::split_attribute_string("fooAttr${td}barValue", true));
+            $this->assertEquals(array('fooAttr', 'barValue'), Net_LDAP2_Util::split_attribute_string("fooAttr${td}barValue", true), "AttrString='fooAttr${td}barValue'; sep='$td'");
             $this->assertEquals(array('fooAttr', 'barValue'), Net_LDAP2_Util::split_attribute_string("fooAttr${td}barValue", true, false));
 
             // test proper escaping

@@ -439,14 +439,14 @@ class Net_LDAP2_Entry extends PEAR
     * The first parameter is the name of the attribute
     * The second parameter influences the way the value is returned:
     * 'single':  only the first value is returned as string
-    * 'all':     all values including the value count are returned in an array
+    * 'all':     all values are returned in an array
     * 'default': in all other cases an attribute value with a single value is
     *            returned as string, if it has multiple values it is returned
-    *            as an array (without value count)
+    *            as an array
     *
     * If the attribute is not set at this entry (no value or not defined in
-    * schema), "false" is returned when $option is 'single' or 'default, and an
-    * empty array when 'all'.
+    * schema), "false" is returned when $option is 'single', an empty string if
+    * 'default', and an empty array when 'all'.
     *
     * You may use Net_LDAP2_Schema->checkAttribute() to see if the attribute
     * is defined for the objectClasses of this entry.
@@ -461,20 +461,36 @@ class Net_LDAP2_Entry extends PEAR
     {
         $attr = $this->getAttrName($attr);
 
-        // If the attribute is not set at the entry, return an empty value.
-        // Users should do schema checks if they want to know if an attribute is
-        // valid for an entrys OCLs.
+        // return depending on set $options
         if (!array_key_exists($attr, $this->_attributes)) {
-            $value = array();
-        } else {
-            $value = $this->_attributes[$attr];
-        }
+            // attribute not set
+            switch ($option) {
+                case 'single':
+                    $value = false;
+                break;
+                case 'all':
+                    $value = array();
+                break;
+                default:
+                    $value = '';
+            }
 
-        // format the attribute values depending on $option
-        if (($option == "single" && count($value)) || (count($value) == 1 && $option != 'all')) {
-            $value = $value[0];
-        } else if($option == 'single' && !count($value)) {
-            $value = false;
+        } else {
+            // attribute present
+            switch ($option) {
+                case 'single':
+                    $value = $this->_attributes[$attr][0];
+                break;
+                case 'all':
+                    $value = $this->_attributes[$attr];
+                break;
+                default:
+                    $value = $this->_attributes[$attr];
+                    if (count($value) == 1) {
+                        $value = $value[0];
+                    }
+            }
+            
         }
 
         return $value;

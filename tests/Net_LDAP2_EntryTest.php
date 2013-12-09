@@ -190,10 +190,28 @@ class Net_LDAP2_EntryTest extends PHPUnit_Framework_TestCase {
      * @todo Implement testGetValue().
      */
     public function testGetValue() {
-        // Remove the following line when you implement this test.
-        $this->markTestIncomplete(
-          "This test has not been implemented yet."
+        // make up some local entry
+        $entry = Net_LDAP2_Entry::createFresh("cn=test",
+            array(
+                'attr1' => 'single',
+                'attr2' => array('mv1', 'mv2')
+                )
         );
+    
+        // test default behavior
+        $this->assertEquals('single', $entry->getValue('attr1'));
+        $this->assertEquals(array('mv1', 'mv2'), $entry->getValue('attr2'));
+        $this->assertEquals(false, $entry->getValue('nonexistent'));
+
+        // test option "single"
+        $this->assertEquals('single', $entry->getValue('attr1', 'single'));
+        $this->assertEquals('mv1', $entry->getValue('attr2', 'single'));
+        $this->assertEquals(false, $entry->getValue('nonexistent', 'single'));
+
+        // test option "all"
+        $this->assertEquals(array('single'), $entry->getValue('attr1', 'all'));
+        $this->assertEquals(array('mv1', 'mv2'), $entry->getValue('attr2', 'all'));
+        $this->assertEquals(array(), $entry->getValue('nonexistent', 'all'));
     }
 
     /**

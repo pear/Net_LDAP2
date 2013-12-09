@@ -1709,7 +1709,10 @@ class Net_LDAP2 extends PEAR
                         continue;
                     }
 
-                    if (false !== strpos($attr['syntax'], '1.3.6.1.4.1.1466.115.121.1.15')) {
+                    // Encoding is needed if this is a DIR_STR. We assume also
+                    // needed encoding in case the schema contains no syntax
+                    // information (he does not need to, see rfc2252, 4.2)
+                    if (!array_key_exists('syntax', $attr) || false !== strpos($attr['syntax'], '1.3.6.1.4.1.1466.115.121.1.15')) {
                         $encode = true;
                     } else {
                         $encode = false;

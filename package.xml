@@ -26,9 +26,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>yyyy-mm-dd</date>
+    <date>2013-12-09</date>
     <version>
-        <release>2.0.14</release>
+        <release>2.1.0</release>
         <api>2.0.0</api>
     </version>
     <stability>
@@ -37,7 +37,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </stability>
     <license>LGPLv3 License</license>
     <notes>
-        * ...
+        * New feature: Filter::matches() can do simple filtering on entry sets (supported: equals, contain, begin, end, any; NOT, AND, OR. Filtering is simple based on regexp, no schema checks and matchRules yet!)
+        * Fixed minor bugs in Filter, LDAP and Entry class
+        * Util::split_attribute_string(): Added support for extended match operators from filters
+        * Util::split_attribute_string(): Added support for delimeter retrieval
     </notes>
     <contents>
         <dir name="/">
@@ -815,24 +818,6 @@ debug information.
         * inmproved performance with large search results
         * Fixed some minor issues with Net_LDAP2_Filter and Net_LDAP2->dnExists()
         * Added NOT filter to Net_LDAP2_Filter::create() so negating is more easily now
-    </notes>
-  </release>
-  <release>
-    <date>2013-12-09</date>
-    <version>
-        <release>2.0.13</release>
-        <api>2.0.0</api>
-    </version>
-    <stability>
-        <release>stable</release>
-        <api>stable</api>
-    </stability>
-    <license>LGPLv3 License</license>
-    <notes>
-        * New feature: Filter::matches() can do simple filtering on entry sets (supported: equals, contain, begin, end, any; NOT, AND, OR. Filtering is simple based on regexp, no schema checks and matchRules yet!)
-        * Fixed minor bugs in Filter, LDAP and Entry class
-        * Util::split_attribute_string(): Added support for extended match operators from filters
-        * Util::split_attribute_string(): Added support for delimeter retrieval
     </notes>
   </release>
  </changelog>

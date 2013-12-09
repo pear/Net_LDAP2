@@ -563,7 +563,7 @@ class Net_LDAP2_Filter extends PEAR
     * @todo Currently only "="-based matches (equals, begins, ends, contains, any) implemented; Implement all the stuff!
     * @todo Implement expert code with schema checks in case $entry is connected to a directory
     * @param array|Net_LDAP2_Entry The entry (or array with entries) to check
-    * @param array                 If given, the array will be filled with entries who matched the filter. Return value is true if any entry matched.
+    * @param array                 If given, the array will be appended with entries who matched the filter. Return value is true if any entry matched.
     * @return int|Net_LDAP2_Error Returns the number of matched entries or error
     */
     function matches(&$entries, &$results=array()) {

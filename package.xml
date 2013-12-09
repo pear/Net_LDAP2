@@ -26,7 +26,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     </lead>
 
     <!-- Information for this release -->
-    <date>yyyy-mm-dd</date>
+    <date>2013-12-09</date>
     <version>
         <release>2.0.13</release>
         <api>2.0.0</api>
@@ -38,7 +38,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <license>LGPLv3 License</license>
     <notes>
         * New feature: Filter::matches() can do simple filtering on entry sets (supported: equals, contain, begin, end, any; NOT, AND, OR. Filtering is simple based on regexp, no schema checks and matchRules yet!)
-        * Fixed minor bugs in Filter class
+        * Fixed minor bugs in Filter, LDAP and Entry class
         * Util::split_attribute_string(): Added support for extended match operators from filters
         * Util::split_attribute_string(): Added support for delimeter retrieval
     </notes>

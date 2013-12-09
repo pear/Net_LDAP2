@@ -1,0 +1,20 @@
+UTF8 and Net_LDAP2:
+
+It is hard to know exactly what entries need utf8 every time you need them,
+so here's the simple way to salvation:
+
+Net_LDAP2 will check internally if utf8 is needed.
+
+Code:
+      // $attr is some text a user entered with funny characters in it.
+      // If $attr should not be utfized (f.x. userPassword) then utf8Encode
+      // will not encode the attribute.
+      $attr = $ldap->utf8Encode($attr); 
+      // now insert the correctly encoded attribute  into the directory.
+      $entry->modify($attr);
+      
+      // later when you access the attributes of that user, decode the ones
+      // that have to be decoded.
+      $attr = $ldap->utf8Decode( $entry->attributes() );
+                  
+Thanks to Jan for the code.

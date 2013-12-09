@@ -487,7 +487,7 @@ class Net_LDAP2_Entry extends PEAR
                 default:
                     $value = $this->_attributes[$attr];
                     if (count($value) == 1) {
-                        $value = $value[0];
+                        $value = array_shift($value);
                     }
             }
             

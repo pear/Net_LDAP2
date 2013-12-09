@@ -830,7 +830,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
             $ldap    =& $this->connect();
-            $utf8    = array('cn' => 'this needs utf8: צהü');
+            $utf8    = array('cn' => 'this needs utf8: '.base64_decode('w7bDpMO8')); //צהü
             $no_utf8 = array('cn' => 'this needs no utf8');
 
             $this->assertNotEquals($utf8, $ldap->utf8Encode($utf8));

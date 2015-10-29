@@ -1,14 +1,5 @@
 <?php
 //@encoding iso-8859-1
-
-// Call Net_LDAP2_LDIFTest::main() if this source file is executed directly.
-if (!defined("PHPUnit_MAIN_METHOD")) {
-    define("PHPUnit_MAIN_METHOD", "Net_LDAP2_LDIFTest::main");
-}
-
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
-
 require_once 'Net/LDAP2/LDIF.php';
 
 /**
@@ -679,11 +670,6 @@ class Net_LDAP2_LDIFTest extends PHPUnit_Framework_TestCase {
         return true;
     }
 
-}
-
-// Call Net_LDAP2_LDIFTest::main() if this source file is executed directly.
-if (PHPUnit_MAIN_METHOD == "Net_LDAP2_LDIFTest::main") {
-    Net_LDAP2_LDIFTest::main();
 }
 
 if (!function_exists('conv_lineend')) {

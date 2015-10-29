@@ -1,12 +1,4 @@
 <?php
-// Call Net_LDAP2_UtilTest::main() if this source file is executed directly.
-if (!defined("PHPUnit_MAIN_METHOD")) {
-    define("PHPUnit_MAIN_METHOD", "Net_LDAP2_UtilTest::main");
-}
-
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
-
 require_once 'Net/LDAP2/Util.php';
 
 /**
@@ -388,10 +380,5 @@ class Net_LDAP2_UtilTest extends PHPUnit_Framework_TestCase {
 
     }
 
-}
-
-// Call Net_LDAP2_UtilTest::main() if this source file is executed directly.
-if (PHPUnit_MAIN_METHOD == "Net_LDAP2_UtilTest::main") {
-    Net_LDAP2_UtilTest::main();
 }
 ?>

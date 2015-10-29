@@ -1,12 +1,4 @@
 <?php
-// Call Net_LDAP2_RootDSETest::main() if this source file is executed directly.
-if (!defined("PHPUnit_MAIN_METHOD")) {
-    define("PHPUnit_MAIN_METHOD", "Net_LDAP2_RootDSETest::main");
-}
-
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
-
 require_once 'Net/LDAP2/RootDSE.php';
 
 /**
@@ -155,10 +147,5 @@ class Net_LDAP2_RootDSETest extends PHPUnit_Framework_TestCase {
           "This test has not been implemented yet."
         );
     }
-}
-
-// Call Net_LDAP2_RootDSETest::main() if this source file is executed directly.
-if (PHPUnit_MAIN_METHOD == "Net_LDAP2_RootDSETest::main") {
-    Net_LDAP2_RootDSETest::main();
 }
 ?>

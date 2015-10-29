@@ -1,12 +1,4 @@
 <?php
-// Call Net_LDAP2_SearchTest::main() if this source file is executed directly.
-if (!defined("PHPUnit_MAIN_METHOD")) {
-    define("PHPUnit_MAIN_METHOD", "Net_LDAP2_SearchTest::main");
-}
-
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
-
 require_once 'Net/LDAP2.php';
 require_once 'Net/LDAP2/Search.php';
 
@@ -19,19 +11,6 @@ class Net_LDAP2_SearchTest extends PHPUnit_Framework_TestCase {
     * Stores the LDAP configuration
     */
     var $ldapcfg = false;
-
-    /**
-     * Runs the test methods of this class.
-     *
-     * @access public
-     * @static
-     */
-    public static function main() {
-        require_once "PHPUnit/TextUI/TestRunner.php";
-
-        $suite  = new PHPUnit_Framework_TestSuite("Net_LDAP2_SearchTest");
-        $result = PHPUnit_TextUI_TestRunner::run($suite);
-    }
 
     /**
      * Sets up the fixture, for example, open a network connection.
@@ -379,10 +358,5 @@ class Net_LDAP2_SearchTest extends PHPUnit_Framework_TestCase {
             $this->assertTrue($ldap->delete($ou2), 'Cleanup failed, please delete manually');
         }
     }
-}
-
-// Call Net_LDAP2_SearchTest::main() if this source file is executed directly.
-if (PHPUnit_MAIN_METHOD == "Net_LDAP2_SearchTest::main") {
-    Net_LDAP2_SearchTest::main();
 }
 ?>

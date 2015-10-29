@@ -1,12 +1,4 @@
 <?php
-// Call Net_LDAP2_EntryTest::main() if this source file is executed directly.
-if (!defined("PHPUnit_MAIN_METHOD")) {
-    define("PHPUnit_MAIN_METHOD", "Net_LDAP2_EntryTest::main");
-}
-
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
-
 require_once 'Net_LDAP2Test.php'; // for config methods
 
 require_once 'Net/LDAP2/Entry.php';
@@ -323,10 +315,5 @@ class Net_LDAP2_EntryTest extends PHPUnit_Framework_TestCase {
           "This test has not been implemented yet."
         );
     }
-}
-
-// Call Net_LDAP2_EntryTest::main() if this source file is executed directly.
-if (PHPUnit_MAIN_METHOD == "Net_LDAP2_EntryTest::main") {
-    Net_LDAP2_EntryTest::main();
 }
 ?>

@@ -25,7 +25,7 @@
 [global]
 server_cap_tls       = false
 server_cap_anonymous = true
-server_base_dn       = "ou=example,dc=com"
+server_base_dn       = "dc=example,dc=com"
 server_address       = localhost
 server_port          = 389
 server_binddn        = "cn=admin"

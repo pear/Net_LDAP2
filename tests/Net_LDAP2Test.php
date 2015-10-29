@@ -125,14 +125,14 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
         } else {
             // This connect is supposed to fail
             $lcfg = array(
-                    'host' => 'pear.net-ldap.test.hostunknown.com',
+                    'host' => '0.0.0.1',
                 );
             $ldap = Net_LDAP2::connect($lcfg);
             $this->assertInstanceOf('Net_LDAP2_Error', $ldap, 'Connect succeeded but was supposed to fail!');
 
             // Failing with multiple hosts
             $lcfg = array(
-                    'host' => array('pear.net-ldap.test.hostunknown1.com', 'pear.net-ldap.test.hostunknown2.com'),
+                    'host' => array('0.0.0.1', '0.0.0.2'),
                 );
             $ldap = Net_LDAP2::connect($lcfg);
             $this->assertInstanceOf('Net_LDAP2_Error', $ldap, 'Connect succeeded but was supposed to fail!');
@@ -143,7 +143,7 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
             // Working connect and privilegued bind with first host down
             $lcfg = array(
                     'host'   => array(
-                            'pear.net-ldap.test.hostunknown1.com',
+                            '0.0.0.1',
                             $this->ldapcfg['global']['server_address']
                         ),
                     'port'   => $this->ldapcfg['global']['server_port'],

@@ -263,7 +263,7 @@ class Net_LDAP2_SearchTest extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
 
             // some testdata, so we have some entries to search for
             $base = $this->ldapcfg['global']['server_base_dn'];

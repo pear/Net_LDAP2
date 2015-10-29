@@ -192,7 +192,7 @@ class Net_LDAP2 extends PEAR
     * @access public
     * @return Net_LDAP2_Error|Net_LDAP2   Net_LDAP2_Error or Net_LDAP2 object
     */
-    public static function &connect($config = array())
+    public static function connect($config = array())
     {
         $ldap_check = self::checkLDAPExtension();
         if (self::iserror($ldap_check)) {
@@ -665,7 +665,7 @@ class Net_LDAP2 extends PEAR
     public function start_tls()
     {
         $args = func_get_args();
-        return call_user_func_array(array( &$this, 'startTLS' ), $args);
+        return call_user_func_array(array( $this, 'startTLS' ), $args);
     }
 
     /**
@@ -708,11 +708,11 @@ class Net_LDAP2 extends PEAR
     * This also links the entry to the connection used for the add,
     * if it was a fresh entry ({@link Net_LDAP2_Entry::createFresh()})
     *
-    * @param Net_LDAP2_Entry &$entry Net_LDAP2_Entry
+    * @param Net_LDAP2_Entry $entry Net_LDAP2_Entry
     *
     * @return Net_LDAP2_Error|true    Net_LDAP2_Error object or true
     */
-    public function add(&$entry)
+    public function add($entry)
     {
         if (!$entry instanceof Net_LDAP2_Entry) {
             return PEAR::raiseError('Parameter to Net_LDAP2::add() must be a Net_LDAP2_Entry object.');
@@ -1283,7 +1283,7 @@ class Net_LDAP2 extends PEAR
     * @return Net_LDAP2_Entry|Net_LDAP2_Error    Reference to a Net_LDAP2_Entry object or Net_LDAP2_Error object
     * @todo Maybe check against the shema should be done to be sure the attribute type exists
     */
-    public function &getEntry($dn, $attr = array())
+    public function getEntry($dn, $attr = array())
     {
         if (!is_array($attr)) {
             $attr = array($attr);
@@ -1327,7 +1327,7 @@ class Net_LDAP2 extends PEAR
         if (is_string($entry)) {
             $entry_o = $this->getEntry($entry);
         } else {
-            $entry_o =& $entry;
+            $entry_o = $entry;
         }
         if (!$entry_o instanceof Net_LDAP2_Entry) {
             return PEAR::raiseError('Parameter $entry is expected to be a Net_LDAP2_Entry object! (If DN was passed, conversion failed)');
@@ -1374,12 +1374,12 @@ class Net_LDAP2 extends PEAR
     * Please note that only attributes you have
     * selected will be copied.
     *
-    * @param Net_LDAP2_Entry &$entry Entry object
+    * @param Net_LDAP2_Entry $entry Entry object
     * @param string          $newdn  New FQF-DN of the entry
     *
     * @return Net_LDAP2_Error|Net_LDAP2_Entry Error Message or reference to the copied entry
     */
-    public function &copy(&$entry, $newdn)
+    public function copy($entry, $newdn)
     {
         if (!$entry instanceof Net_LDAP2_Entry) {
             return PEAR::raiseError('Parameter $entry is expected to be a Net_LDAP2_Entry object!');
@@ -1491,7 +1491,7 @@ class Net_LDAP2 extends PEAR
     * @access public
     * @return Net_LDAP2_Error|Net_LDAP2_RootDSE Net_LDAP2_Error or Net_LDAP2_RootDSE object
     */
-    public function &rootDse($attrs = null)
+    public function rootDse($attrs = null)
     {
         if ($attrs !== null && !is_array($attrs)) {
             return PEAR::raiseError('Parameter $attr is expected to be an array!');
@@ -1502,7 +1502,7 @@ class Net_LDAP2 extends PEAR
         // see if we need to fetch a fresh object, or if we already
         // requested this object with the same attributes
         if (true || !array_key_exists($attrs_signature, $this->_rootDSE_cache)) {
-            $rootdse =& Net_LDAP2_RootDSE::fetch($this, $attrs);
+            $rootdse = Net_LDAP2_RootDSE::fetch($this, $attrs);
             if ($rootdse instanceof Net_LDAP2_Error) {
                 return $rootdse;
             }
@@ -1520,10 +1520,10 @@ class Net_LDAP2 extends PEAR
     * @see rootDse()
     * @return Net_LDAP2_Error|Net_LDAP2_RootDSE
     */
-    public function &root_dse()
+    public function root_dse()
     {
         $args = func_get_args();
-        return call_user_func_array(array(&$this, 'rootDse'), $args);
+        return call_user_func_array(array($this, 'rootDse'), $args);
     }
 
     /**
@@ -1534,7 +1534,7 @@ class Net_LDAP2 extends PEAR
     * @access public
     * @return Net_LDAP2_Schema|Net_LDAP2_Error  Net_LDAP2_Schema or Net_LDAP2_Error object
     */
-    public function &schema($dn = null)
+    public function schema($dn = null)
     {
         // Schema caching by Knut-Olav Hoven
         // If a schema caching object is registered, we use that to fetch
@@ -1746,7 +1746,7 @@ class Net_LDAP2 extends PEAR
     * @access public
     * @return resource LDAP link
     */
-    public function &getLink()
+    public function getLink()
     {
         if ($this->_config['auto_reconnect']) {
             while (true) {

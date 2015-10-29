@@ -159,7 +159,7 @@ If we just want one single entry, it may be useful to directly fetch that entry 
 of searching it manually. To do this you can use Net_LDAP2s "getEntry()" method:
 <pre>
 $dn = 'cn=Foo Bar,ou=dev,ou=People,dc=php,dc=net';
-$entry =& $ldap->getEntry($dn, array('sn','gn','telephonenumber'));
+$entry = $ldap->getEntry($dn, array('sn','gn','telephonenumber'));
 </pre>
 </p>
 With this entry object you now can perform some actions like fetching the contents of attributes:

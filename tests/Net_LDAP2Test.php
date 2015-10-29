@@ -158,7 +158,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
             $this->assertInstanceOf('Net_LDAP2_Error', $ldap, 'Connect succeeded but was supposed to fail!');
 
             // Simple working connect and privilegued bind
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
 
             // Working connect and privilegued bind with first host down
             $lcfg = array(
@@ -233,7 +233,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
 
             // Adding a fresh entry
             $cn          = 'Net-LDAP-TestEntry';
@@ -263,7 +263,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
             // some parameter checks
             $this->assertInstanceOf('Net_LDAP2_Error', $ldap->delete(1234));
             $this->assertInstanceOf('Net_LDAP2_Error', $ldap->delete($ldap));
@@ -332,7 +332,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
             // We need a test entry:
             $local_entry = Net_LDAP2_Entry::createFresh(
                 'ou=Net_LDAP2_Test_modify,'.$this->ldapcfg['global']['server_base_dn'],
@@ -416,7 +416,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
 
             // some testdata, so we can test sizelimit
             $base = $this->ldapcfg['global']['server_base_dn'];
@@ -583,7 +583,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
             $dn   = $this->ldapcfg['test']['existing_entry'].','.$this->ldapcfg['global']['server_base_dn'];
 
             // Testing existing and not existing DN; neither should produce an error
@@ -616,7 +616,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
             $dn   = $this->ldapcfg['test']['existing_entry'].','.$this->ldapcfg['global']['server_base_dn'];
 
             // existing DN
@@ -635,7 +635,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
 
             // For Moving tests, we need some little tree again
             $base   = $this->ldapcfg['global']['server_base_dn'];
@@ -740,7 +740,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
 
             // some testdata...
             $base = $this->ldapcfg['global']['server_base_dn'];
@@ -805,7 +805,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
             $this->assertInstanceOf('Net_LDAP2_RootDSE', $ldap->rootDSE());
         }
     }
@@ -817,7 +817,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
             $this->assertInstanceOf('Net_LDAP2_Schema', $ldap->schema());
         }
     }
@@ -829,7 +829,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap    =& $this->connect();
+            $ldap    = $this->connect();
             $utf8    = array('cn' => 'this needs utf8: '.base64_decode('w7bDpMO8')); //צהü
             $no_utf8 = array('cn' => 'this needs no utf8');
 
@@ -849,7 +849,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap  =& $this->connect();
+            $ldap  = $this->connect();
             $entry = $ldap->getEntry($this->ldapcfg['test']['existing_entry'].','.$this->ldapcfg['global']['server_base_dn'],
                 array($this->ldapcfg['test']['utf8_attr'], $this->ldapcfg['test']['noutf8_attr']));
             $this->assertInstanceOf('Net_LDAP2_Entry', $entry, 'Unable to fetch test entry, check ldapconfig.ini');
@@ -874,7 +874,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
             $this->assertTrue(is_resource($ldap->getLink()));
         }
     }
@@ -886,7 +886,7 @@ class Net_LDAP2Test extends PHPUnit_Framework_TestCase {
         if (!$this->ldapcfg) {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
-            $ldap =& $this->connect();
+            $ldap = $this->connect();
 
             // setup test entry
             $cn   = 'Net_LDAP2_Test_bug_18202';

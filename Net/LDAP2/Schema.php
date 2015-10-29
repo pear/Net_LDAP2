@@ -123,7 +123,7 @@ class Net_LDAP2_Schema extends PEAR
     * @access public
     * @return Net_LDAP2_Schema|NET_LDAP2_Error
     */
-    public function fetch($ldap, $dn = null)
+    public static function fetch($ldap, $dn = null)
     {
         if (!$ldap instanceof Net_LDAP2) {
             return PEAR::raiseError("Unable to fetch Schema: Parameter \$ldap must be a Net_LDAP2 object!");

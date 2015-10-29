@@ -133,7 +133,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     */
     public function __construct(&$search, &$ldap, $attributes = array())
     {
-        $this->PEAR('Net_LDAP2_Error');
+        parent::__construct('Net_LDAP2_Error');
 
         $this->setSearch($search);
 

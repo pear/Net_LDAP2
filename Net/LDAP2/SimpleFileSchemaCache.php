@@ -43,7 +43,7 @@ class Net_LDAP2_SimpleFileSchemaCache implements Net_LDAP2_SchemaCache
     *
     * @param array $cfg Config array
     */
-    public function Net_LDAP2_SimpleFileSchemaCache($cfg)
+    public function __construct($cfg)
     {
     	foreach ($cfg as $key => $value) {
 			if (array_key_exists($key, $this->config)) {

@@ -148,7 +148,7 @@ class Net_LDAP2_Entry extends PEAR
     */
     public function __construct(&$ldap, $entry = null)
     {
-        $this->PEAR('Net_LDAP2_Error');
+        parent::__construct('Net_LDAP2_Error');
 
         // set up entry resource or DN
         if (is_resource($entry)) {

@@ -218,7 +218,7 @@ class Net_LDAP2_LDIF extends PEAR
     */
     public function __construct($file, $mode = 'r', $options = array())
     {
-        $this->PEAR('Net_LDAP2_Error'); // default error class
+        parent::__construct('Net_LDAP2_Error'); // default error class
 
         // First, parse options
         // todo: maybe implement further checks on possible values

@@ -229,7 +229,7 @@ class Net_LDAP2 extends PEAR
     */
     public function __construct($config = array())
     {
-        $this->PEAR('Net_LDAP2_Error');
+        parent::__construct('Net_LDAP2_Error');
         $this->setConfig($config);
     }
 
@@ -1792,9 +1792,9 @@ class Net_LDAP2_Error extends PEAR_Error
                          $level = E_USER_NOTICE, $debuginfo = null)
     {
         if (is_int($code)) {
-            $this->PEAR_Error($message . ': ' . Net_LDAP2::errorMessage($code), $code, $mode, $level, $debuginfo);
+            parent::__construct($message . ': ' . Net_LDAP2::errorMessage($code), $code, $mode, $level, $debuginfo);
         } else {
-            $this->PEAR_Error("$message: $code", NET_LDAP2_ERROR, $mode, $level, $debuginfo);
+            parent::__construct("$message: $code", NET_LDAP2_ERROR, $mode, $level, $debuginfo);
         }
     }
 }

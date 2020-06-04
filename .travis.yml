@@ -1,10 +1,7 @@
 language: php
 sudo: false
 php:
-  - 7
-  - 5.6
-  - 5.5
-  - 5.4
+  - 7.4
 addons:
   apt:
     packages:
@@ -12,7 +9,7 @@ addons:
     - slapd
 before_script:
   - phpenv config-add tests/travis/enable-ldap.ini
-  - pear upgrade pear-1.10.1
+  - pear upgrade pear
   - cat tests/ldapconfig.ini.dist | sed s/389/3389/ > tests/ldapconfig.ini
   - mkdir /tmp/slapd
   - slapd -f tests/ldif_data/slapd.conf -h ldap://localhost:3389 &

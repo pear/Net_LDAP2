@@ -31,15 +31,6 @@ class Net_LDAP2_RootDSETest extends Net_LDAP2_TestBase {
     }
 
     /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     *
-     * @access protected
-     */
-    protected function tearDown() {
-    }
-
-    /**
      * @todo Implement testGetValue().
      */
     public function testGetValue() {

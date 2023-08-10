@@ -23,15 +23,6 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
     }
 
     /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     *
-     * @access protected
-     */
-    protected function tearDown() {
-    }
-
-    /**
      * This checks if a valid LDAP testconfig is present and loads it.
      *
      * If so, it is loaded and returned as array. If not, false is returned.

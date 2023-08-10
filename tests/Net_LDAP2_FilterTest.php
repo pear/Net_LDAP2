@@ -26,24 +26,6 @@ class Net_LDAP2_FilterTest extends Net_LDAP2_TestBase {
     }
 
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
-     *
-     * @access protected
-     */
-    protected function setUp() {
-    }
-
-    /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     *
-     * @access protected
-     */
-    protected function tearDown() {
-    }
-
-    /**
      * This tests the perl compatible creation of filters through parsing of an filter string
      */
     public function testCreatePerlCompatible() {

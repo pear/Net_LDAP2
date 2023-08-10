@@ -21,24 +21,6 @@ class Net_LDAP2_UtilTest extends Net_LDAP2_TestBase {
     }
 
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
-     *
-     * @access protected
-     */
-    protected function setUp() {
-    }
-
-    /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     *
-     * @access protected
-     */
-    protected function tearDown() {
-    }
-
-    /**
      * Test escape_dn_value()
      */
     public function testEscape_dn_value() {

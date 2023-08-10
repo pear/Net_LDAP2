@@ -174,12 +174,15 @@ class Net_LDAP2_LDIFTest extends Net_LDAP2_TestBase {
 
         // writing to existing file but without permission
         // note: chmod should succeed since we do that in setUp()
-        if (chmod($this->outfile, 0444)) {
+        if (!chmod($this->outfile, 0444)) {
+            $this->markTestSkipped("Could not chmod ".$this->outfile.", write test without permission skipped");
+        } else if (stat($this->outfile)['uid'] === 0) {
+            $this->markTestSkipped("Running as root breaks this test");
+
+        } else {
             $ldif = new Net_LDAP2_LDIF($this->outfile, 'w', $this->defaultConfig);
             $this->assertNull($ldif->handle());
             $this->assertInstanceOf('Net_LDAP2_Error', $ldif->error());
-        } else {
-            $this->markTestSkipped("Could not chmod ".$this->outfile.", write test without permission skipped");
         }
     }
 

@@ -126,7 +126,7 @@ class Net_LDAP2_FilterTest extends Net_LDAP2_TestBase {
             $filter = Net_LDAP2_Filter::create($testattr, $match, $testval, false);
 
             $this->assertInstanceOf('Net_LDAP2_Filter', $filter);
-            $this->assertRegExp($regex, $filter->asString(), "Filter generation failed for MatchType: $match");
+            $this->assertMatchesRegularExpression($regex, $filter->asString(), "Filter generation failed for MatchType: $match");
         }
 
         // test creating failure

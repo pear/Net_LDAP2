@@ -34,7 +34,7 @@ class Net_LDAP2_EntryTest extends Net_LDAP2_TestBase {
      *
      * @access protected
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->ldapcfg = $this->getTestConfig();
     }
 

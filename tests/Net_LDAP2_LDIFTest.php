@@ -100,7 +100,7 @@ class Net_LDAP2_LDIFTest extends Net_LDAP2_TestBase {
      *
      * @access protected
      */
-    protected function setUp() {
+    protected function setUp(): void {
         // initialize test entries
         $this->testentries = array();
         foreach ($this->testentries_data as $dn => $attrs) {
@@ -120,7 +120,7 @@ class Net_LDAP2_LDIFTest extends Net_LDAP2_TestBase {
      *
      * @access protected
      */
-    protected function tearDown() {
+    protected function tearDown(): void {
 	// uncomment this if you debug the test cases so you will have output available
 	if (file_exists($this->outfile)) @unlink($this->outfile);
     }
@@ -551,8 +551,8 @@ class Net_LDAP2_LDIFTest extends Net_LDAP2_TestBase {
         $ldif = new Net_LDAP2_LDIF(dirname(__FILE__).'/some_not_existing/path/for/net_ldap_ldif', 'r', $this->defaultConfig);
         $this->assertTrue((boolean)$ldif->error());
         $this->assertInstanceOf('Net_LDAP2_Error', $ldif->error());
-        $this->assertInternalType('string', $ldif->error(true));
-        $this->assertInternalType('int', $ldif->error_lines());
+        $this->assertIsString($ldif->error(true));
+        $this->assertIsInt($ldif->error_lines());
         $this->assertThat(strlen($ldif->error(true)), $this->greaterThan(0));
 
         // Test for line number reporting

@@ -876,7 +876,7 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
             $this->assertTrue( $ldap->add($entry) );
             $this->assertTrue( $entry->replace(array('uid' => 'Foo Bar')) );
             $this->assertTrue( $result = $entry->update() );
-    
+
             // cleanup
             $this->assertTrue($ldap->delete($entry),
                     'Cleanup of test entry failed. Please remove manually: '.$entry->dn());

@@ -420,7 +420,7 @@ class Net_LDAP2_LDIFTest extends Net_LDAP2_TestBase {
         $this->assertFalse((boolean)$ldif->error(), 'Failed writing entry to '.$this->outfile.': '.$ldif->error(true));
         $ldif->done();
         $this->assertEquals(0, filesize($this->outfile));
-   
+
     }
 
     /**

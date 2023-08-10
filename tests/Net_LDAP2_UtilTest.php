@@ -325,7 +325,7 @@ class Net_LDAP2_UtilTest extends Net_LDAP2_TestBase {
             '#' => '\#',
             '=' => '\=',
             chr(18) => '\12',
-            '/' => '\/'
+            '/' => '\2f'
         );
         foreach ($specialchars as $char => $escape) {
             $test_string = 'CN=be'.$char.'ni,DC=ph'.$char.'p,C=net';

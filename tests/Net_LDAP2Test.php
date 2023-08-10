@@ -864,7 +864,12 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
             $ldap = $this->connect();
-            $this->assertTrue(is_resource($ldap->getLink()));
+
+            if (version_compare(PHP_VERSION, '8.1.0', '<')) {
+                $this->assertTrue(is_resource($ldap->getLink()));
+            } else {
+                $this->assertInstanceOf(\LDAP\Connection::class, $ldap->getLink());
+            }
         }
     }
 

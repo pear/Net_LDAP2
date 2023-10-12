@@ -26,24 +26,6 @@ class Net_LDAP2_FilterTest extends Net_LDAP2_TestBase {
     }
 
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
-     *
-     * @access protected
-     */
-    protected function setUp() {
-    }
-
-    /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     *
-     * @access protected
-     */
-    protected function tearDown() {
-    }
-
-    /**
      * This tests the perl compatible creation of filters through parsing of an filter string
      */
     public function testCreatePerlCompatible() {
@@ -144,7 +126,7 @@ class Net_LDAP2_FilterTest extends Net_LDAP2_TestBase {
             $filter = Net_LDAP2_Filter::create($testattr, $match, $testval, false);
 
             $this->assertInstanceOf('Net_LDAP2_Filter', $filter);
-            $this->assertRegExp($regex, $filter->asString(), "Filter generation failed for MatchType: $match");
+            $this->assertMatchesRegularExpression($regex, $filter->asString(), "Filter generation failed for MatchType: $match");
         }
 
         // test creating failure
@@ -392,10 +374,10 @@ class Net_LDAP2_FilterTest extends Net_LDAP2_TestBase {
                 'height'         => '120',
                 'mail'           => 'bart@iHateSchool.com',
                 'objectClass'    => array('top', 'person', 'inetOrgPerson', 'myFancyTestClass'),
-                )   
+                )
         );
         $entry3 = Net_LDAP2_Entry::createFresh('cn=Brockman Kent,l=springfield,c=usa',
-            array(      
+            array(
                 'cn'             => 'Brockman Kent',
                 'sn'             => 'Brockman',
                 'givenName'      => 'Kent',
@@ -404,7 +386,7 @@ class Net_LDAP2_FilterTest extends Net_LDAP2_TestBase {
                 'height'         => '185',
                 'mail'           => 'kent.brockman@channel6.com',
                 'objectClass'    => array('top', 'person', 'inetOrgPerson', 'myFancyTestClass'),
-                )   
+                )
         );
 
         $allEntries = array($entry1, $entry2, $entry3);
@@ -455,7 +437,7 @@ class Net_LDAP2_FilterTest extends Net_LDAP2_TestBase {
 	$filterresult = array();
 	$this->assertEquals(1, $filter->matches($allEntries, $filterresult));
 	$this->assertEquals($entry1->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry! filter='".$filter->asString()."'");
-	
+
 	$filter = Net_LDAP2_Filter::combine('not', $filter); // all but homer consume donuts
         $this->assertEquals(count($allEntries)-1, $filter->matches($allEntries, $filterresult), "Filtered entry does not equal expected entry! filter='".$filter->asString()."'");
 
@@ -465,7 +447,7 @@ class Net_LDAP2_FilterTest extends Net_LDAP2_TestBase {
         $this->assertEquals(2, $filter->matches($allEntries, $filterresult));
         $this->assertEquals($entry2->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry! filter='".$filter->asString()."'");
         $this->assertEquals($entry3->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry! filter='".$filter->asString()."'");
-        
+
         // OR combination test
         $filter1 = Net_LDAP2_Filter::create('sn', 'equals', 'Simpson');
         $filter2 = Net_LDAP2_Filter::create('givenName', 'equals', 'Kent');
@@ -493,7 +475,7 @@ class Net_LDAP2_FilterTest extends Net_LDAP2_TestBase {
         $filterresult = array();
         $this->assertEquals(1, $filter_final->matches($allEntries, $filterresult)); // should leave only kent
         $this->assertEquals($entry3->dn(), array_shift($filterresult)->dn(), "Filtered entry does not equal expected entry! filter='".$filter_final->asString()."'");
-        
+
         // [TODO]: Further tests for >, <, >=, <= and ~=, when they are implemented.
         // ...until then: negative testing for those cases
         foreach (array('>', '<', '>=', '<=', '~=') as $to) {

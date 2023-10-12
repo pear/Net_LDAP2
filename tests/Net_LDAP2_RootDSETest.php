@@ -26,17 +26,8 @@ class Net_LDAP2_RootDSETest extends Net_LDAP2_TestBase {
      *
      * @access protected
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->markTestIncomplete('Test not implemented yet.');
-    }
-
-    /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     *
-     * @access protected
-     */
-    protected function tearDown() {
     }
 
     /**

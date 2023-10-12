@@ -34,17 +34,8 @@ class Net_LDAP2_EntryTest extends Net_LDAP2_TestBase {
      *
      * @access protected
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->ldapcfg = $this->getTestConfig();
-    }
-
-    /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     *
-     * @access protected
-     */
-    protected function tearDown() {
     }
 
     /**
@@ -112,7 +103,7 @@ class Net_LDAP2_EntryTest extends Net_LDAP2_TestBase {
         $this->assertTrue(Net_LDAP2::isError($t), 'Creating fresh entry succeeded but was supposed to fail!');
 
         // test failing creation
-        $t = Net_LDAP2_Entry::createFresh("cn=test", 
+        $t = Net_LDAP2_Entry::createFresh("cn=test",
             array(
                 'attr1' => 'single',
                 'attr2' => array('mv1', 'mv2')
@@ -190,7 +181,7 @@ class Net_LDAP2_EntryTest extends Net_LDAP2_TestBase {
                 'attr2' => array('mv1', 'mv2')
                 )
         );
-    
+
         // test default behavior
         $this->assertEquals('single', $entry->getValue('attr1'));
         $this->assertEquals(array('mv1', 'mv2'), $entry->getValue('attr2'));

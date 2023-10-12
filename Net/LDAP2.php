@@ -1745,7 +1745,7 @@ class Net_LDAP2 extends PEAR
     * auto_reconnect has been turned on (see the _config array documentation).
     *
     * @access public
-    * @return resource LDAP link
+    * @return resource|\LDAP\Connection LDAP link (resource on PHP < 8.1)
     */
     public function getLink()
     {

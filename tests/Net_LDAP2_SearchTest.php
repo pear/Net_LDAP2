@@ -19,17 +19,8 @@ class Net_LDAP2_SearchTest extends Net_LDAP2_TestBase {
      *
      * @access protected
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->ldapcfg = $this->getTestConfig();
-    }
-
-    /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     *
-     * @access protected
-     */
-    protected function tearDown() {
     }
 
     /**
@@ -257,6 +248,11 @@ class Net_LDAP2_SearchTest extends Net_LDAP2_TestBase {
                     'objectClass' => array('top','organizationalUnit'),
                     'ou' => 'Net_LDAP2_Test_search2'
                 ));
+
+            //remove data from previously failed test
+            $ldap->delete($ou1->dn());
+            $ldap->delete($ou2->dn());
+
             $this->assertTrue($ldap->add($ou1));
             $this->assertTrue($ldap->dnExists($ou1->dn()));
             $this->assertTrue($ldap->add($ou2));

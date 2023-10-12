@@ -18,17 +18,8 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
      *
      * @access protected
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->ldapcfg = $this->getTestConfig();
-    }
-
-    /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     *
-     * @access protected
-     */
-    protected function tearDown() {
     }
 
     /**
@@ -325,6 +316,10 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
                     'postalAddress'   => 'someAddress',
                     'facsimileTelephoneNumber' => array('123','456')
                 ));
+
+            //remove data from previously failed test
+            $ldap->delete($local_entry->dn());
+
             $this->assertTrue($ldap->add($local_entry));
             $this->assertTrue($ldap->dnExists($local_entry->dn()));
 
@@ -415,6 +410,12 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
                     'objectClass' => array('top','organizationalUnit'),
                     'ou' => 'Net_LDAP2_Test_search2'
                 ));
+
+            //remove data from previously failed test
+            $ldap->delete($ou1_1->dn());
+            $ldap->delete($ou1->dn());
+            $ldap->delete($ou2->dn());
+
             $this->assertTrue($ldap->add($ou1));
             $this->assertTrue($ldap->dnExists($ou1->dn()));
             $this->assertTrue($ldap->add($ou1_1));
@@ -647,6 +648,14 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
                     'objectClass' => array('top','organizationalUnit'),
                     'ou' => 'target_otherdir'
                 ));
+
+            //remove data from previously failed test
+            $ldap->delete($ou_1_l1->dn());
+            $ldap->delete($ou_1->dn());
+            $ldap->delete($ou_2->dn());
+            $ldap->delete($ou_3->dn());
+            $ldap->delete($ou->dn());
+
             $this->assertTrue($ldap->add($ou));
             $this->assertTrue($ldap->add($ou_1));
             $this->assertTrue($ldap->add($ou_1_l1));
@@ -855,7 +864,12 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
             $this->markTestSkipped('No ldapconfig.ini found. Skipping test!');
         } else {
             $ldap = $this->connect();
-            $this->assertTrue(is_resource($ldap->getLink()));
+
+            if (version_compare(PHP_VERSION, '8.1.0', '<')) {
+                $this->assertTrue(is_resource($ldap->getLink()));
+            } else {
+                $this->assertInstanceOf(\LDAP\Connection::class, $ldap->getLink());
+            }
         }
     }
 
@@ -878,6 +892,9 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
                 'cn'          => $cn
             );
 
+            //remove data from previously failed test
+            $ldap->delete($dn);
+
             // Test case
             $entry = Net_LDAP2_Entry::createFresh($dn, $data);
             $this->assertInstanceOf('Net_LDAP2_Entry', $entry);
@@ -885,7 +902,7 @@ class Net_LDAP2Test extends Net_LDAP2_TestBase {
             $this->assertTrue( $ldap->add($entry) );
             $this->assertTrue( $entry->replace(array('uid' => 'Foo Bar')) );
             $this->assertTrue( $result = $entry->update() );
-    
+
             // cleanup
             $this->assertTrue($ldap->delete($entry),
                     'Cleanup of test entry failed. Please remove manually: '.$entry->dn());

@@ -14,8 +14,8 @@ before_script:
   - mkdir /tmp/slapd
   - slapd -f tests/ldif_data/slapd.conf -h ldap://localhost:3389 &
   - sleep 3
-  - ldapadd -h localhost:3389 -D cn=admin,dc=example,dc=com -w test -f tests/ldif_data/base.ldif
-  - ldapadd -h localhost:3389 -D cn=admin,dc=example,dc=com -w test -f tests/ldif_data/INITIAL_TESTDATA.ldif
+  - ldapadd -H ldap://localhost:3389 -D cn=admin,dc=example,dc=com -w test -f tests/ldif_data/base.ldif
+  - ldapadd -H ldap://localhost:3389 -D cn=admin,dc=example,dc=com -w test -f tests/ldif_data/INITIAL_TESTDATA.ldif
 
 script:
   - cd tests

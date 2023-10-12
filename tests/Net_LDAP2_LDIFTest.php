@@ -100,7 +100,7 @@ class Net_LDAP2_LDIFTest extends Net_LDAP2_TestBase {
      *
      * @access protected
      */
-    protected function setUp() {
+    protected function setUp(): void {
         // initialize test entries
         $this->testentries = array();
         foreach ($this->testentries_data as $dn => $attrs) {
@@ -120,7 +120,7 @@ class Net_LDAP2_LDIFTest extends Net_LDAP2_TestBase {
      *
      * @access protected
      */
-    protected function tearDown() {
+    protected function tearDown(): void {
 	// uncomment this if you debug the test cases so you will have output available
 	if (file_exists($this->outfile)) @unlink($this->outfile);
     }
@@ -174,12 +174,15 @@ class Net_LDAP2_LDIFTest extends Net_LDAP2_TestBase {
 
         // writing to existing file but without permission
         // note: chmod should succeed since we do that in setUp()
-        if (chmod($this->outfile, 0444)) {
+        if (!chmod($this->outfile, 0444)) {
+            $this->markTestSkipped("Could not chmod ".$this->outfile.", write test without permission skipped");
+        } else if (stat($this->outfile)['uid'] === 0) {
+            $this->markTestSkipped("Running as root breaks this test");
+
+        } else {
             $ldif = new Net_LDAP2_LDIF($this->outfile, 'w', $this->defaultConfig);
             $this->assertNull($ldif->handle());
             $this->assertInstanceOf('Net_LDAP2_Error', $ldif->error());
-        } else {
-            $this->markTestSkipped("Could not chmod ".$this->outfile.", write test without permission skipped");
         }
     }
 
@@ -420,7 +423,7 @@ class Net_LDAP2_LDIFTest extends Net_LDAP2_TestBase {
         $this->assertFalse((boolean)$ldif->error(), 'Failed writing entry to '.$this->outfile.': '.$ldif->error(true));
         $ldif->done();
         $this->assertEquals(0, filesize($this->outfile));
-   
+
     }
 
     /**
@@ -551,8 +554,8 @@ class Net_LDAP2_LDIFTest extends Net_LDAP2_TestBase {
         $ldif = new Net_LDAP2_LDIF(dirname(__FILE__).'/some_not_existing/path/for/net_ldap_ldif', 'r', $this->defaultConfig);
         $this->assertTrue((boolean)$ldif->error());
         $this->assertInstanceOf('Net_LDAP2_Error', $ldif->error());
-        $this->assertInternalType('string', $ldif->error(true));
-        $this->assertInternalType('int', $ldif->error_lines());
+        $this->assertIsString($ldif->error(true));
+        $this->assertIsInt($ldif->error_lines());
         $this->assertThat(strlen($ldif->error(true)), $this->greaterThan(0));
 
         // Test for line number reporting

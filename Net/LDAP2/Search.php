@@ -562,7 +562,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     *
     * @return Net_LDAP2_Entry|false
     */
-    public function current()
+    public function current(): mixed
     {
         if (count($this->_iteratorCache) == 0) {
             $this->next();
@@ -578,7 +578,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @see current()
     * @return string|false DN of the current entry; false in case no entry is returned by current()
     */
-    public function key()
+    public function key(): mixed
     {
         $entry = $this->current();
         return ($entry instanceof Net_LDAP2_Entry)? $entry->dn() :false;
@@ -593,7 +593,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @see current()
     * @return void
     */
-    public function next()
+    public function next(): void
     {
         // fetch next entry.
         // if we have no entrys anymore, we add false (which is
@@ -616,7 +616,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @see current()
     * @return boolean FALSE if there's nothing more to iterate over
     */
-    public function valid()
+    public function valid(): bool
     {
         return ($this->current() instanceof Net_LDAP2_Entry);
     }
@@ -629,7 +629,7 @@ class Net_LDAP2_Search extends PEAR implements Iterator
     * @see current()
     * @return void
     */
-    public function rewind()
+    public function rewind(): void
     {
         reset($this->_iteratorCache);
     }

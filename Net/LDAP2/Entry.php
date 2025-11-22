@@ -882,7 +882,7 @@ class Net_LDAP2_Entry extends PEAR
         }
 
         // COMMIT
-        if (false === @ldap_modify($link, $this->dn(), $modifications)) {
+        if ($modifications && false === @ldap_modify($link, $this->dn(), $modifications)) {
             return PEAR::raiseError("Could not modify the entry: " . @ldap_error($link), @ldap_errno($link));
         }
 
